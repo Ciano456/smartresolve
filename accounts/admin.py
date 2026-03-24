@@ -1,14 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from accounts.forms import CustomUserChangeForm, CustomUserCreationForm
+from accounts.models import User
 
-# Import the custom user model and forms
-from .models import User
-from .forms import UserCreationForm, UserChangeForm
 
 # Register your models here.
 class UserAdmin(BaseUserAdmin):
-    add_form = UserCreationForm
-    form = UserChangeForm
+    add_form = CustomUserCreationForm
+    form = CustomUserChangeForm
     model = User
     list_display = ("email", "first_name", "last_name", "is_staff")
     search_fields = ("email", "first_name", "last_name")
@@ -21,7 +20,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             "classes": ("wide",),
-            "fields": ("email", "password1", "password2"),
+            "fields": ("email", "first_name", "last_name", "password1", "password2"),
         }),
     )
 
