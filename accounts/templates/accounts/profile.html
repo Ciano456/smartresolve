@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Premier Life Sciences | SmartResolve Profile{% endblock %}
+
+{% block body %}
+<main class="min-h-screen p-4 md:p-6">
+    <section class="mx-auto min-h-[calc(100vh-2rem)] max-w-7xl overflow-hidden rounded-[34px] border border-white/50 bg-white/55 shadow-shell backdrop-blur">
+        {% include "partials/top_nav.html" with top_nav="tracking" %}
+
+        <div class="grid min-h-[calc(100vh-8rem)] md:grid-cols-[110px_1fr]">
+            {% include "partials/side_nav.html" with side_nav="profile" %}
+
+            <section class="p-5 md:p-7">
+                <div class="grid items-start gap-6 xl:grid-cols-[310px_1fr]">
+                    <aside class="rounded-[30px] border border-slate-200/70 bg-white/90 p-7 text-center shadow-card">
+                        <div class="mx-auto mb-4 grid h-28 w-28 place-items-center rounded-full bg-gradient-to-br from-indigo-100 to-blue-200 text-4xl font-extrabold text-premierBlue shadow-card">
+                            {% if request.user.first_name %}
+                            {{ request.user.first_name|slice:":1" }}{{ request.user.last_name|slice:":1" }}
+                            {% else %}
+                            {{ request.user.email|slice:":1"|upper }}
+                            {% endif %}
+                        </div>
+
+                        <span class="mb-3 inline-block rounded-full bg-premierBlue px-3 py-2 text-xs font-bold text-white shadow-soft">Your Profile</span>
+                        <p class="text-sm text-slate-500">User Name</p>
+                        <h2 class="mt-1 text-4xl font-extrabold tracking-tight">
+                            {% if request.user.first_name or request.user.last_name %}
+                            {{ request.user.first_name }} {{ request.user.last_name }}
+                            {% else %}
+                            {{ request.user.email }}
+                            {% endif %}
+                        </h2>
+                        <span class="mt-4 inline-block rounded-full bg-yellow-100 px-3 py-2 text-xs font-extrabold text-yellow-800">
+                            {{ request.user.display_role }}
+                        </span>
+                    </aside>
+
+                    <section>
+                        <div class="grid gap-4 lg:grid-cols-3">
+                            <article class="relative overflow-hidden rounded-[22px] border border-slate-200/70 bg-white/90 p-6 shadow-card">
+                                <h3 class="text-5xl font-extrabold tracking-[-0.06em] text-sky-500">5</h3>
+                                <p class="mt-2 font-semibold text-slate-800">Current Tickets</p>
+                                <small class="mt-2 block text-slate-500">35.67%</small>
+                            </article>
+
+                            <article class="relative overflow-hidden rounded-[22px] border border-slate-200/70 bg-white/90 p-6 shadow-card">
+                                <h3 class="text-5xl font-extrabold tracking-[-0.06em] text-violet-500">2</h3>
+                                <p class="mt-2 font-semibold text-slate-800">Closed Tickets</p>
+                                <small class="mt-2 block text-slate-500">25%</small>
+                            </article>
+
+                            <article class="relative overflow-hidden rounded-[22px] border border-slate-200/70 bg-white/90 p-6 shadow-card">
+                                <h3 class="text-4xl font-extrabold tracking-[-0.06em] text-orange-500">1.5 hrs</h3>
+                                <p class="mt-2 font-semibold text-slate-800">Average Response Time</p>
+                                <small class="mt-2 block text-slate-500">Current support average</small>
+                            </article>
+                        </div>
+
+                        <section class="mt-5 rounded-[30px] border border-slate-200/70 bg-white/90 p-6 shadow-card">
+                            <h3 class="mb-5 border-b border-slate-200 pb-3 text-lg font-bold">Ticket Activity</h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full border-collapse">
+                                    <thead>
+                                        <tr class="text-left text-xs font-bold uppercase tracking-[0.05em] text-slate-500">
+                                            <th class="px-2 py-3">Date</th>
+                                            <th class="px-2 py-3">Activity</th>
+                                            <th class="px-2 py-3">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="border-t border-slate-200/80">
+                                            <td class="px-2 py-4">03/31/2025</td>
+                                            <td class="px-2 py-4">Ticket closed</td>
+                                            <td class="px-2 py-4"><span class="inline-block rounded-full bg-amber-100 px-3 py-2 text-xs font-extrabold text-amber-800">Cancelled</span></td>
+                                        </tr>
+                                        <tr class="border-t border-slate-200/80">
+                                            <td class="px-2 py-4">03/31/2025</td>
+                                            <td class="px-2 py-4">Comment added</td>
+                                            <td class="px-2 py-4"><span class="inline-block rounded-full bg-emerald-100 px-3 py-2 text-xs font-extrabold text-emerald-700">Updated</span></td>
+                                        </tr>
+                                        <tr class="border-t border-slate-200/80">
+                                            <td class="px-2 py-4">03/31/2025</td>
+                                            <td class="px-2 py-4">New ticket raised</td>
+                                            <td class="px-2 py-4"><span class="inline-block rounded-full bg-rose-100 px-3 py-2 text-xs font-extrabold text-rose-700">Medium Priority</span></td>
+                                        </tr>
+                                        <tr class="border-t border-slate-200/80">
+                                            <td class="px-2 py-4">03/31/2025</td>
+                                            <td class="px-2 py-4">New ticket raised</td>
+                                            <td class="px-2 py-4"><span class="inline-block rounded-full bg-slate-200 px-3 py-2 text-xs font-extrabold text-slate-700">High Priority</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </section>
+                    </section>
+                </div>
+            </section>
+        </div>
+    </section>
+</main>
+{% endblock %}

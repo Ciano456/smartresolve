@@ -1,0 +1,17 @@
+<aside class="flex flex-col justify-between gap-6 border-r border-slate-200/70 bg-white/60 p-4">
+    <nav class="flex flex-col gap-4">
+        <a href="{% url 'profile' %}" class="flex flex-col items-center gap-2 rounded-2xl px-3 py-4 text-center text-xs font-bold shadow-soft {% if side_nav == 'profile' %}bg-gradient-to-b from-sky-400 to-premierBlue text-white{% else %}bg-white/90 text-slate-500{% endif %}">
+            <span class="text-base">●</span>
+            <span>Profile</span>
+        </a>
+    </nav>
+
+    {% if user.is_authenticated %}
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="w-full rounded-full bg-gradient-to-r from-[#344cab] to-premierBlue px-4 py-3 text-sm font-bold text-white shadow-card">
+            Logout
+        </button>
+    </form>
+    {% endif %}
+</aside>

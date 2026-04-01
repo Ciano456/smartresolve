@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premier Life Sciences | Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        premierBlue: "#233893",
+                        premierBlueDeep: "#18296e",
+                        premierYellow: "#ffbd11",
+                    },
+                    boxShadow: {
+                        shell: "0 28px 70px rgba(24, 38, 89, 0.18)",
+                        soft: "0 14px 26px rgba(24, 38, 89, 0.12)",
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-[linear-gradient(135deg,#dce6fb_0%,#eef3ff_55%,#d9e4fb_100%)] p-6 text-slate-900">
+    <div class="mx-auto w-full max-w-7xl overflow-hidden rounded-[22px] border border-white/40 bg-white/60 shadow-shell backdrop-blur">
+        <div class="flex items-center gap-3 border-b border-slate-200/70 bg-slate-50/90 px-4 py-3">
+            <div class="flex gap-2">
+                <span class="h-2.5 w-2.5 rounded-full bg-slate-300"></span>
+                <span class="h-2.5 w-2.5 rounded-full bg-slate-300"></span>
+                <span class="h-2.5 w-2.5 rounded-full bg-slate-300"></span>
+            </div>
+            <div class="rounded-xl bg-white px-4 py-2 text-sm font-semibold shadow-soft">Premier Life Sciences</div>
+        </div>
+
+        <main class="grid min-h-[760px] bg-white lg:grid-cols-[0.95fr_1.05fr]">
+            <section class="relative flex flex-col justify-between overflow-hidden bg-[linear-gradient(180deg,#2c43a5_0%,#233893_58%,#18296e_100%)] px-10 py-14 text-white">
+                <div class="absolute left-[-220px] top-[60px] h-[520px] w-[520px] rounded-full border border-white/10"></div>
+                <div class="absolute left-[-120px] top-[200px] h-[340px] w-[340px] rounded-full border border-white/10"></div>
+
+                <div class="relative text-6xl leading-none text-premierYellow drop-shadow-md">✳</div>
+
+                <div class="relative max-w-[290px]">
+                    <h1 class="mb-5 text-5xl font-extrabold leading-[0.95] tracking-[-0.05em] md:text-6xl">
+                        Hello,<br>Premier Life<br>Sciences Portal!
+                    </h1>
+                    <p class="text-base leading-7 text-white/85">
+                        Raise incidents, request support, track internal tickets,
+                        and keep day-to-day IT operations moving with SmartResolve.
+                    </p>
+                </div>
+
+                <div class="relative flex max-w-[280px] items-center gap-4">
+                    <div class="text-5xl leading-none">👋</div>
+                    <div>
+                        <strong class="block text-2xl font-bold leading-tight">Your gateway</strong>
+                        <span class="mt-1 block text-base text-white/85">to expert IT support.</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="flex flex-col px-9 py-10">
+
+                <div class="my-auto w-full max-w-[390px] pl-0 lg:pl-3">
+                    <p class="mb-12 text-3xl font-extrabold tracking-[-0.04em]">Premier Life Sciences</p>
+
+                    <h2 class="mb-2 text-4xl font-extrabold tracking-[-0.04em]">Welcome Back!</h2>
+                    <p class="mb-7 text-base leading-7 text-slate-500">
+                        Sign in with your internal account to access SmartResolve and manage support requests.
+                    </p>
+
+                    {% if messages %}
+                    <ul class="mb-5 space-y-2">
+                        {% for message in messages %}
+                        <li class="rounded-2xl bg-indigo-50 px-4 py-3 text-sm text-premierBlue">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    <form method="post" class="space-y-4">
+                        {% csrf_token %}
+                        <div>
+                            <label for="email" class="mb-2 block text-sm font-bold">Email</label>
+                            <input type="email" id="email" name="email" required class="w-full border-0 border-b-2 border-slate-300 bg-transparent px-0 py-3 outline-none focus:border-premierBlue focus:ring-0">
+                        </div>
+
+                        <div>
+                            <label for="password" class="mb-2 block text-sm font-bold">Password</label>
+                            <input type="password" id="password" name="password" required class="w-full border-0 border-b-2 border-slate-300 bg-transparent px-0 py-3 outline-none focus:border-premierBlue focus:ring-0">
+                        </div>
+
+                        <button type="submit" class="w-full rounded-xl bg-[linear-gradient(135deg,#314ba9_0%,#233893_100%)] px-4 py-3 font-bold text-white shadow-soft">
+                            Login Now
+                        </button>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

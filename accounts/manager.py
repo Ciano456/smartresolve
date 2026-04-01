@@ -1,3 +1,7 @@
+# Student Name: Cian O'Connor
+# Student Number: x22109668
+# Module: Final Year Project
+
 from django.contrib.auth.models import BaseUserManager
 
 class UserManager(BaseUserManager):
@@ -14,6 +18,7 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
+        # A superuser should always keep the built-in Django admin flags.
         if extra_fields.get("is_staff") is not True:
             raise ValueError("Superuser must have is_staff=True.")
         if extra_fields.get("is_superuser") is not True:

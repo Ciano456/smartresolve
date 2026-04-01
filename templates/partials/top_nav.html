@@ -1,0 +1,23 @@
+<header class="flex flex-wrap items-center gap-4 border-b border-slate-200/70 bg-white/90 px-6 py-4">
+    <div class="flex items-center gap-3">
+        <div class="grid h-11 w-11 place-items-center rounded-full border border-slate-200 bg-gradient-to-br from-white to-slate-100 text-lg font-extrabold text-premierBlue shadow-soft">
+            ✺
+        </div>
+        <div class="leading-none">
+            <strong class="block text-xl font-extrabold tracking-tight">Premier</strong>
+            <span class="text-sm text-slate-500">Life Sciences</span>
+        </div>
+    </div>
+
+    <div class="flex items-center gap-4">
+        <span class="text-sm font-semibold text-slate-800">Tracking</span>
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="rounded-full bg-gradient-to-r from-[#344cab] to-premierBlue px-5 py-3 text-sm font-bold text-white shadow-card">
+                Logout
+            </button>
+        </form>
+        {% endif %}
+    </div>
+</header>
