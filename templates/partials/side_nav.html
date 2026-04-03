@@ -4,6 +4,13 @@
             <span class="text-base">●</span>
             <span>Profile</span>
         </a>
+
+        {% if user.is_admin_role %}
+        <a href="{% url 'admin_dashboard' %}" class="flex flex-col items-center gap-2 rounded-2xl px-3 py-4 text-center text-xs font-bold shadow-soft {% if side_nav == 'admin_portal' %}bg-gradient-to-b from-sky-400 to-premierBlue text-white{% else %}bg-white/90 text-slate-500{% endif %}">
+            <span class="text-base">◆</span>
+            <span>Admin</span>
+        </a>
+        {% endif %}
     </nav>
 
     {% if user.is_authenticated %}

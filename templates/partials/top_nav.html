@@ -1,17 +1,28 @@
-<header class="flex flex-wrap items-center gap-4 border-b border-slate-200/70 bg-white/90 px-6 py-4">
-    <div class="flex items-center gap-3">
-        <div class="grid h-11 w-11 place-items-center rounded-full border border-slate-200 bg-gradient-to-br from-white to-slate-100 text-lg font-extrabold text-premierBlue shadow-soft">
-            ✺
+<header class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200/70 bg-white/90 px-6 py-4">
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3">
+            <div class="grid h-11 w-11 place-items-center rounded-full border border-slate-200 bg-gradient-to-br from-white to-slate-100 text-lg font-extrabold text-premierBlue shadow-soft">
+                ✺
+            </div>
+            <div class="leading-none">
+                <strong class="block text-xl font-extrabold tracking-tight">Premier</strong>
+                <span class="text-sm text-slate-500">Life Sciences</span>
+            </div>
         </div>
-        <div class="leading-none">
-            <strong class="block text-xl font-extrabold tracking-tight">Premier</strong>
-            <span class="text-sm text-slate-500">Life Sciences</span>
+
+        <div class="hidden h-10 w-px bg-slate-200 md:block"></div>
+
+        <div>
+            <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">SmartResolve</p>
+            <p class="text-sm font-semibold text-slate-800">{{ top_nav|default:"Workspace" }}</p>
         </div>
     </div>
 
-    <div class="flex items-center gap-4">
-        <span class="text-sm font-semibold text-slate-800">Tracking</span>
+    <div class="flex flex-wrap items-center gap-3">
         {% if user.is_authenticated %}
+        <span class="rounded-full bg-yellow-100 px-4 py-2 text-xs font-extrabold uppercase tracking-[0.14em] text-yellow-800">
+            {{ user.display_role }}
+        </span>
         <form method="post" action="{% url 'logout' %}">
             {% csrf_token %}
             <button type="submit" class="rounded-full bg-gradient-to-r from-[#344cab] to-premierBlue px-5 py-3 text-sm font-bold text-white shadow-card">

@@ -49,7 +49,7 @@ INSTALLED_APPS = [
 
     # Custom Apps
     "accounts",
-    "adminportal",
+    "admin_portal",
     "ml",
     "notifications",
     "tickets", 

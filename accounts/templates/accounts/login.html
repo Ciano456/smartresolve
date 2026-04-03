@@ -1,29 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premier Life Sciences | Login</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        premierBlue: "#233893",
-                        premierBlueDeep: "#18296e",
-                        premierYellow: "#ffbd11",
-                    },
-                    boxShadow: {
-                        shell: "0 28px 70px rgba(24, 38, 89, 0.18)",
-                        soft: "0 14px 26px rgba(24, 38, 89, 0.12)",
-                    },
-                }
-            }
-        }
-    </script>
-</head>
-<body class="min-h-screen bg-[linear-gradient(135deg,#dce6fb_0%,#eef3ff_55%,#d9e4fb_100%)] p-6 text-slate-900">
+{% extends "base.html" %}
+
+{% block title %}Premier Life Sciences | Login{% endblock %}
+
+{% block body %}
+<main class="min-h-screen p-6 text-slate-900">
     <div class="mx-auto w-full max-w-7xl overflow-hidden rounded-[22px] border border-white/40 bg-white/60 shadow-shell backdrop-blur">
         <div class="flex items-center gap-3 border-b border-slate-200/70 bg-slate-50/90 px-4 py-3">
             <div class="flex gap-2">
@@ -98,5 +78,5 @@
             </section>
         </main>
     </div>
-</body>
-</html>
+ </main>
+{% endblock %}

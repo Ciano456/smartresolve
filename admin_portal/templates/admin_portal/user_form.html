@@ -1,0 +1,153 @@
+{% comment %}
+Student Name: Cian O'Connor
+Student Number: x22109668
+Module: Final Year Project
+{% endcomment %}
+{% extends "base.html" %}
+
+{% block title %}Premier Life Sciences | {{ page_title }}{% endblock %}
+
+{% block body %}
+<main class="min-h-screen p-4 md:p-6">
+    <section class="mx-auto min-h-[calc(100vh-2rem)] max-w-7xl overflow-hidden rounded-[34px] border border-white/50 bg-white/55 shadow-shell backdrop-blur">
+        {% include "partials/top_nav.html" with top_nav=page_title %}
+
+        <div class="grid min-h-[calc(100vh-8rem)] md:grid-cols-[110px_1fr]">
+            {% include "partials/side_nav.html" with side_nav="admin_portal" %}
+
+            <section class="p-5 md:p-7">
+                <div class="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+                    <section class="relative overflow-hidden rounded-[30px] bg-[linear-gradient(160deg,#2c43a5_0%,#233893_58%,#18296e_100%)] px-7 py-8 text-white shadow-card md:px-9 md:py-10">
+                        <div class="absolute right-[-110px] top-[-70px] h-56 w-56 rounded-full border border-white/10"></div>
+                        <div class="absolute bottom-[-120px] left-[-70px] h-64 w-64 rounded-full border border-white/10"></div>
+
+                        <div class="relative max-w-xl">
+                            <span class="inline-flex rounded-full bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-premierYellow">
+                                Sprint 3
+                            </span>
+                            <h1 class="mt-6 text-4xl font-extrabold tracking-[-0.05em] md:text-5xl">{{ page_title }}</h1>
+                            <p class="mt-5 text-base leading-7 text-white/85 md:text-lg">
+                                {{ hero_text }}
+                            </p>
+                        </div>
+
+                        <div class="relative mt-10 grid gap-4">
+                            <article class="rounded-[22px] border border-white/10 bg-white/10 p-5 backdrop-blur">
+                                <p class="text-sm font-semibold text-white/70">Role Assignment</p>
+                                <h2 class="mt-3 text-2xl font-extrabold">Single App Role</h2>
+                                <p class="mt-2 text-sm leading-6 text-white/75">Each user is assigned one business role through the admin portal UI.</p>
+                            </article>
+
+                            <article class="rounded-[22px] border border-white/10 bg-white/10 p-5 backdrop-blur">
+                                <p class="text-sm font-semibold text-white/70">Current Flow</p>
+                                <h2 class="mt-3 text-2xl font-extrabold">Admin Managed</h2>
+                                <p class="mt-2 text-sm leading-6 text-white/75">{{ flow_text }}</p>
+                            </article>
+                        </div>
+                    </section>
+
+                    <section class="rounded-[30px] border border-slate-200/70 bg-white/90 p-6 shadow-card md:p-8">
+                        <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 pb-4">
+                            <div>
+                                <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Admin Portal</p>
+                                <h2 class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900">{{ form_heading }}</h2>
+                            </div>
+                            <a href="{% url 'user_list' %}" class="rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-soft transition hover:border-premierBlue hover:text-premierBlue">
+                                Back to Users
+                            </a>
+                        </div>
+
+                        <form method="post" class="mt-6 space-y-5">
+                            {% csrf_token %}
+
+                            {% if form.non_field_errors %}
+                            <div class="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                                {{ form.non_field_errors }}
+                            </div>
+                            {% endif %}
+
+                            <div class="grid gap-5 md:grid-cols-2">
+                                <div>
+                                    <label for="{{ form.first_name.id_for_label }}" class="mb-2 block text-sm font-bold text-slate-800">First Name</label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                    <p class="mt-2 text-sm text-rose-600">{{ form.first_name.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+
+                                <div>
+                                    <label for="{{ form.last_name.id_for_label }}" class="mb-2 block text-sm font-bold text-slate-800">Last Name</label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                    <p class="mt-2 text-sm text-rose-600">{{ form.last_name.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="{{ form.email.id_for_label }}" class="mb-2 block text-sm font-bold text-slate-800">Email</label>
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                <p class="mt-2 text-sm text-rose-600">{{ form.email.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
+                            {% if form_mode == "create" %}
+                            <div class="grid gap-5 md:grid-cols-2">
+                                <div>
+                                    <label for="{{ form.password1.id_for_label }}" class="mb-2 block text-sm font-bold text-slate-800">Password</label>
+                                    {{ form.password1 }}
+                                    {% if form.password1.help_text %}
+                                    <p class="mt-2 text-xs leading-6 text-slate-500">{{ form.password1.help_text|safe }}</p>
+                                    {% endif %}
+                                    {% if form.password1.errors %}
+                                    <p class="mt-2 text-sm text-rose-600">{{ form.password1.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+
+                                <div>
+                                    <label for="{{ form.password2.id_for_label }}" class="mb-2 block text-sm font-bold text-slate-800">Confirm Password</label>
+                                    {{ form.password2 }}
+                                    {% if form.password2.errors %}
+                                    <p class="mt-2 text-sm text-rose-600">{{ form.password2.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <div class="grid gap-5 md:grid-cols-[1fr_auto] md:items-end">
+                                <div>
+                                    <label for="{{ form.role.id_for_label }}" class="mb-2 block text-sm font-bold text-slate-800">Role</label>
+                                    {{ form.role }}
+                                    {% if form.role.errors %}
+                                    <p class="mt-2 text-sm text-rose-600">{{ form.role.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+
+                                <div class="rounded-[22px] border border-slate-200/70 bg-slate-50/80 px-4 py-4">
+                                    <label for="{{ form.is_active.id_for_label }}" class="flex items-center gap-3 text-sm font-bold text-slate-800">
+                                        {{ form.is_active }}
+                                        <span>Active Account</span>
+                                    </label>
+                                    {% if form.is_active.errors %}
+                                    <p class="mt-2 text-sm text-rose-600">{{ form.is_active.errors.0 }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap items-center gap-3 pt-2">
+                                <button type="submit" class="rounded-full bg-gradient-to-r from-[#344cab] to-premierBlue px-6 py-3 text-sm font-bold text-white shadow-card">
+                                    {{ submit_label }}
+                                </button>
+                                <a href="{% url 'user_list' %}" class="rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-700 shadow-soft transition hover:border-premierBlue hover:text-premierBlue">
+                                    Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+            </section>
+        </div>
+    </section>
+</main>
+{% endblock %}
