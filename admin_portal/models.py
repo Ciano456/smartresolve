@@ -1,3 +1,5 @@
-from django.db import models
+# Student Name: Cian O'Connor
+# Student Number: x22109668
+# Module: Final Year Project
 
-# Create your models here.
+from django.db import models

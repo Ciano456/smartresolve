@@ -1,3 +1,5 @@
-from django.contrib import admin
+# Student Name: Cian O'Connor
+# Student Number: x22109668
+# Module: Final Year Project
 
-# Register your models here.
+from django.contrib import admin

@@ -1,3 +1,7 @@
+# Student Name: Cian O'Connor
+# Student Number: x22109668
+# Module: Final Year Project
+
 from django.shortcuts import render, redirect
 from accounts.decorators import admin_required
 from accounts.models import User

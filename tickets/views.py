@@ -3,5 +3,3 @@
 # Module: Final Year Project
 
 from django.shortcuts import render
-
-# Create your views here.

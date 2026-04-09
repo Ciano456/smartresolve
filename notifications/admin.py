@@ -3,5 +3,3 @@
 # Module: Final Year Project
 
 from django.contrib import admin
-
-# Register your models here.
