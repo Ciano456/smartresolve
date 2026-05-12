@@ -1,12 +1,12 @@
 {% load static %}
 <aside class="flex min-h-full flex-col bg-white px-5 py-8 shadow-[12px_0_35px_rgba(15,23,42,0.06)]">
-    <a href="{% url 'profile' %}" class="mb-10 block text-center" aria-label="SmartResolve home">
+    <a href="{% url 'dashboard' %}" class="mb-10 block text-center" aria-label="SmartResolve home">
         <img src="{% static 'img/smartresolve-logo.png' %}" alt="SmartResolve logo" class="mx-auto h-28 w-28 rounded-full object-cover shadow-[0_14px_34px_rgba(7,86,248,0.22)]">
         <span class="mt-3 block text-sm font-black uppercase tracking-[0.34em] text-[#0756f8]">Smart Resolve</span>
     </a>
 
     <nav class="flex flex-1 flex-col gap-3 text-base font-semibold">
-        <a href="{% url 'profile' %}" class="flex items-center gap-4 rounded-lg px-4 py-4 transition {% if side_nav == 'profile' or side_nav == 'dashboard' %}bg-[#eaf1ff] text-[#0756f8]{% else %}text-slate-700 hover:bg-slate-50 hover:text-[#0756f8]{% endif %}">
+        <a href="{% url 'dashboard' %}" class="flex items-center gap-4 rounded-lg px-4 py-4 transition {% if side_nav == 'dashboard' %}bg-[#eaf1ff] text-[#0756f8]{% else %}text-slate-700 hover:bg-slate-50 hover:text-[#0756f8]{% endif %}">
             <span class="text-2xl" aria-hidden="true">⌂</span>
             <span>Dashboard</span>
         </a>

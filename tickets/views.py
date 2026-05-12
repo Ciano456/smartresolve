@@ -149,9 +149,65 @@ def ticket_list(request):
 @login_required
 @admin_or_support_staff_required
 def ticket_detail(request, id):
-    # Logic to show ticket details
-    ticket_detail = get_object_or_404(Ticket, id=id)
-    return render(request, "tickets/ticket_detail.html", {"ticket": ticket_detail})
+    ticket_detail = get_object_or_404(
+        Ticket.objects.select_related(
+            "submitter",
+            "assigned_to",
+            "ticket_type",
+            "ticket_system",
+            "ticket_priority",
+            "ticket_status",
+        ).prefetch_related(
+            "comments__author",
+            "attachments__uploaded_by",
+        ),
+        id=id,
+    )
+    status_options = TicketStatus.objects.filter(is_active=True).order_by("sort_order")
+    comments = ticket_detail.comments.all().order_by("-created_at")
+    attachments = ticket_detail.attachments.all().order_by("-created_at")
+
+    if request.method == "POST":
+        status_id = request.POST.get("ticket_status")
+        new_status = status_options.filter(id=status_id).first()
+        if new_status is None:
+            return render(
+                request,
+                "tickets/ticket_detail.html",
+                {
+                    "ticket": ticket_detail,
+                    "status_options": status_options,
+                    "comments": comments,
+                    "attachments": attachments,
+                    "status_error": "Select a valid ticket status.",
+                },
+                status=400,
+            )
+
+        old_status = ticket_detail.ticket_status
+        if old_status.id != new_status.id:
+            ticket_detail.ticket_status = new_status
+            ticket_detail.save()
+            TicketHistory.objects.create(
+                ticket=ticket_detail,
+                changed_by=request.user,
+                change_type="STATUS_CHANGED",
+                field_name="ticket_status",
+                old_value=old_status.name,
+                new_value=new_status.name,
+            )
+        return redirect("ticket_detail", id=ticket_detail.id)
+
+    return render(
+        request,
+        "tickets/ticket_detail.html",
+        {
+            "ticket": ticket_detail,
+            "status_options": status_options,
+            "comments": comments,
+            "attachments": attachments,
+        },
+    )
 
 
 @login_required

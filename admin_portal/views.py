@@ -2,17 +2,29 @@
 # Student Number: x22109668
 # Module: Final Year Project
 
-from django.shortcuts import render, redirect
+from django.db.models import Count, Q
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
+
 from accounts.decorators import admin_required
 from accounts.models import User
-from django.shortcuts import get_object_or_404
 from admin_portal.forms import AdminPortalUserCreateForm, AdminPortalUserEditForm
-from django.views.decorators.http import require_POST
+from tickets.models import Ticket
 
 # Landing page view for the admin portal
 @admin_required
-def admin_dashboard(request):
-    return render(request, "admin_portal/admin_dashboard.html")
+def admin_dashboard(request: HttpRequest) -> HttpResponse:
+    ticket_stats = Ticket.objects.aggregate(
+        total_tickets=Count("id"),
+        open_tickets=Count("id", filter=Q(ticket_status__is_closed=False)),
+        closed_tickets=Count("id", filter=Q(ticket_status__is_closed=True)),
+    )
+    return render(
+        request,
+        "admin_portal/admin_dashboard.html",
+        {"ticket_stats": ticket_stats},
+    )
 
 @admin_required
 def user_list(request):

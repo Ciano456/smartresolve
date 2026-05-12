@@ -6,11 +6,6 @@
 
     {% if user.is_authenticated %}
     <div class="flex items-center gap-5">
-        <div class="relative hidden h-11 w-11 place-items-center rounded-full border border-white/30 text-2xl md:grid" aria-hidden="true">
-            <span>!</span>
-            <span class="absolute -right-1 -top-1 grid h-6 w-6 place-items-center rounded-full bg-[#ff6159] text-xs font-bold text-white">3</span>
-        </div>
-        <div class="hidden h-12 w-px bg-white/35 md:block"></div>
         <div class="flex items-center gap-3">
             <div class="grid h-14 w-14 place-items-center rounded-full bg-white text-3xl font-bold text-[#0756f8]">
                 {% if request.user.first_name %}

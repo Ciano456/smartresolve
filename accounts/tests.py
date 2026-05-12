@@ -5,6 +5,13 @@
 from django.test import TestCase
 from accounts.models import User
 from django.contrib.auth.models import Group
+from tickets.models import (
+    Ticket,
+    TicketPriority,
+    TicketStatus,
+    TicketSystem,
+    TicketType,
+)
 
 class AuthViewTests(TestCase):
     def setUp(self):
@@ -32,7 +39,7 @@ class AuthViewTests(TestCase):
     def test_login_view_with_valid_credentials(self):
         response = self.client.post("/accounts/login/", {"email": self.email, "password": self.password})
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, "/accounts/profile/")
+        self.assertRedirects(response, "/accounts/dashboard/")
 
     def test_logout_view(self):
         # Log in first so this test follows the real logout flow.
@@ -44,6 +51,99 @@ class AuthViewTests(TestCase):
     def test_profile_view_requires_login(self):
         response = self.client.get("/accounts/profile/")
         self.assertRedirects(response, "/accounts/login/?next=/accounts/profile/")
+
+    def test_dashboard_view_requires_login(self):
+        response = self.client.get("/accounts/dashboard/")
+        self.assertRedirects(response, "/accounts/login/?next=/accounts/dashboard/")
+
+    def test_profile_view_loads_actual_profile_page(self):
+        self.client.force_login(self.user)
+        response = self.client.get("/accounts/profile/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/profile.html")
+        self.assertContains(response, "Profile details")
+
+    def test_dashboard_view_loads_dashboard_page(self):
+        self.client.force_login(self.user)
+        response = self.client.get("/accounts/dashboard/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/dashboard.html")
+
+    def test_dashboard_view_uses_current_users_ticket_data(self):
+        other_user = User.objects.create_user(
+            email="other@test.com",
+            password=self.password,
+        )
+        ticket_type = TicketType.objects.get(code="INCIDENT")
+        ticket_system = TicketSystem.objects.get(code="NETWORK")
+        ticket_priority = TicketPriority.objects.get(code="HIGH")
+        open_status = TicketStatus.objects.get(code="OPEN")
+        closed_status = TicketStatus.objects.get(code="CLOSED")
+        user_ticket = Ticket.objects.create(
+            title="User open ticket",
+            description="User open ticket description",
+            submitter=self.user,
+            ticket_type=ticket_type,
+            ticket_system=ticket_system,
+            ticket_priority=ticket_priority,
+            ticket_status=open_status,
+        )
+        other_ticket = Ticket.objects.create(
+            title="Other closed ticket",
+            description="Other closed ticket description",
+            submitter=other_user,
+            ticket_type=ticket_type,
+            ticket_system=ticket_system,
+            ticket_priority=ticket_priority,
+            ticket_status=closed_status,
+        )
+
+        self.client.force_login(self.user)
+        response = self.client.get("/accounts/dashboard/")
+
+        self.assertEqual(response.context["dashboard_stats"]["total_tickets"], 1)
+        self.assertEqual(response.context["dashboard_stats"]["current_tickets"], 1)
+        self.assertEqual(response.context["dashboard_stats"]["closed_tickets"], 0)
+        self.assertContains(response, user_ticket.ticket_number)
+        self.assertNotContains(response, other_ticket.ticket_number)
+
+    def test_dashboard_view_shows_all_ticket_data_for_support_staff(self):
+        support_group = Group.objects.create(name="Support Staff")
+        self.user.groups.add(support_group)
+        other_user = User.objects.create_user(
+            email="other@test.com",
+            password=self.password,
+        )
+        ticket_type = TicketType.objects.get(code="INCIDENT")
+        ticket_system = TicketSystem.objects.get(code="NETWORK")
+        ticket_priority = TicketPriority.objects.get(code="HIGH")
+        open_status = TicketStatus.objects.get(code="OPEN")
+        closed_status = TicketStatus.objects.get(code="CLOSED")
+        Ticket.objects.create(
+            title="Open ticket",
+            description="Open ticket description",
+            submitter=self.user,
+            ticket_type=ticket_type,
+            ticket_system=ticket_system,
+            ticket_priority=ticket_priority,
+            ticket_status=open_status,
+        )
+        Ticket.objects.create(
+            title="Closed ticket",
+            description="Closed ticket description",
+            submitter=other_user,
+            ticket_type=ticket_type,
+            ticket_system=ticket_system,
+            ticket_priority=ticket_priority,
+            ticket_status=closed_status,
+        )
+
+        self.client.force_login(self.user)
+        response = self.client.get("/accounts/dashboard/")
+
+        self.assertEqual(response.context["dashboard_stats"]["total_tickets"], 2)
+        self.assertEqual(response.context["dashboard_stats"]["current_tickets"], 1)
+        self.assertEqual(response.context["dashboard_stats"]["closed_tickets"], 1)
 
 class UserRolePropertyTests(TestCase): 
     def setUp(self):

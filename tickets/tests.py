@@ -5,8 +5,10 @@
 from django.test import TestCase
 from .models import Ticket, TicketType, TicketSystem, TicketPriority, TicketStatus, TicketComment, TicketAttachment, TicketHistory
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.deletion import ProtectedError
+from django.urls import reverse
 class TicketModelTest(TestCase):
     def setUp(self):
         # Set up a user for testing ticket creation
@@ -248,4 +250,142 @@ class TicketModelTest(TestCase):
         self.assertFalse(TicketHistory.objects.filter(id=ticket_history.id).exists())
         
         
+class TicketStaffViewTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.admin_group = Group.objects.create(name="Admin")
+        self.submitter_group = Group.objects.create(name="Submitter")
+        self.support_staff_group = Group.objects.create(name="Support Staff")
+        self.admin_user = User.objects.create_user(
+            email="admin-ticket@test.com",
+            password="password123",
+        )
+        self.support_user = User.objects.create_user(
+            email="support-ticket@test.com",
+            password="password123",
+        )
+        self.submitter_user = User.objects.create_user(
+            email="submitter-ticket@test.com",
+            password="password123",
+        )
+        self.admin_user.groups.add(self.admin_group)
+        self.support_user.groups.add(self.support_staff_group)
+        self.submitter_user.groups.add(self.submitter_group)
+        self.ticket_type = TicketType.objects.get(code="INCIDENT")
+        self.ticket_system = TicketSystem.objects.get(code="SOFTWARE")
+        self.ticket_priority = TicketPriority.objects.get(code="MEDIUM")
+        self.open_status = TicketStatus.objects.get(code="OPEN")
+        self.in_progress_status = TicketStatus.objects.get(code="IN_PROGRESS")
+        self.closed_status = TicketStatus.objects.get(code="CLOSED")
+        self.ticket = Ticket.objects.create(
+            title="Staff status test",
+            description="Ticket used for staff status update tests.",
+            submitter=self.submitter_user,
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.open_status,
+        )
+
+    def test_support_staff_can_update_ticket_status(self):
+        # Support staff need to move tickets through the operational workflow.
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("ticket_detail", args=[self.ticket.id]),
+            {"ticket_status": self.in_progress_status.id},
+        )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_status, self.in_progress_status)
+        self.assertTrue(
+            TicketHistory.objects.filter(
+                ticket=self.ticket,
+                changed_by=self.support_user,
+                change_type="STATUS_CHANGED",
+                field_name="ticket_status",
+                old_value="Open",
+                new_value="In Progress",
+            ).exists()
+        )
+
+    def test_admin_closing_ticket_sets_closed_at(self):
+        # Closed statuses should trigger the model-level closed_at timestamp.
+        self.client.force_login(self.admin_user)
+        response = self.client.post(
+            reverse("ticket_detail", args=[self.ticket.id]),
+            {"ticket_status": self.closed_status.id},
+        )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_status, self.closed_status)
+        self.assertIsNotNone(self.ticket.closed_at)
+
+    def test_submitter_cannot_update_ticket_status_from_staff_view(self):
+        # Submitters must not be able to use the staff ticket detail POST endpoint.
+        self.client.force_login(self.submitter_user)
+        response = self.client.post(
+            reverse("ticket_detail", args=[self.ticket.id]),
+            {"ticket_status": self.closed_status.id},
+        )
+
+        self.assertRedirects(response, reverse("profile"))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_status, self.open_status)
+        self.assertFalse(TicketHistory.objects.filter(ticket=self.ticket).exists())
+
+    def test_invalid_status_update_is_rejected(self):
+        # Invalid status ids should return an error and leave the ticket unchanged.
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("ticket_detail", args=[self.ticket.id]),
+            {"ticket_status": 999999},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_status, self.open_status)
+        self.assertContains(response, "Select a valid ticket status.", status_code=400)
+        self.assertFalse(TicketHistory.objects.filter(ticket=self.ticket).exists())
+
+    def test_staff_ticket_detail_shows_comments_and_attachments(self):
+        # Staff detail view should show related ticket discussion and uploaded files.
+        simple_file = SimpleUploadedFile(
+            "staff-detail.txt",
+            b"file_content",
+            content_type="text/plain",
+        )
+        TicketComment.objects.create(
+            ticket=self.ticket,
+            author=self.submitter_user,
+            body="Visible staff comment.",
+        )
+        TicketAttachment.objects.create(
+            ticket=self.ticket,
+            uploaded_by=self.submitter_user,
+            file=simple_file,
+            original_filename="staff-detail.txt",
+        )
+        other_ticket = Ticket.objects.create(
+            title="Other ticket",
+            description="Other ticket description.",
+            submitter=self.submitter_user,
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.open_status,
+        )
+        TicketComment.objects.create(
+            ticket=other_ticket,
+            author=self.submitter_user,
+            body="Hidden other ticket comment.",
+        )
+
+        self.client.force_login(self.support_user)
+        response = self.client.get(reverse("ticket_detail", args=[self.ticket.id]))
+
+        self.assertContains(response, "Visible staff comment.")
+        self.assertContains(response, "staff-detail.txt")
+        self.assertNotContains(response, "Hidden other ticket comment.")
         

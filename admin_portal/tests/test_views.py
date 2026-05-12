@@ -6,6 +6,13 @@ from django.test import TestCase
 from accounts.models import User
 from django.contrib.auth.models import Group
 from django.urls import reverse
+from tickets.models import (
+    Ticket,
+    TicketPriority,
+    TicketStatus,
+    TicketSystem,
+    TicketType,
+)
 
 class AdminPortalViewTests(TestCase):
     def setUp(self):
@@ -38,6 +45,38 @@ class AdminPortalViewTests(TestCase):
         response = self.client.get("/admin_portal/")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "admin_portal/admin_dashboard.html")
+
+    def test_admin_dashboard_uses_live_ticket_counts(self):
+        self._login_admin_user()
+        ticket_type = TicketType.objects.get(code="INCIDENT")
+        ticket_system = TicketSystem.objects.get(code="NETWORK")
+        ticket_priority = TicketPriority.objects.get(code="HIGH")
+        open_status = TicketStatus.objects.get(code="OPEN")
+        closed_status = TicketStatus.objects.get(code="CLOSED")
+        Ticket.objects.create(
+            title="Open ticket",
+            description="Open ticket description",
+            submitter=self.user,
+            ticket_type=ticket_type,
+            ticket_system=ticket_system,
+            ticket_priority=ticket_priority,
+            ticket_status=open_status,
+        )
+        Ticket.objects.create(
+            title="Closed ticket",
+            description="Closed ticket description",
+            submitter=self.user,
+            ticket_type=ticket_type,
+            ticket_system=ticket_system,
+            ticket_priority=ticket_priority,
+            ticket_status=closed_status,
+        )
+
+        response = self.client.get("/admin_portal/")
+
+        self.assertEqual(response.context["ticket_stats"]["total_tickets"], 2)
+        self.assertEqual(response.context["ticket_stats"]["open_tickets"], 1)
+        self.assertEqual(response.context["ticket_stats"]["closed_tickets"], 1)
     
     def test_user_list_view_accessible_by_admin(self):
         self._login_admin_user()
