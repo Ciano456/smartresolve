@@ -33,8 +33,12 @@ def user_list(request):
 
 @admin_required
 def user_detail(request, user_id):
-    user = get_object_or_404(User, id=user_id)
-    return render(request, "admin_portal/user_detail.html", {"user": user})
+    managed_user = get_object_or_404(User, id=user_id)
+    return render(
+        request,
+        "admin_portal/user_detail.html",
+        {"managed_user": managed_user},
+    )
 
 
 @admin_required
@@ -64,21 +68,21 @@ def user_create(request):
 
 @admin_required
 def user_edit(request, user_id):
-    user = get_object_or_404(User, id=user_id)
+    managed_user = get_object_or_404(User, id=user_id)
     if request.method == "POST":
-        form = AdminPortalUserEditForm(request.POST, instance=user)
+        form = AdminPortalUserEditForm(request.POST, instance=managed_user)
         if form.is_valid():
             form.save()
-            return redirect("user_detail", user_id=user.id)
+            return redirect("user_detail", user_id=managed_user.id)
     else:
-        form = AdminPortalUserEditForm(instance=user)
+        form = AdminPortalUserEditForm(instance=managed_user)
 
     return render(
         request,
         "admin_portal/user_form.html",
         {
             "form": form,
-            "user": user,
+            "managed_user": managed_user,
             "form_mode": "edit",
             "page_title": "Edit User",
             "form_heading": "Update User Details",

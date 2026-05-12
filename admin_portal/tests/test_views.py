@@ -90,6 +90,22 @@ class AdminPortalViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "admin_portal/user_detail.html")
 
+    def test_user_detail_sidebar_uses_logged_in_admin_role(self):
+        # Viewing a submitter account must not make the admin sidebar show submitter links.
+        submitter_user = User.objects.create_user(
+            email="managed-submitter@test.com",
+            password="password123",
+        )
+        submitter_user.groups.add(self.submitter_group)
+
+        self._login_admin_user()
+        response = self.client.get(reverse("user_detail", args=[submitter_user.id]))
+
+        self.assertContains(response, "All Tickets")
+        self.assertContains(response, "User Management")
+        self.assertNotContains(response, "My Tickets")
+        self.assertNotContains(response, "Create Ticket")
+
     def test_user_create_view_accessible_by_admin(self):
         self._login_admin_user()
         response = self.client.get("/admin_portal/users/create/")

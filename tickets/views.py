@@ -15,7 +15,7 @@ from .models import Ticket, TicketAttachment, TicketComment, TicketHistory, Tick
 @login_required
 @submitter_required
 def my_tickets(request):
-    tickets = Ticket.objects.select_related(
+    tickets = Ticket.objects.filter(submitter=request.user).select_related(
         "ticket_type",
         "ticket_system",
         "ticket_priority",

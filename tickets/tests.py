@@ -388,4 +388,53 @@ class TicketStaffViewTests(TestCase):
         self.assertContains(response, "Visible staff comment.")
         self.assertContains(response, "staff-detail.txt")
         self.assertNotContains(response, "Hidden other ticket comment.")
+
+
+class TicketSubmitterViewTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.submitter_group = Group.objects.create(name="Submitter")
+        self.submitter_user = User.objects.create_user(
+            email="submitter-list@test.com",
+            password="password123",
+        )
+        self.other_submitter = User.objects.create_user(
+            email="other-submitter-list@test.com",
+            password="password123",
+        )
+        self.submitter_user.groups.add(self.submitter_group)
+        self.other_submitter.groups.add(self.submitter_group)
+        self.ticket_type = TicketType.objects.get(code="INCIDENT")
+        self.ticket_system = TicketSystem.objects.get(code="SOFTWARE")
+        self.ticket_priority = TicketPriority.objects.get(code="MEDIUM")
+        self.open_status = TicketStatus.objects.get(code="OPEN")
+
+    def test_my_tickets_only_shows_logged_in_submitters_tickets(self):
+        # Submitters must not see tickets submitted by other users in their list.
+        own_ticket = Ticket.objects.create(
+            title="Own visible ticket",
+            description="This ticket belongs to the logged-in submitter.",
+            submitter=self.submitter_user,
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.open_status,
+        )
+        other_ticket = Ticket.objects.create(
+            title="Other hidden ticket",
+            description="This ticket belongs to another submitter.",
+            submitter=self.other_submitter,
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.open_status,
+        )
+
+        self.client.force_login(self.submitter_user)
+        response = self.client.get(reverse("my_tickets"))
+
+        self.assertContains(response, own_ticket.ticket_number)
+        self.assertContains(response, own_ticket.title)
+        self.assertNotContains(response, other_ticket.ticket_number)
+        self.assertNotContains(response, other_ticket.title)
         

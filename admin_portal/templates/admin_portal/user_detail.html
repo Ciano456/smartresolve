@@ -19,12 +19,12 @@
                         </a>
 
                         <div class="flex flex-wrap gap-4">
-                            <a href="{% url 'user_edit' user.id %}" class="inline-flex items-center justify-center gap-3 rounded-xl border border-blue-200 bg-white px-6 py-4 text-base font-bold text-[#0756f8] shadow-soft transition hover:bg-blue-50">
+                            <a href="{% url 'user_edit' managed_user.id %}" class="inline-flex items-center justify-center gap-3 rounded-xl border border-blue-200 bg-white px-6 py-4 text-base font-bold text-[#0756f8] shadow-soft transition hover:bg-blue-50">
                                 <span class="text-2xl" aria-hidden="true">⌁</span>
                                 Edit User
                             </a>
-                            {% if user.is_active %}
-                            <form method="post" action="{% url 'user_deactivate' user.id %}">
+                            {% if managed_user.is_active %}
+                            <form method="post" action="{% url 'user_deactivate' managed_user.id %}">
                                 {% csrf_token %}
                                 <button type="submit" class="inline-flex items-center justify-center gap-3 rounded-xl border border-rose-200 bg-white px-6 py-4 text-base font-bold text-rose-600 shadow-soft transition hover:bg-rose-50">
                                     <span class="text-2xl" aria-hidden="true">⌧</span>
@@ -32,7 +32,7 @@
                                 </button>
                             </form>
                             {% else %}
-                            <form method="post" action="{% url 'user_reactivate' user.id %}">
+                            <form method="post" action="{% url 'user_reactivate' managed_user.id %}">
                                 {% csrf_token %}
                                 <button type="submit" class="inline-flex items-center justify-center gap-3 rounded-xl border border-emerald-200 bg-white px-6 py-4 text-base font-bold text-emerald-700 shadow-soft transition hover:bg-emerald-50">
                                     <span class="text-2xl" aria-hidden="true">✓</span>
@@ -46,25 +46,25 @@
                     <div class="grid gap-7 xl:grid-cols-[0.9fr_0.95fr_1.05fr]">
                         <aside class="rounded-[24px] bg-white px-7 py-10 text-center shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
                             <div class="mx-auto grid h-32 w-32 place-items-center rounded-full bg-[#0756f8] text-5xl font-bold text-white">
-                                {% if user.first_name %}
-                                {{ user.first_name|slice:":1" }}{{ user.last_name|slice:":1" }}
+                                {% if managed_user.first_name %}
+                                {{ managed_user.first_name|slice:":1" }}{{ managed_user.last_name|slice:":1" }}
                                 {% else %}
-                                {{ user.email|slice:":1"|upper }}
+                                {{ managed_user.email|slice:":1"|upper }}
                                 {% endif %}
                             </div>
                             <h1 class="mt-7 break-words text-2xl font-black tracking-tight text-slate-950">
-                                {% if user.first_name or user.last_name %}
-                                {{ user.first_name }} {{ user.last_name }}
+                                {% if managed_user.first_name or managed_user.last_name %}
+                                {{ managed_user.first_name }} {{ managed_user.last_name }}
                                 {% else %}
-                                {{ user.email }}
+                                {{ managed_user.email }}
                                 {% endif %}
                             </h1>
-                            <p class="mt-4 break-words text-lg font-medium text-slate-500">{{ user.email }}</p>
-                            <span class="mt-7 inline-flex rounded-full bg-blue-50 px-6 py-3 text-sm font-bold text-[#0756f8]">{{ user.display_role }}</span>
+                            <p class="mt-4 break-words text-lg font-medium text-slate-500">{{ managed_user.email }}</p>
+                            <span class="mt-7 inline-flex rounded-full bg-blue-50 px-6 py-3 text-sm font-bold text-[#0756f8]">{{ managed_user.display_role }}</span>
                         </aside>
 
                         <article class="flex min-h-60 items-center gap-7 rounded-[24px] bg-white p-8 shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
-                            {% if user.is_active %}
+                            {% if managed_user.is_active %}
                             <div class="grid h-24 w-24 shrink-0 place-items-center rounded-full bg-emerald-50 text-5xl text-emerald-600">✓</div>
                             <div>
                                 <p class="text-sm font-black uppercase tracking-[0.28em] text-slate-500">Account Status</p>
@@ -85,7 +85,7 @@
                             <div class="grid h-24 w-24 shrink-0 place-items-center rounded-full bg-blue-50 text-5xl text-[#0756f8]">⌾</div>
                             <div>
                                 <p class="text-sm font-black uppercase tracking-[0.28em] text-slate-500">Role</p>
-                                <h2 class="mt-5 text-4xl font-bold text-[#0756f8]">{{ user.display_role }}</h2>
+                                <h2 class="mt-5 text-4xl font-bold text-[#0756f8]">{{ managed_user.display_role }}</h2>
                                 <p class="mt-4 max-w-sm text-lg leading-8 text-slate-500">Role checks are enforced by the accounts decorators.</p>
                             </div>
                         </article>
@@ -100,7 +100,7 @@
                                 <div class="grid h-16 w-16 shrink-0 place-items-center rounded-xl border border-blue-100 bg-blue-50 text-3xl text-[#0756f8]">○</div>
                                 <div>
                                     <dt class="text-sm font-black uppercase tracking-[0.18em] text-slate-500">First Name</dt>
-                                    <dd class="mt-2 text-2xl font-bold text-slate-950">{{ user.first_name|default:"Not set" }}</dd>
+                                    <dd class="mt-2 text-2xl font-bold text-slate-950">{{ managed_user.first_name|default:"Not set" }}</dd>
                                 </div>
                             </div>
 
@@ -108,7 +108,7 @@
                                 <div class="grid h-16 w-16 shrink-0 place-items-center rounded-xl border border-blue-100 bg-blue-50 text-3xl text-[#0756f8]">○</div>
                                 <div>
                                     <dt class="text-sm font-black uppercase tracking-[0.18em] text-slate-500">Last Name</dt>
-                                    <dd class="mt-2 text-2xl font-bold text-slate-950">{{ user.last_name|default:"Not set" }}</dd>
+                                    <dd class="mt-2 text-2xl font-bold text-slate-950">{{ managed_user.last_name|default:"Not set" }}</dd>
                                 </div>
                             </div>
 
@@ -116,7 +116,7 @@
                                 <div class="grid h-16 w-16 shrink-0 place-items-center rounded-xl border border-blue-100 bg-blue-50 text-3xl text-[#0756f8]">▣</div>
                                 <div>
                                     <dt class="text-sm font-black uppercase tracking-[0.18em] text-slate-500">Staff Access</dt>
-                                    <dd class="mt-2 text-2xl font-bold {% if user.is_staff %}text-emerald-600{% else %}text-slate-950{% endif %}">{{ user.is_staff|yesno:"Yes,No" }}</dd>
+                                    <dd class="mt-2 text-2xl font-bold {% if managed_user.is_staff %}text-emerald-600{% else %}text-slate-950{% endif %}">{{ managed_user.is_staff|yesno:"Yes,No" }}</dd>
                                 </div>
                             </div>
 
@@ -124,7 +124,7 @@
                                 <div class="grid h-16 w-16 shrink-0 place-items-center rounded-xl border border-blue-100 bg-blue-50 text-3xl text-[#0756f8]">▦</div>
                                 <div>
                                     <dt class="text-sm font-black uppercase tracking-[0.18em] text-slate-500">Joined</dt>
-                                    <dd class="mt-2 text-2xl font-bold text-slate-950">{{ user.date_joined|date:"d M Y" }}</dd>
+                                    <dd class="mt-2 text-2xl font-bold text-slate-950">{{ managed_user.date_joined|date:"d M Y" }}</dd>
                                 </div>
                             </div>
                         </dl>
