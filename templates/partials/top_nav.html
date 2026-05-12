@@ -1,34 +1,35 @@
-<header class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200/70 bg-white/90 px-6 py-4">
-    <div class="flex items-center gap-4">
+<header class="flex min-h-28 flex-col justify-center gap-4 bg-[linear-gradient(135deg,#0756f8_0%,#0046d6_54%,#0037af_100%)] px-6 py-6 text-white shadow-[0_18px_42px_rgba(0,70,214,0.20)] md:flex-row md:items-center md:justify-between md:px-10">
+    <div>
+        <h1 class="text-3xl font-bold tracking-tight">{{ top_nav|default:"Dashboard" }}</h1>
+        <p class="mt-2 text-base font-medium text-white/85">{{ top_nav_subtitle|default:"Welcome back! Here's what's happening." }}</p>
+    </div>
+
+    {% if user.is_authenticated %}
+    <div class="flex items-center gap-5">
+        <div class="relative hidden h-11 w-11 place-items-center rounded-full border border-white/30 text-2xl md:grid" aria-hidden="true">
+            <span>!</span>
+            <span class="absolute -right-1 -top-1 grid h-6 w-6 place-items-center rounded-full bg-[#ff6159] text-xs font-bold text-white">3</span>
+        </div>
+        <div class="hidden h-12 w-px bg-white/35 md:block"></div>
         <div class="flex items-center gap-3">
-            <div class="grid h-11 w-11 place-items-center rounded-full border border-slate-200 bg-gradient-to-br from-white to-slate-100 text-lg font-extrabold text-premierBlue shadow-soft">
-                ✺
+            <div class="grid h-14 w-14 place-items-center rounded-full bg-white text-3xl font-bold text-[#0756f8]">
+                {% if request.user.first_name %}
+                {{ request.user.first_name|slice:":1" }}{{ request.user.last_name|slice:":1" }}
+                {% else %}
+                {{ request.user.email|slice:":1"|upper }}
+                {% endif %}
             </div>
-            <div class="leading-none">
-                <strong class="block text-xl font-extrabold tracking-tight">Premier</strong>
-                <span class="text-sm text-slate-500">Life Sciences</span>
+            <div class="leading-tight">
+                <p class="font-semibold">
+                    {% if request.user.first_name or request.user.last_name %}
+                    {{ request.user.first_name }} {{ request.user.last_name }}
+                    {% else %}
+                    {{ request.user.email }}
+                    {% endif %}
+                </p>
+                <p class="text-sm text-white/80">{{ request.user.display_role }}</p>
             </div>
         </div>
-
-        <div class="hidden h-10 w-px bg-slate-200 md:block"></div>
-
-        <div>
-            <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">SmartResolve</p>
-            <p class="text-sm font-semibold text-slate-800">{{ top_nav|default:"Workspace" }}</p>
-        </div>
     </div>
-
-    <div class="flex flex-wrap items-center gap-3">
-        {% if user.is_authenticated %}
-        <span class="rounded-full bg-yellow-100 px-4 py-2 text-xs font-extrabold uppercase tracking-[0.14em] text-yellow-800">
-            {{ user.display_role }}
-        </span>
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="rounded-full bg-gradient-to-r from-[#344cab] to-premierBlue px-5 py-3 text-sm font-bold text-white shadow-card">
-                Logout
-            </button>
-        </form>
-        {% endif %}
-    </div>
+    {% endif %}
 </header>

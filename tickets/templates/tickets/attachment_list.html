@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}SmartResolve | Attachments{% endblock %}
+
+{% block body %}
+<main class="min-h-screen p-2 md:p-3">
+    <section class="mx-auto min-h-[calc(100vh-1rem)] w-full max-w-[1850px] overflow-hidden rounded-[26px] border border-slate-200 bg-[#f7faff] shadow-shell">
+        <div class="grid min-h-[calc(100vh-1rem)] md:grid-cols-[280px_1fr]">
+            {% include "partials/side_nav.html" with side_nav="all_tickets" %}
+            <div class="min-w-0">
+                {% include "partials/top_nav.html" with top_nav="Attachments" top_nav_subtitle="Review files uploaded to this request." %}
+                <section class="p-5 md:p-7">
+                    <section class="rounded-2xl bg-white p-6 shadow-card">
+                        <h2 class="text-2xl font-bold">Attachments</h2>
+                        <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            {% for attachment in attachments %}
+                            <a href="{{ attachment.file.url }}" class="rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-[#0756f8]/30 hover:bg-[#eaf1ff]">
+                                <p class="font-bold">{{ attachment.original_filename }}</p>
+                                <p class="mt-1 text-sm text-slate-500">{{ attachment.uploaded_by|default:"Deleted user" }}</p>
+                                <p class="mt-1 text-sm text-slate-500">{{ attachment.created_at|date:"d M Y H:i" }}</p>
+                            </a>
+                            {% empty %}
+                            <p class="text-slate-500">No attachments available.</p>
+                            {% endfor %}
+                        </div>
+                    </section>
+                </section>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

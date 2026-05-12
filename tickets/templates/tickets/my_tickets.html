@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}SmartResolve | My Tickets{% endblock %}
+
+{% block body %}
+<main class="min-h-screen p-2 md:p-3">
+    <section class="mx-auto min-h-[calc(100vh-1rem)] w-full max-w-[1850px] overflow-hidden rounded-[26px] border border-slate-200 bg-[#f7faff] shadow-shell">
+        <div class="grid min-h-[calc(100vh-1rem)] md:grid-cols-[280px_1fr]">
+            {% include "partials/side_nav.html" with side_nav="my_tickets" %}
+            <div class="min-w-0">
+                {% include "partials/top_nav.html" with top_nav="My Tickets" top_nav_subtitle="Track your submitted support requests." %}
+
+                <section class="p-5 md:p-7">
+                    <div class="mb-6 flex flex-col gap-4 rounded-2xl bg-white p-6 shadow-card md:flex-row md:items-center md:justify-between">
+                        <div>
+                            <p class="text-sm font-bold uppercase tracking-[0.18em] text-[#0756f8]">Submitter Workspace</p>
+                            <h2 class="mt-2 text-3xl font-bold tracking-tight">Your support tickets</h2>
+                            <p class="mt-2 text-slate-500">Only tickets submitted by your account are shown here.</p>
+                        </div>
+                        <a href="{% url 'ticket_create' %}" class="inline-flex items-center justify-center rounded-lg bg-[#0756f8] px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-[#0046d6]">
+                            Create Ticket
+                        </a>
+                    </div>
+
+                    <section class="overflow-hidden rounded-2xl bg-white shadow-card">
+                        {% if tickets %}
+                        <div class="overflow-x-auto">
+                            <table class="sr-table min-w-full">
+                                <thead class="bg-slate-50">
+                                    <tr>
+                                        <th>Ticket</th>
+                                        <th>Title</th>
+                                        <th>Status</th>
+                                        <th>Priority</th>
+                                        <th>System</th>
+                                        <th>Created</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ticket in tickets %}
+                                    <tr class="bg-white">
+                                        <td class="font-bold text-slate-900">{{ ticket.ticket_number }}</td>
+                                        <td>
+                                            <p class="font-semibold text-slate-900">{{ ticket.title }}</p>
+                                            <p class="mt-1 max-w-md truncate text-sm text-slate-500">{{ ticket.description }}</p>
+                                        </td>
+                                        <td><span class="rounded-full bg-blue-50 px-3 py-2 text-xs font-bold text-[#0756f8]">{{ ticket.ticket_status.name }}</span></td>
+                                        <td><span class="rounded-full bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700">{{ ticket.ticket_priority.name }}</span></td>
+                                        <td class="text-slate-600">{{ ticket.ticket_system.name }}</td>
+                                        <td class="text-slate-500">{{ ticket.created_at|date:"d M Y" }}</td>
+                                        <td>
+                                            <a href="{% url 'my_ticket_detail' ticket.id %}" class="inline-flex rounded-lg border border-[#0756f8]/25 px-4 py-2 text-sm font-bold text-[#0756f8] transition hover:bg-[#eaf1ff]">
+                                                View Details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="grid min-h-[360px] place-items-center px-6 py-14 text-center">
+                            <div>
+                                <div class="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#eaf1ff] text-4xl text-[#0756f8]">▤</div>
+                                <h2 class="mt-5 text-2xl font-bold">No tickets submitted yet</h2>
+                                <p class="mt-2 text-slate-500">Create your first support request to start tracking it here.</p>
+                                <a href="{% url 'ticket_create' %}" class="mt-6 inline-flex rounded-lg bg-[#0756f8] px-5 py-3 text-sm font-bold text-white shadow-soft">
+                                    Create Ticket
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </section>
+                </section>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

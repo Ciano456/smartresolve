@@ -1,100 +1,130 @@
 {% extends "base.html" %}
 
-{% block title %}Premier Life Sciences | SmartResolve Profile{% endblock %}
+{% block title %}SmartResolve | Dashboard{% endblock %}
 
 {% block body %}
-<main class="min-h-screen p-4 md:p-6">
-    <section class="mx-auto min-h-[calc(100vh-2rem)] max-w-7xl overflow-hidden rounded-[34px] border border-white/50 bg-white/55 shadow-shell backdrop-blur">
-        {% include "partials/top_nav.html" with top_nav="Profile" %}
+<main class="min-h-screen p-2 md:p-3">
+    <section class="mx-auto min-h-[calc(100vh-1rem)] w-full max-w-[1850px] overflow-hidden rounded-[34px] border border-white/50 bg-white/55 shadow-shell backdrop-blur">
+        <div class="grid min-h-[calc(100vh-8rem)] md:grid-cols-[280px_1fr]">
+            {% include "partials/side_nav.html" with side_nav="dashboard" %}
 
-        <div class="grid min-h-[calc(100vh-8rem)] md:grid-cols-[110px_1fr]">
-            {% include "partials/side_nav.html" with side_nav="profile" %}
+            <div class="min-w-0">
+                {% include "partials/top_nav.html" with top_nav="Dashboard" top_nav_subtitle="Welcome back! Here's what's happening." %}
 
-            <section class="p-5 md:p-7">
-                <div class="grid items-start gap-6 xl:grid-cols-[310px_1fr]">
-                    <aside class="rounded-[30px] border border-slate-200/70 bg-white/90 p-7 text-center shadow-card">
-                        <div class="mx-auto mb-4 grid h-28 w-28 place-items-center rounded-full bg-gradient-to-br from-indigo-100 to-blue-200 text-4xl font-extrabold text-premierBlue shadow-card">
-                            {% if request.user.first_name %}
-                            {{ request.user.first_name|slice:":1" }}{{ request.user.last_name|slice:":1" }}
-                            {% else %}
-                            {{ request.user.email|slice:":1"|upper }}
-                            {% endif %}
-                        </div>
-
-                        <span class="mb-3 inline-block rounded-full bg-premierBlue px-3 py-2 text-xs font-bold text-white shadow-soft">Your Profile</span>
-                        <p class="text-sm text-slate-500">User Name</p>
-                        <h2 class="mt-1 text-4xl font-extrabold tracking-tight">
-                            {% if request.user.first_name or request.user.last_name %}
-                            {{ request.user.first_name }} {{ request.user.last_name }}
-                            {% else %}
-                            {{ request.user.email }}
-                            {% endif %}
-                        </h2>
-                        <span class="mt-4 inline-block rounded-full bg-yellow-100 px-3 py-2 text-xs font-extrabold text-yellow-800">
-                            {{ request.user.display_role }}
-                        </span>
-                    </aside>
-
-                    <section>
-                        <div class="grid gap-4 lg:grid-cols-3">
-                            <article class="relative overflow-hidden rounded-[22px] border border-slate-200/70 bg-white/90 p-6 shadow-card">
-                                <h3 class="text-5xl font-extrabold tracking-[-0.06em] text-sky-500">5</h3>
-                                <p class="mt-2 font-semibold text-slate-800">Current Tickets</p>
-                                <small class="mt-2 block text-slate-500">35.67%</small>
-                            </article>
-
-                            <article class="relative overflow-hidden rounded-[22px] border border-slate-200/70 bg-white/90 p-6 shadow-card">
-                                <h3 class="text-5xl font-extrabold tracking-[-0.06em] text-violet-500">2</h3>
-                                <p class="mt-2 font-semibold text-slate-800">Closed Tickets</p>
-                                <small class="mt-2 block text-slate-500">25%</small>
-                            </article>
-
-                            <article class="relative overflow-hidden rounded-[22px] border border-slate-200/70 bg-white/90 p-6 shadow-card">
-                                <h3 class="text-4xl font-extrabold tracking-[-0.06em] text-orange-500">1.5 hrs</h3>
-                                <p class="mt-2 font-semibold text-slate-800">Average Response Time</p>
-                                <small class="mt-2 block text-slate-500">Current support average</small>
-                            </article>
-                        </div>
-
-                        <section class="mt-5 rounded-[30px] border border-slate-200/70 bg-white/90 p-6 shadow-card">
-                            <h3 class="mb-5 border-b border-slate-200 pb-3 text-lg font-bold">Ticket Activity</h3>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full border-collapse">
-                                    <thead>
-                                        <tr class="text-left text-xs font-bold uppercase tracking-[0.05em] text-slate-500">
-                                            <th class="px-2 py-3">Date</th>
-                                            <th class="px-2 py-3">Activity</th>
-                                            <th class="px-2 py-3">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="border-t border-slate-200/80">
-                                            <td class="px-2 py-4">03/31/2025</td>
-                                            <td class="px-2 py-4">Ticket closed</td>
-                                            <td class="px-2 py-4"><span class="inline-block rounded-full bg-amber-100 px-3 py-2 text-xs font-extrabold text-amber-800">Cancelled</span></td>
-                                        </tr>
-                                        <tr class="border-t border-slate-200/80">
-                                            <td class="px-2 py-4">03/31/2025</td>
-                                            <td class="px-2 py-4">Comment added</td>
-                                            <td class="px-2 py-4"><span class="inline-block rounded-full bg-emerald-100 px-3 py-2 text-xs font-extrabold text-emerald-700">Updated</span></td>
-                                        </tr>
-                                        <tr class="border-t border-slate-200/80">
-                                            <td class="px-2 py-4">03/31/2025</td>
-                                            <td class="px-2 py-4">New ticket raised</td>
-                                            <td class="px-2 py-4"><span class="inline-block rounded-full bg-rose-100 px-3 py-2 text-xs font-extrabold text-rose-700">Medium Priority</span></td>
-                                        </tr>
-                                        <tr class="border-t border-slate-200/80">
-                                            <td class="px-2 py-4">03/31/2025</td>
-                                            <td class="px-2 py-4">New ticket raised</td>
-                                            <td class="px-2 py-4"><span class="inline-block rounded-full bg-slate-200 px-3 py-2 text-xs font-extrabold text-slate-700">High Priority</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                <section class="p-5 md:p-8">
+                    <div class="grid gap-7 xl:grid-cols-3">
+                        <article class="flex min-h-56 items-center gap-8 rounded-[26px] bg-white p-8 shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
+                            <div class="grid h-36 w-36 shrink-0 place-items-center rounded-full bg-blue-50 text-6xl text-[#0756f8]">▤</div>
+                            <div>
+                                <p class="text-7xl font-bold tracking-tight text-[#0756f8]">5</p>
+                                <h2 class="mt-3 text-2xl font-bold">Current Tickets</h2>
+                                <p class="mt-4 text-xl text-slate-500">35.67% of all tickets</p>
                             </div>
-                        </section>
+                        </article>
+
+                        <article class="flex min-h-56 items-center gap-8 rounded-[26px] bg-white p-8 shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
+                            <div class="grid h-36 w-36 shrink-0 place-items-center rounded-full bg-violet-50 text-6xl text-violet-600">✓</div>
+                            <div>
+                                <p class="text-7xl font-bold tracking-tight text-violet-600">2</p>
+                                <h2 class="mt-3 text-2xl font-bold">Closed Tickets</h2>
+                                <p class="mt-4 text-xl text-slate-500">25% of all tickets</p>
+                            </div>
+                        </article>
+
+                        <article class="flex min-h-56 items-center gap-8 rounded-[26px] bg-white p-8 shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
+                            <div class="grid h-36 w-36 shrink-0 place-items-center rounded-full bg-orange-50 text-6xl text-orange-500">◷</div>
+                            <div>
+                                <p class="text-6xl font-bold tracking-tight text-orange-500">1.5 hrs</p>
+                                <h2 class="mt-3 text-2xl font-bold">Average Response Time</h2>
+                                <p class="mt-4 text-xl text-slate-500">Current support average</p>
+                            </div>
+                        </article>
+                    </div>
+
+                    <section class="mt-10 overflow-hidden rounded-[28px] bg-white shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
+                        <div class="flex flex-col gap-4 px-8 py-8 md:flex-row md:items-center md:justify-between">
+                            <h2 class="text-4xl font-bold tracking-tight">Recent Ticket Activity</h2>
+                            {% if request.user.is_submitter_role %}
+                            <a href="{% url 'my_tickets' %}" class="inline-flex items-center justify-center gap-3 rounded-xl border border-slate-300 px-6 py-4 text-xl font-bold text-[#0756f8] transition hover:bg-blue-50">
+                                <span aria-hidden="true">☷</span>
+                                View My Tickets
+                                <span aria-hidden="true">›</span>
+                            </a>
+                            {% endif %}
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-200 text-left text-xl font-bold text-slate-500">
+                                        <th class="px-8 py-6">Date</th>
+                                        <th class="px-8 py-6">Activity</th>
+                                        <th class="px-8 py-6">Ticket</th>
+                                        <th class="px-8 py-6">Status</th>
+                                        <th class="px-8 py-6">Priority</th>
+                                        <th class="px-8 py-6"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="border-b border-slate-200">
+                                        <td class="px-8 py-7">
+                                            <div class="flex items-center gap-5">
+                                                <span class="grid h-16 w-16 place-items-center rounded-xl bg-blue-50 text-3xl text-[#0756f8]">▣</span>
+                                                <div><p class="text-xl font-semibold">Mar 31, 2025</p><p class="mt-1 text-lg text-slate-500">10:24 AM</p></div>
+                                            </div>
+                                        </td>
+                                        <td class="px-8 py-7 text-xl font-semibold">Ticket closed</td>
+                                        <td class="px-8 py-7 text-xl text-slate-500">Ticket #SR-00015</td>
+                                        <td class="px-8 py-7"><span class="rounded-full bg-orange-100 px-6 py-3 text-lg font-bold text-orange-600">Cancelled</span></td>
+                                        <td class="px-8 py-7 text-xl font-semibold">Medium</td>
+                                        <td class="px-8 py-7 text-4xl text-slate-500">›</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-200">
+                                        <td class="px-8 py-7">
+                                            <div class="flex items-center gap-5">
+                                                <span class="grid h-16 w-16 place-items-center rounded-xl bg-emerald-50 text-3xl text-emerald-600">▣</span>
+                                                <div><p class="text-xl font-semibold">Mar 31, 2025</p><p class="mt-1 text-lg text-slate-500">09:15 AM</p></div>
+                                            </div>
+                                        </td>
+                                        <td class="px-8 py-7 text-xl font-semibold">Comment added</td>
+                                        <td class="px-8 py-7 text-xl text-slate-500">Ticket #SR-00014</td>
+                                        <td class="px-8 py-7"><span class="rounded-full bg-emerald-100 px-6 py-3 text-lg font-bold text-emerald-700">Updated</span></td>
+                                        <td class="px-8 py-7 text-xl font-semibold">Low</td>
+                                        <td class="px-8 py-7 text-4xl text-slate-500">›</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-200">
+                                        <td class="px-8 py-7">
+                                            <div class="flex items-center gap-5">
+                                                <span class="grid h-16 w-16 place-items-center rounded-xl bg-rose-50 text-3xl text-rose-500">▣</span>
+                                                <div><p class="text-xl font-semibold">Mar 31, 2025</p><p class="mt-1 text-lg text-slate-500">08:42 AM</p></div>
+                                            </div>
+                                        </td>
+                                        <td class="px-8 py-7 text-xl font-semibold">New ticket raised</td>
+                                        <td class="px-8 py-7 text-xl text-slate-500">Ticket #SR-00013</td>
+                                        <td class="px-8 py-7"><span class="rounded-full bg-rose-100 px-6 py-3 text-lg font-bold text-rose-600">Medium Priority</span></td>
+                                        <td class="px-8 py-7 text-xl font-semibold">Medium</td>
+                                        <td class="px-8 py-7 text-4xl text-slate-500">›</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-8 py-7">
+                                            <div class="flex items-center gap-5">
+                                                <span class="grid h-16 w-16 place-items-center rounded-xl bg-slate-100 text-3xl text-slate-600">▣</span>
+                                                <div><p class="text-xl font-semibold">Mar 31, 2025</p><p class="mt-1 text-lg text-slate-500">08:30 AM</p></div>
+                                            </div>
+                                        </td>
+                                        <td class="px-8 py-7 text-xl font-semibold">New ticket raised</td>
+                                        <td class="px-8 py-7 text-xl text-slate-500">Ticket #SR-00012</td>
+                                        <td class="px-8 py-7"><span class="rounded-full bg-slate-200 px-6 py-3 text-lg font-bold text-slate-700">High Priority</span></td>
+                                        <td class="px-8 py-7 text-xl font-semibold">High</td>
+                                        <td class="px-8 py-7 text-4xl text-slate-500">›</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </section>
-                </div>
-            </section>
+                    <p class="mt-8 text-lg text-slate-500">© 2025 Smart Resolve. All rights reserved.</p>
+                </section>
+            </div>
         </div>
     </section>
 </main>

@@ -6,7 +6,9 @@
     input[type="text"],
     input[type="email"],
     input[type="password"],
-    select {
+    select,
+    textarea,
+    input[type="file"] {
         width: 100%;
         border: 1px solid rgba(148, 163, 184, 0.55);
         border-radius: 18px;
@@ -19,10 +21,17 @@
     input[type="text"]:focus,
     input[type="email"]:focus,
     input[type="password"]:focus,
-    select:focus {
+    select:focus,
+    textarea:focus,
+    input[type="file"]:focus {
         outline: none;
         border-color: #233893;
         box-shadow: 0 0 0 3px rgba(35, 56, 147, 0.12);
+    }
+
+    textarea {
+        min-height: 8rem;
+        resize: vertical;
     }
 
     input[type="checkbox"] {
@@ -47,5 +56,21 @@
         list-style: none;
         padding-left: 0;
         color: rgb(225 29 72);
+    }
+
+    .sr-table th {
+        padding: 0.85rem 1rem;
+        text-align: left;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: rgb(100 116 139);
+    }
+
+    .sr-table td {
+        border-top: 1px solid rgb(226 232 240);
+        padding: 1rem;
+        vertical-align: top;
     }
 }

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}SmartResolve | Create Ticket{% endblock %}
+
+{% block body %}
+<main class="min-h-screen p-2 md:p-3">
+    <section class="mx-auto min-h-[calc(100vh-1rem)] w-full max-w-[1850px] overflow-hidden rounded-[26px] border border-slate-200 bg-[#f7faff] shadow-shell">
+        <div class="grid min-h-[calc(100vh-1rem)] md:grid-cols-[280px_1fr]">
+            {% include "partials/side_nav.html" with side_nav="ticket_create" %}
+            <div class="min-w-0">
+                {% include "partials/top_nav.html" with top_nav="Create Ticket" top_nav_subtitle="Log a new IT support request." %}
+
+                <section class="p-5 md:p-7">
+                    <div class="grid gap-6">
+                        <form method="post" class="rounded-2xl bg-white p-6 shadow-card md:p-8">
+                            {% csrf_token %}
+                            <div class="mb-7">
+                                <p class="text-sm font-bold uppercase tracking-[0.18em] text-[#0756f8]">New Request</p>
+                                <h2 class="mt-2 text-3xl font-bold tracking-tight">Ticket details</h2>
+                                <p class="mt-2 text-slate-500">Describe the issue clearly so support staff can triage it quickly.</p>
+                            </div>
+
+                            {% if form.non_field_errors %}
+                            <div class="mb-5 rounded-lg bg-rose-50 p-4 text-sm font-semibold text-rose-700">{{ form.non_field_errors }}</div>
+                            {% endif %}
+
+                            <div class="grid gap-5">
+                                {% for field in form %}
+                                <div>
+                                    <label for="{{ field.id_for_label }}" class="mb-2 block text-sm font-bold text-slate-800">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.help_text %}<p class="form-helptext">{{ field.help_text }}</p>{% endif %}
+                                    {{ field.errors }}
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                                <a href="{% url 'my_tickets' %}" class="inline-flex items-center justify-center rounded-lg border border-slate-300 px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
+                                    Cancel
+                                </a>
+                                <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-[#0756f8] px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-[#0046d6]">
+                                    Submit Ticket
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}
