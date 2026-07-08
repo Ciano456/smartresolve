@@ -12,6 +12,7 @@ from .forms import (
     StaffTicketAssignmentForm,
     StaffTicketCommentForm,
     StaffTicketPriorityForm,
+    StaffTicketResolutionNoteForm,
     TicketAttachmentForm,
     TicketCommentForm,
     TicketForm,
@@ -189,6 +190,7 @@ def ticket_detail(request, id):
     attachments = ticket_detail.attachments.all().order_by("-created_at")
     assignment_form = StaffTicketAssignmentForm(instance=ticket_detail)
     priority_form = StaffTicketPriorityForm(instance=ticket_detail)
+    resolution_note_form = StaffTicketResolutionNoteForm()
 
     if request.method == "POST":
         status_id = request.POST.get("ticket_status")
@@ -206,6 +208,7 @@ def ticket_detail(request, id):
                     "comment_form": StaffTicketCommentForm(),
                     "assignment_form": assignment_form,
                     "priority_form": priority_form,
+                    "resolution_note_form": resolution_note_form,
                 },
                 status=400,
             )
@@ -235,6 +238,7 @@ def ticket_detail(request, id):
             "comment_form": StaffTicketCommentForm(),
             "assignment_form": assignment_form,
             "priority_form": priority_form,
+            "resolution_note_form": resolution_note_form,
         },
     )
 
@@ -282,6 +286,7 @@ def ticket_assignment_update(request, ticket_id):
             "comment_form": StaffTicketCommentForm(),
             "assignment_form": form,
             "priority_form": StaffTicketPriorityForm(instance=ticket),
+            "resolution_note_form": StaffTicketResolutionNoteForm(),
         },
         status=400,
     )
@@ -330,6 +335,53 @@ def ticket_priority_update(request, ticket_id):
             "comment_form": StaffTicketCommentForm(),
             "assignment_form": StaffTicketAssignmentForm(instance=ticket),
             "priority_form": form,
+            "resolution_note_form": StaffTicketResolutionNoteForm(),
+        },
+        status=400,
+    )
+
+
+@login_required
+@admin_or_support_staff_required
+def ticket_resolution_note_create(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    if request.method != "POST":
+        return redirect("ticket_detail", id=ticket_id)
+
+    resolution_note_form = StaffTicketResolutionNoteForm(request.POST)
+    if resolution_note_form.is_valid():
+        resolution_note = resolution_note_form.save(commit=False)
+        resolution_note.ticket = ticket
+        resolution_note.author = request.user
+        resolution_note.is_internal = False
+        resolution_note.save()
+        TicketHistory.objects.create(
+            ticket=ticket,
+            changed_by=request.user,
+            change_type="RESOLUTION_NOTE_ADDED",
+            field_name="comments",
+            old_value="",
+            new_value="Resolution note added",
+        )
+        return redirect("ticket_detail", id=ticket_id)
+
+    status_options = TicketStatus.objects.filter(is_active=True).order_by("sort_order")
+    comments = ticket.comments.select_related("author").order_by("-created_at")
+    attachments = ticket.attachments.select_related("uploaded_by").order_by(
+        "-created_at"
+    )
+    return render(
+        request,
+        "tickets/ticket_detail.html",
+        {
+            "ticket": ticket,
+            "status_options": status_options,
+            "comments": comments,
+            "attachments": attachments,
+            "comment_form": StaffTicketCommentForm(),
+            "assignment_form": StaffTicketAssignmentForm(instance=ticket),
+            "priority_form": StaffTicketPriorityForm(instance=ticket),
+            "resolution_note_form": resolution_note_form,
         },
         status=400,
     )
@@ -366,6 +418,7 @@ def staff_comment_create(request, ticket_id):
                 "comment_form": comment_form,
                 "assignment_form": StaffTicketAssignmentForm(instance=ticket),
                 "priority_form": StaffTicketPriorityForm(instance=ticket),
+                "resolution_note_form": StaffTicketResolutionNoteForm(),
             },
             status=400,
         )

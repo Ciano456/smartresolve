@@ -36,6 +36,12 @@ class StaffTicketCommentForm(ModelForm):
         fields = ["body", "is_internal"]
 
 
+class StaffTicketResolutionNoteForm(ModelForm):
+    class Meta:
+        model = TicketComment
+        fields = ["body"]
+
+
 class StaffTicketAssignmentForm(ModelForm):
     class Meta:
         model = Ticket
