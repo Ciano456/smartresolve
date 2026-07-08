@@ -8,7 +8,12 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from accounts.decorators import admin_or_support_staff_required, submitter_required
 
-from .forms import TicketAttachmentForm, TicketCommentForm, TicketForm
+from .forms import (
+    StaffTicketCommentForm,
+    TicketAttachmentForm,
+    TicketCommentForm,
+    TicketForm,
+)
 from .models import Ticket, TicketAttachment, TicketComment, TicketHistory, TicketStatus
 
 
@@ -35,7 +40,14 @@ def my_tickets(request):
 @submitter_required
 def my_ticket_detail(request, id):
     ticket_detail = get_object_or_404(Ticket, id=id, submitter=request.user)
-    comment_detail = TicketComment.objects.filter(ticket_id=id, author=request.user)
+    comment_detail = (
+        TicketComment.objects.filter(
+            ticket_id=id,
+            is_internal=False,
+        )
+        .select_related("author")
+        .order_by("-created_at")
+    )
     attachment_detail = TicketAttachment.objects.filter(
         ticket_id=id, uploaded_by=request.user
     )
@@ -100,7 +112,10 @@ def comment_create(request, ticket_id):
                     "ticket": ticket,
                     "comment_form": comment_form,
                     "attachment_form": TicketAttachmentForm(),
-                    "comments": TicketComment.objects.filter(ticket_id=ticket_id),
+                    "comments": TicketComment.objects.filter(
+                        ticket_id=ticket_id,
+                        is_internal=False,
+                    ).select_related("author"),
                     "attachments": TicketAttachment.objects.filter(ticket_id=ticket_id),
                 },
             )
@@ -127,7 +142,10 @@ def attachment_create(request, ticket_id):
                     "ticket": ticket,
                     "comment_form": TicketCommentForm(),
                     "attachment_form": attachment_form,
-                    "comments": TicketComment.objects.filter(ticket_id=ticket_id),
+                    "comments": TicketComment.objects.filter(
+                        ticket_id=ticket_id,
+                        is_internal=False,
+                    ).select_related("author"),
                     "attachments": TicketAttachment.objects.filter(ticket_id=ticket_id),
                 },
             )
@@ -181,6 +199,7 @@ def ticket_detail(request, id):
                     "comments": comments,
                     "attachments": attachments,
                     "status_error": "Select a valid ticket status.",
+                    "comment_form": StaffTicketCommentForm(),
                 },
                 status=400,
             )
@@ -207,8 +226,45 @@ def ticket_detail(request, id):
             "status_options": status_options,
             "comments": comments,
             "attachments": attachments,
+            "comment_form": StaffTicketCommentForm(),
         },
     )
+
+
+@login_required
+@admin_or_support_staff_required
+def staff_comment_create(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
+    if request.method == "POST":
+        comment_form = StaffTicketCommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.ticket = ticket
+            comment.author = request.user
+            comment.save()
+            return redirect("ticket_detail", id=ticket_id)
+
+        comments = ticket.comments.select_related("author").order_by("-created_at")
+        attachments = ticket.attachments.select_related("uploaded_by").order_by(
+            "-created_at"
+        )
+        status_options = TicketStatus.objects.filter(is_active=True).order_by(
+            "sort_order"
+        )
+        return render(
+            request,
+            "tickets/ticket_detail.html",
+            {
+                "ticket": ticket,
+                "status_options": status_options,
+                "comments": comments,
+                "attachments": attachments,
+                "comment_form": comment_form,
+            },
+            status=400,
+        )
+
+    return redirect("ticket_detail", id=ticket_id)
 
 
 @login_required

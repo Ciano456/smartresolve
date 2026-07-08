@@ -11,6 +11,11 @@ urlpatterns = [
     path("ticket/create/", views.ticket_create, name="ticket_create"),
     path("ticket/<int:ticket_id>/comments/", views.comment_list, name="comment_list"),
     path(
+        "ticket/<int:ticket_id>/comments/create/",
+        views.staff_comment_create,
+        name="staff_comment_create",
+    ),
+    path(
         "ticket/<int:ticket_id>/attachments/",
         views.attachment_list,
         name="attachment_list",

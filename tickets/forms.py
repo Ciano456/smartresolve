@@ -25,6 +25,12 @@ class TicketCommentForm(ModelForm):
         fields = ["body"]
 
 
+class StaffTicketCommentForm(ModelForm):
+    class Meta:
+        model = TicketComment
+        fields = ["body", "is_internal"]
+
+
 class TicketAttachmentForm(ModelForm):
     max_file_size = 5 * 1024 * 1024
     allowed_extensions = {

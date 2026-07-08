@@ -502,6 +502,138 @@ class TicketAttachmentDownloadTests(TestCase):
         self.assertNotContains(response, self.attachment.file.url)
 
 
+class TicketCommentVisibilityTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.submitter_group = Group.objects.create(name="Submitter")
+        self.support_staff_group = Group.objects.create(name="Support Staff")
+        self.submitter_user = User.objects.create_user(
+            email="comment-submitter@test.com",
+            password="password123",
+        )
+        self.support_user = User.objects.create_user(
+            email="comment-support@test.com",
+            password="password123",
+        )
+        self.submitter_user.groups.add(self.submitter_group)
+        self.support_user.groups.add(self.support_staff_group)
+        self.ticket_type = TicketType.objects.get(code="INCIDENT")
+        self.ticket_system = TicketSystem.objects.get(code="SOFTWARE")
+        self.ticket_priority = TicketPriority.objects.get(code="MEDIUM")
+        self.open_status = TicketStatus.objects.get(code="OPEN")
+        self.ticket = Ticket.objects.create(
+            title="Comment visibility test",
+            description="Ticket used for comment visibility tests.",
+            submitter=self.submitter_user,
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.open_status,
+        )
+
+    def test_submitter_sees_public_staff_comment_and_not_internal_note(self):
+        TicketComment.objects.create(
+            ticket=self.ticket,
+            author=self.support_user,
+            body="Public support reply.",
+            is_internal=False,
+        )
+        TicketComment.objects.create(
+            ticket=self.ticket,
+            author=self.support_user,
+            body="Internal support note.",
+            is_internal=True,
+        )
+
+        self.client.force_login(self.submitter_user)
+        response = self.client.get(
+            reverse("my_ticket_detail", args=[self.ticket.id])
+        )
+
+        self.assertContains(response, "Public support reply.")
+        self.assertNotContains(response, "Internal support note.")
+
+    def test_staff_sees_public_and_internal_comments(self):
+        TicketComment.objects.create(
+            ticket=self.ticket,
+            author=self.support_user,
+            body="Public support reply.",
+            is_internal=False,
+        )
+        TicketComment.objects.create(
+            ticket=self.ticket,
+            author=self.support_user,
+            body="Internal support note.",
+            is_internal=True,
+        )
+
+        self.client.force_login(self.support_user)
+        response = self.client.get(reverse("ticket_detail", args=[self.ticket.id]))
+
+        self.assertContains(response, "Public support reply.")
+        self.assertContains(response, "Internal support note.")
+        self.assertContains(response, "Internal")
+
+    def test_staff_can_create_internal_comment(self):
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("staff_comment_create", args=[self.ticket.id]),
+            {
+                "body": "Internal triage note.",
+                "is_internal": "on",
+            },
+        )
+
+        self.assertRedirects(
+            response,
+            reverse("ticket_detail", args=[self.ticket.id]),
+        )
+        self.assertTrue(
+            TicketComment.objects.filter(
+                ticket=self.ticket,
+                author=self.support_user,
+                body="Internal triage note.",
+                is_internal=True,
+            ).exists()
+        )
+
+    def test_submitter_cannot_use_staff_comment_endpoint(self):
+        self.client.force_login(self.submitter_user)
+        response = self.client.post(
+            reverse("staff_comment_create", args=[self.ticket.id]),
+            {
+                "body": "I should not be able to post here.",
+                "is_internal": "on",
+            },
+        )
+
+        self.assertRedirects(response, reverse("profile"))
+        self.assertFalse(
+            TicketComment.objects.filter(
+                ticket=self.ticket,
+                body="I should not be able to post here.",
+            ).exists()
+        )
+
+    def test_submitter_created_comment_is_public(self):
+        self.client.force_login(self.submitter_user)
+        response = self.client.post(
+            reverse("comment_create", args=[self.ticket.id]),
+            {"body": "Submitter follow-up."},
+        )
+
+        self.assertRedirects(
+            response,
+            reverse("my_ticket_detail", args=[self.ticket.id]),
+        )
+        comment = TicketComment.objects.get(
+            ticket=self.ticket,
+            author=self.submitter_user,
+            body="Submitter follow-up.",
+        )
+        self.assertFalse(comment.is_internal)
+
+
 class TicketSubmitterViewTests(TestCase):
     def setUp(self):
         User = get_user_model()

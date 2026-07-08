@@ -65,7 +65,12 @@
                                     {% for comment in comments %}
                                     <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
                                         <div class="flex flex-wrap justify-between gap-2">
-                                            <p class="font-bold text-slate-900">{{ comment.author|default:"Deleted user" }}</p>
+                                            <div class="flex flex-wrap items-center gap-3">
+                                                <p class="font-bold text-slate-900">{{ comment.author|default:"Deleted user" }}</p>
+                                                {% if comment.is_internal %}
+                                                <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-amber-800">Internal</span>
+                                                {% endif %}
+                                            </div>
                                             <p class="text-sm text-slate-500">{{ comment.created_at|date:"d M Y H:i" }}</p>
                                         </div>
                                         <p class="mt-3 whitespace-pre-line text-slate-600">{{ comment.body }}</p>
@@ -78,6 +83,23 @@
                         </section>
 
                         <aside class="grid gap-6">
+                            <form method="post" action="{% url 'staff_comment_create' ticket.id %}" class="rounded-2xl bg-white p-6 shadow-card">
+                                {% csrf_token %}
+                                <h2 class="text-xl font-bold">Add Comment</h2>
+                                <div class="mt-4">
+                                    {{ comment_form.body }}
+                                    {{ comment_form.body.errors }}
+                                </div>
+                                <label class="mt-4 flex items-center gap-3 text-sm font-semibold text-slate-700">
+                                    {{ comment_form.is_internal }}
+                                    Internal note
+                                </label>
+                                {{ comment_form.is_internal.errors }}
+                                <button type="submit" class="mt-4 w-full rounded-lg bg-[#0756f8] px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-[#0046d6]">
+                                    Add Comment
+                                </button>
+                            </form>
+
                             <section class="rounded-2xl bg-white p-6 shadow-card">
                                 <h2 class="text-xl font-bold">Attachments</h2>
                                 <div class="mt-4 grid gap-3">
