@@ -1,3 +1,7 @@
+{# Student Name: Cian O'Connor #}
+{# Student Number: x22109668 #}
+{# Module: Final Year Project #}
+
 {% load static %}
 <aside class="flex min-h-full flex-col bg-white px-5 py-8 shadow-[12px_0_35px_rgba(15,23,42,0.06)]">
     <a href="{% url 'dashboard' %}" class="mb-10 block text-center" aria-label="SmartResolve home">
@@ -41,6 +45,10 @@
         <a href="{% url 'user_list' %}" class="flex items-center gap-4 rounded-lg px-4 py-4 transition {% if side_nav == 'user_management' %}bg-[#eaf1ff] text-[#0756f8]{% else %}text-slate-700 hover:bg-slate-50 hover:text-[#0756f8]{% endif %}">
             <span class="text-2xl" aria-hidden="true">◫</span>
             <span>User Management</span>
+        </a>
+        <a href="{% url 'audit_log_list' %}" class="flex items-center gap-4 rounded-lg px-4 py-4 transition {% if side_nav == 'audit_logs' %}bg-[#eaf1ff] text-[#0756f8]{% else %}text-slate-700 hover:bg-slate-50 hover:text-[#0756f8]{% endif %}">
+            <span class="text-2xl" aria-hidden="true">◷</span>
+            <span>Audit Logs</span>
         </a>
         {% endif %}
 

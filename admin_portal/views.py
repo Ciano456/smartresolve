@@ -2,6 +2,7 @@
 # Student Number: x22109668
 # Module: Final Year Project
 
+from django.contrib import messages
 from django.db.models import Count, Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -10,9 +11,76 @@ from django.views.decorators.http import require_POST
 from accounts.decorators import admin_required
 from accounts.models import User
 from admin_portal.forms import AdminPortalUserCreateForm, AdminPortalUserEditForm
-from tickets.models import Ticket
+from admin_portal.models import AuditLog
+from tickets.models import Ticket, TicketHistory
 
-# Landing page view for the admin portal
+AUDIT_LOG_LIMIT = 100
+
+
+def _record_user_audit_log(
+    *,
+    actor: User,
+    action: str,
+    target_user: User,
+    message: str,
+) -> None:
+    AuditLog.objects.create(
+        actor=actor,
+        action=action,
+        target_type="User",
+        target_id=target_user.id,
+        target_repr=target_user.email,
+        message=message,
+    )
+
+
+def _build_audit_log_entries() -> list[dict]:
+    audit_logs = AuditLog.objects.select_related("actor").order_by("-created_at")[
+        :AUDIT_LOG_LIMIT
+    ]
+    ticket_history = TicketHistory.objects.select_related(
+        "ticket",
+        "changed_by",
+    ).order_by("-created_at")[:AUDIT_LOG_LIMIT]
+
+    entries = [
+        {
+            "created_at": log.created_at,
+            "source": "Admin",
+            "action": log.get_action_display(),
+            "actor": log.actor,
+            "target": log.target_repr,
+            "message": log.message,
+        }
+        for log in audit_logs
+    ]
+    entries.extend(
+        {
+            "created_at": history.created_at,
+            "source": "Ticket",
+            "action": history.change_type.replace("_", " ").title(),
+            "actor": history.changed_by,
+            "target": history.ticket.ticket_number,
+            "message": (
+                f"{history.field_name}: {history.old_value} -> {history.new_value}"
+                if history.field_name
+                else history.new_value
+            ),
+        }
+        for history in ticket_history
+    )
+
+    return sorted(
+        entries,
+        key=lambda entry: entry["created_at"],
+        reverse=True,
+    )[:AUDIT_LOG_LIMIT]
+
+
+def _active_admin_count() -> int:
+    return User.objects.filter(is_active=True, groups__name="Admin").distinct().count()
+
+
 @admin_required
 def admin_dashboard(request: HttpRequest) -> HttpResponse:
     ticket_stats = Ticket.objects.aggregate(
@@ -26,10 +94,21 @@ def admin_dashboard(request: HttpRequest) -> HttpResponse:
         {"ticket_stats": ticket_stats},
     )
 
+
+@admin_required
+def audit_log_list(request: HttpRequest) -> HttpResponse:
+    return render(
+        request,
+        "admin_portal/audit_log_list.html",
+        {"audit_entries": _build_audit_log_entries()},
+    )
+
+
 @admin_required
 def user_list(request):
-    users = User.objects.all()
+    users = User.objects.prefetch_related("groups")
     return render(request, "admin_portal/user_list.html", {"users": users})
+
 
 @admin_required
 def user_detail(request, user_id):
@@ -46,7 +125,13 @@ def user_create(request):
     if request.method == "POST":
         form = AdminPortalUserCreateForm(request.POST)
         if form.is_valid():
-            form.save()
+            created_user = form.save()
+            _record_user_audit_log(
+                actor=request.user,
+                action=AuditLog.ACTION_USER_CREATED,
+                target_user=created_user,
+                message=f"Created user {created_user.email}.",
+            )
             return redirect("user_list")
     else:
         form = AdminPortalUserCreateForm()
@@ -66,13 +151,20 @@ def user_create(request):
         },
     )
 
+
 @admin_required
 def user_edit(request, user_id):
     managed_user = get_object_or_404(User, id=user_id)
     if request.method == "POST":
         form = AdminPortalUserEditForm(request.POST, instance=managed_user)
         if form.is_valid():
-            form.save()
+            updated_user = form.save()
+            _record_user_audit_log(
+                actor=request.user,
+                action=AuditLog.ACTION_USER_UPDATED,
+                target_user=updated_user,
+                message=f"Updated user {updated_user.email}.",
+            )
             return redirect("user_detail", user_id=managed_user.id)
     else:
         form = AdminPortalUserEditForm(instance=managed_user)
@@ -92,14 +184,28 @@ def user_edit(request, user_id):
         },
     )
 
+
 @admin_required
 @require_POST
 def user_deactivate(request, user_id):
     # Status changes are POST-only so they cannot be triggered by a simple link visit.
     user = get_object_or_404(User, id=user_id)
+    if user == request.user:
+        messages.error(request, "You cannot deactivate your own account.")
+        return redirect("user_detail", user_id=user.id)
+    if user.is_admin_role and _active_admin_count() <= 1:
+        messages.error(request, "You cannot deactivate the last active admin account.")
+        return redirect("user_detail", user_id=user.id)
     user.is_active = False
     user.save()
+    _record_user_audit_log(
+        actor=request.user,
+        action=AuditLog.ACTION_USER_DEACTIVATED,
+        target_user=user,
+        message=f"Deactivated user {user.email}.",
+    )
     return redirect("user_detail", user_id=user.id)
+
 
 @admin_required
 @require_POST
@@ -108,4 +214,10 @@ def user_reactivate(request, user_id):
     user = get_object_or_404(User, id=user_id)
     user.is_active = True
     user.save()
+    _record_user_audit_log(
+        actor=request.user,
+        action=AuditLog.ACTION_USER_REACTIVATED,
+        target_user=user,
+        message=f"Reactivated user {user.email}.",
+    )
     return redirect("user_detail", user_id=user.id)

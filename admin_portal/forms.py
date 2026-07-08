@@ -3,28 +3,41 @@
 # Module: Final Year Project
 
 from django.contrib.auth.forms import UserCreationForm
-from accounts.models import User
 from django import forms
 from django.contrib.auth.models import Group
 
-class AdminPortalUserCreateForm(UserCreationForm):
-    ROLE_CHOICES = [
-        ("Admin", "Admin"),
-        ("Support Staff", "Support Staff"),
-        ("Submitter", "Submitter"),
-    ]
+from accounts.models import User
 
+ROLE_CHOICES = [
+    ("Admin", "Admin"),
+    ("Support Staff", "Support Staff"),
+    ("Submitter", "Submitter"),
+]
+
+
+def validate_role_group(role_name: str) -> str:
+    if not Group.objects.filter(name=role_name).exists():
+        raise forms.ValidationError(
+            f"The {role_name} role is not configured. Create the group before assigning it."
+        )
+    return role_name
+
+
+class AdminPortalUserCreateForm(UserCreationForm):
     role = forms.ChoiceField(choices=ROLE_CHOICES, label="Role")
 
-    class Meta: 
-        model = User 
+    class Meta:
+        model = User
         fields = [
-            "email", 
-            "first_name", 
-            "last_name", 
+            "email",
+            "first_name",
+            "last_name",
             "is_active",
-            ]
-    
+        ]
+
+    def clean_role(self):
+        return validate_role_group(self.cleaned_data["role"])
+
     def save(self, commit=True):
         user = super().save(commit=False)
         role_name = self.cleaned_data["role"]
@@ -34,12 +47,9 @@ class AdminPortalUserCreateForm(UserCreationForm):
             # The UI allows one business role at a time, so we replace the managed groups.
             user.groups.set([group])
         return user
-    
-    
-        
-    
+
+
 class AdminPortalUserEditForm(forms.ModelForm):
-    
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk:
@@ -52,23 +62,20 @@ class AdminPortalUserEditForm(forms.ModelForm):
             elif "Submitter" in current_groups:
                 self.fields["role"].initial = "Submitter"
 
-    ROLE_CHOICES = [
-        ("Admin", "Admin"),
-        ("Support Staff", "Support Staff"),
-        ("Submitter", "Submitter"),
-    ]
+    role = forms.ChoiceField(choices=ROLE_CHOICES, label="Role")
 
-    role = forms.ChoiceField(choices=AdminPortalUserCreateForm.ROLE_CHOICES, label="Role")
-
-    class Meta: 
-        model = User 
+    class Meta:
+        model = User
         fields = [
-            "email", 
-            "first_name", 
-            "last_name", 
+            "email",
+            "first_name",
+            "last_name",
             "is_active",
-            ]
-    
+        ]
+
+    def clean_role(self):
+        return validate_role_group(self.cleaned_data["role"])
+
     def save(self, commit=True):
         user = super().save(commit=False)
         role_name = self.cleaned_data["role"]
@@ -78,4 +85,3 @@ class AdminPortalUserEditForm(forms.ModelForm):
             # Editing follows the same single-role rule as user creation.
             user.groups.set([group])
         return user
-    
