@@ -3,6 +3,7 @@
 # Module: Final Year Project
 
 from admin_portal.views import (
+    audit_log_list,
     admin_dashboard,
     user_list,
     user_detail,
@@ -15,6 +16,7 @@ from django.urls import path
 
 urlpatterns = [
     path("", admin_dashboard, name="admin_dashboard"),
+    path("audit-logs/", audit_log_list, name="audit_log_list"),
     path("users/", user_list, name="user_list"),
     path("users/<int:user_id>/", user_detail, name="user_detail"),
     path("users/create/", user_create, name="user_create"),

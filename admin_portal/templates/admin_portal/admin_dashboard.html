@@ -1,3 +1,7 @@
+{# Student Name: Cian O'Connor #}
+{# Student Number: x22109668 #}
+{# Module: Final Year Project #}
+
 {% extends "base.html" %}
 
 {% block title %}SmartResolve | Admin Portal{% endblock %}
@@ -72,6 +76,14 @@
                                     <div>
                                         <h3 class="text-2xl font-bold">View Ticket Queue</h3>
                                         <p class="mt-2 text-slate-500">Review all submitted tickets from the staff queue.</p>
+                                    </div>
+                                    <span class="text-4xl text-[#0756f8]">›</span>
+                                </a>
+
+                                <a href="{% url 'audit_log_list' %}" class="flex items-center justify-between gap-5 rounded-2xl border border-slate-200 bg-slate-50 px-6 py-5 transition hover:border-[#0756f8]/40 hover:bg-blue-50">
+                                    <div>
+                                        <h3 class="text-2xl font-bold">Audit Logs</h3>
+                                        <p class="mt-2 text-slate-500">Review recent user management and ticket activity.</p>
                                     </div>
                                     <span class="text-4xl text-[#0756f8]">›</span>
                                 </a>

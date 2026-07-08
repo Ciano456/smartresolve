@@ -11,7 +11,6 @@ from .forms import TicketAttachmentForm, TicketCommentForm, TicketForm
 from .models import Ticket, TicketAttachment, TicketComment, TicketHistory, TicketStatus
 
 
-#  Views for submitters to manage their own tickets, comments, and attachments
 @login_required
 @submitter_required
 def my_tickets(request):
@@ -49,7 +48,6 @@ def my_ticket_detail(request, id):
 @login_required
 @submitter_required
 def ticket_create(request):
-    # Logic to create a new ticket
     if request.method == "GET":
         form = TicketForm()
         return render(request, "tickets/ticket_form.html", {"form": form})
@@ -70,7 +68,6 @@ def ticket_create(request):
                 new_value=f"Ticket created with title: {ticket.title}",
             )
             ticket_history.save()
-            # Redirect to ticket list or detail view after creation
             return redirect("my_ticket_detail", id=ticket.id)
         else:
             return render(request, "tickets/ticket_form.html", {"form": form})
@@ -80,7 +77,6 @@ def ticket_create(request):
 @submitter_required
 def comment_create(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id, submitter=request.user)
-    # Logic to create a new comment for a ticket
     if request.method == "POST":
         comment_form = TicketCommentForm(request.POST)
         if comment_form.is_valid():
@@ -130,11 +126,9 @@ def attachment_create(request, ticket_id):
             )
 
 
-# Views for support staff and admins to manage all tickets, comments, and attachments
 @login_required
 @admin_or_support_staff_required
 def ticket_list(request):
-    # Logic to list tickets
     tickets = Ticket.objects.select_related(
         "submitter",
         "assigned_to",
@@ -213,7 +207,6 @@ def ticket_detail(request, id):
 @login_required
 @admin_or_support_staff_required
 def comment_list(request, ticket_id):
-    # Logic to list comments for a ticket
     comments = TicketComment.objects.filter(ticket_id=ticket_id)
     return render(request, "tickets/comment_list.html", {"comments": comments})
 
@@ -221,107 +214,5 @@ def comment_list(request, ticket_id):
 @login_required
 @admin_or_support_staff_required
 def attachment_list(request, ticket_id):
-    # Logic to list attachments for a ticket
     attachments = TicketAttachment.objects.filter(ticket_id=ticket_id)
     return render(request, "tickets/attachment_list.html", {"attachments": attachments})
-
-
-# Deferring update and delete views for tickets, comments, and attachments to support staff and admins until after the core functionality is implemented for submitters. This will allow me to focus on ensuring that submitters can create and manage their own tickets effectively before adding the additional complexity of allowing support staff and admins to manage all tickets. I will implement these views in a future iteration of the project, once the basic ticket creation and management features are working smoothly for submitters.
-# @login_required
-# def ticket_update(request, id):
-#     if request.method == "GET":
-#         ticket = Ticket.objects.get(id=id)
-#         form = TicketForm(instance=ticket)
-#         return render(request, 'tickets/ticket_form.html', {'form': form})
-#     elif request.method == "POST":
-#         # Logic to update a ticket
-#         ticket = Ticket.objects.get(id=id)
-#         form = TicketForm(request.POST, instance=ticket)
-#         if form.is_valid():
-#             updated_ticket = form.save()
-#             # Create a ticket history entry for the update
-#             ticket_history = TicketHistory(
-#                 ticket = updated_ticket,
-#                 changed_by = request.user,
-#                 change_type = "UPDATED",
-#                 field_name = "ALL",
-#                 old_value = f"Previous title: {ticket.title}",
-#                 new_value = f"Updated title: {updated_ticket.title}"
-#             )
-#             ticket_history.save()
-#             return redirect('ticket_detail', id=updated_ticket.id)
-#         else:
-#             return render(request, 'tickets/ticket_form.html', {'form': form})
-
-# @login_required
-# def ticket_delete(request, id):
-#     if request.method == "GET":
-#         ticket = Ticket.objects.get(id=id)
-#         form = Ticket(instance=ticket)
-#         return render(request, 'tickets/ticket_form.html', {'form': form})
-#     elif request.method == "POST":
-#         ticket = Ticket.objects.get(id=id)
-#         ticket.delete()
-#         return redirect('ticket_list')
-#     else:
-#         return redirect('ticket_detail', id=id)
-
-
-# @login_required
-# def comment_update(request, id):
-#     if request.method == "GET":
-#         comment = TicketComment.objects.get(id=id)
-#         form = TicketCommentForm(instance=comment)
-#         return render(request, 'tickets/comment_form.html', {'form': form})
-#     elif request.method == "POST":
-#         # Logic to update a comment
-#         comment = TicketComment.objects.get(id=id)
-#         form = TicketCommentForm(request.POST, instance=comment)
-#         if form.is_valid():
-#             updated_comment = form.save()
-#             return redirect('comment_list', ticket_id=updated_comment.ticket_id)
-#         else:
-#             return render(request, 'tickets/comment_form.html', {'form': form})
-
-# @login_required
-# def comment_delete(request, id):
-#     if request.method == "GET":
-#         comment = TicketComment.objects.get(id=id)
-#         form = TicketComment(instance=comment)
-#         return render(request, 'tickets/comment_form.html', {'form': form})
-#     elif request.method == "POST":
-#         comment = TicketComment.objects.get(id=id)
-#         ticket_id = comment.ticket_id
-#         comment.delete()
-#         return redirect('comment_list', ticket_id=ticket_id)
-#     else:
-#         return redirect('comment_list', ticket_id=id)
-
-# @login_required
-# def attachment_update(request, id):
-#     if request.method == "GET":
-#         attachment = TicketAttachment.objects.get(id=id)
-#         form = TicketAttachmentForm(instance=attachment)
-#         return render(request, 'tickets/attachment_form.html', {'form': form})
-#     elif request.method == "POST":
-#         attachment = TicketAttachment.objects.get(id=id)
-#         form = TicketAttachmentForm(request.POST, request.FILES, instance=attachment)
-#         if form.is_valid():
-#             updated_attachment = form.save()
-#             return redirect('attachment_list', ticket_id=updated_attachment.ticket_id)
-#         else:
-#             return render(request, 'tickets/attachment_form.html', {'form': form})
-
-# @login_required
-# def attachment_delete(request, id):
-#     if request.method == "GET":
-#         attachment = TicketAttachment.objects.get(id=id)
-#         form = TicketAttachment(instance=attachment)
-#         return render(request, 'tickets/attachment_form.html', {'form': form})
-#     elif request.method == "POST":
-#         attachment = TicketAttachment.objects.get(id=id)
-#         ticket_id = attachment.ticket_id
-#         attachment.delete()
-#         return redirect('attachment_list', ticket_id=ticket_id)
-#     else:
-#         return redirect('attachment_list', ticket_id=id)
