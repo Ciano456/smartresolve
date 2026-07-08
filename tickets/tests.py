@@ -264,12 +264,17 @@ class TicketStaffViewTests(TestCase):
             email="support-ticket@test.com",
             password="password123",
         )
+        self.second_support_user = User.objects.create_user(
+            email="second-support-ticket@test.com",
+            password="password123",
+        )
         self.submitter_user = User.objects.create_user(
             email="submitter-ticket@test.com",
             password="password123",
         )
         self.admin_user.groups.add(self.admin_group)
         self.support_user.groups.add(self.support_staff_group)
+        self.second_support_user.groups.add(self.support_staff_group)
         self.submitter_user.groups.add(self.submitter_group)
         self.ticket_type = TicketType.objects.get(code="INCIDENT")
         self.ticket_system = TicketSystem.objects.get(code="SOFTWARE")
@@ -388,6 +393,125 @@ class TicketStaffViewTests(TestCase):
         self.assertContains(response, "Visible staff comment.")
         self.assertContains(response, "staff-detail.txt")
         self.assertNotContains(response, "Hidden other ticket comment.")
+
+    def test_staff_ticket_detail_shows_assignment_form(self):
+        self.client.force_login(self.support_user)
+        response = self.client.get(reverse("ticket_detail", args=[self.ticket.id]))
+
+        self.assertContains(
+            response,
+            reverse("ticket_assignment_update", args=[self.ticket.id]),
+        )
+        self.assertContains(response, "support-ticket@test.com")
+        self.assertContains(response, "second-support-ticket@test.com")
+
+    def test_support_staff_can_assign_ticket_to_support_staff(self):
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("ticket_assignment_update", args=[self.ticket.id]),
+            {"assigned_to": self.second_support_user.id},
+        )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.assigned_to, self.second_support_user)
+        self.assertTrue(
+            TicketHistory.objects.filter(
+                ticket=self.ticket,
+                changed_by=self.support_user,
+                change_type="ASSIGNMENT_CHANGED",
+                field_name="assigned_to",
+                old_value="Unassigned",
+                new_value="second-support-ticket@test.com",
+            ).exists()
+        )
+
+    def test_admin_can_assign_ticket_to_support_staff(self):
+        self.client.force_login(self.admin_user)
+        response = self.client.post(
+            reverse("ticket_assignment_update", args=[self.ticket.id]),
+            {"assigned_to": self.support_user.id},
+        )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.assigned_to, self.support_user)
+
+    def test_support_staff_can_unassign_ticket(self):
+        self.ticket.assigned_to = self.support_user
+        self.ticket.save()
+
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("ticket_assignment_update", args=[self.ticket.id]),
+            {"assigned_to": ""},
+        )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.ticket.refresh_from_db()
+        self.assertIsNone(self.ticket.assigned_to)
+        self.assertTrue(
+            TicketHistory.objects.filter(
+                ticket=self.ticket,
+                changed_by=self.support_user,
+                change_type="ASSIGNMENT_CHANGED",
+                field_name="assigned_to",
+                old_value="support-ticket@test.com",
+                new_value="Unassigned",
+            ).exists()
+        )
+
+    def test_submitter_cannot_assign_ticket_from_staff_endpoint(self):
+        self.client.force_login(self.submitter_user)
+        response = self.client.post(
+            reverse("ticket_assignment_update", args=[self.ticket.id]),
+            {"assigned_to": self.support_user.id},
+        )
+
+        self.assertRedirects(response, reverse("profile"))
+        self.ticket.refresh_from_db()
+        self.assertIsNone(self.ticket.assigned_to)
+        self.assertFalse(TicketHistory.objects.filter(ticket=self.ticket).exists())
+
+    def test_submitter_cannot_be_selected_as_assignee(self):
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("ticket_assignment_update", args=[self.ticket.id]),
+            {"assigned_to": self.submitter_user.id},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.ticket.refresh_from_db()
+        self.assertIsNone(self.ticket.assigned_to)
+        self.assertFalse(TicketHistory.objects.filter(ticket=self.ticket).exists())
+
+    def test_same_assignment_does_not_create_duplicate_history(self):
+        self.ticket.assigned_to = self.support_user
+        self.ticket.save()
+
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("ticket_assignment_update", args=[self.ticket.id]),
+            {"assigned_to": self.support_user.id},
+        )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.assigned_to, self.support_user)
+        self.assertFalse(
+            TicketHistory.objects.filter(
+                ticket=self.ticket,
+                change_type="ASSIGNMENT_CHANGED",
+            ).exists()
+        )
+
+    def test_assignment_get_redirects_to_ticket_detail(self):
+        self.client.force_login(self.support_user)
+        response = self.client.get(
+            reverse("ticket_assignment_update", args=[self.ticket.id])
+        )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
 
 
 class TicketAttachmentDownloadTests(TestCase):
