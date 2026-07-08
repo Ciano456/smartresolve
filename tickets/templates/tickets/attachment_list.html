@@ -18,7 +18,7 @@
                         <h2 class="text-2xl font-bold">Attachments</h2>
                         <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             {% for attachment in attachments %}
-                            <a href="{{ attachment.file.url }}" class="rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-[#0756f8]/30 hover:bg-[#eaf1ff]">
+                            <a href="{% url 'attachment_download' attachment.id %}" class="rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-[#0756f8]/30 hover:bg-[#eaf1ff]">
                                 <p class="font-bold">{{ attachment.original_filename }}</p>
                                 <p class="mt-1 text-sm text-slate-500">{{ attachment.uploaded_by|default:"Deleted user" }}</p>
                                 <p class="mt-1 text-sm text-slate-500">{{ attachment.created_at|date:"d M Y H:i" }}</p>

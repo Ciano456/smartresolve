@@ -390,6 +390,118 @@ class TicketStaffViewTests(TestCase):
         self.assertNotContains(response, "Hidden other ticket comment.")
 
 
+class TicketAttachmentDownloadTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.admin_group = Group.objects.create(name="Admin")
+        self.submitter_group = Group.objects.create(name="Submitter")
+        self.support_staff_group = Group.objects.create(name="Support Staff")
+        self.submitter_user = User.objects.create_user(
+            email="attachment-owner@test.com",
+            password="password123",
+        )
+        self.other_submitter = User.objects.create_user(
+            email="attachment-other@test.com",
+            password="password123",
+        )
+        self.support_user = User.objects.create_user(
+            email="attachment-support@test.com",
+            password="password123",
+        )
+        self.admin_user = User.objects.create_user(
+            email="attachment-admin@test.com",
+            password="password123",
+        )
+        self.submitter_user.groups.add(self.submitter_group)
+        self.other_submitter.groups.add(self.submitter_group)
+        self.support_user.groups.add(self.support_staff_group)
+        self.admin_user.groups.add(self.admin_group)
+        self.ticket_type = TicketType.objects.get(code="INCIDENT")
+        self.ticket_system = TicketSystem.objects.get(code="SOFTWARE")
+        self.ticket_priority = TicketPriority.objects.get(code="MEDIUM")
+        self.open_status = TicketStatus.objects.get(code="OPEN")
+        self.ticket = Ticket.objects.create(
+            title="Attachment download test",
+            description="Ticket with a protected attachment.",
+            submitter=self.submitter_user,
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.open_status,
+        )
+        self.attachment = TicketAttachment.objects.create(
+            ticket=self.ticket,
+            uploaded_by=self.submitter_user,
+            file=SimpleUploadedFile(
+                "protected.txt",
+                b"protected file content",
+                content_type="text/plain",
+            ),
+            original_filename="protected.txt",
+        )
+
+    def test_submitter_can_download_own_attachment(self):
+        self.client.force_login(self.submitter_user)
+        response = self.client.get(
+            reverse("attachment_download", args=[self.attachment.id])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response["Content-Disposition"], 'attachment; filename="protected.txt"'
+        )
+
+    def test_submitter_cannot_download_another_submitters_attachment(self):
+        self.client.force_login(self.other_submitter)
+        response = self.client.get(
+            reverse("attachment_download", args=[self.attachment.id])
+        )
+
+        self.assertRedirects(response, reverse("profile"))
+
+    def test_support_staff_can_download_attachment(self):
+        self.client.force_login(self.support_user)
+        response = self.client.get(
+            reverse("attachment_download", args=[self.attachment.id])
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_admin_can_download_attachment(self):
+        self.client.force_login(self.admin_user)
+        response = self.client.get(
+            reverse("attachment_download", args=[self.attachment.id])
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_anonymous_user_redirects_to_login(self):
+        download_url = reverse("attachment_download", args=[self.attachment.id])
+        response = self.client.get(download_url)
+
+        self.assertRedirects(response, f"{reverse('login')}?next={download_url}")
+
+    def test_ticket_detail_uses_protected_attachment_link(self):
+        self.client.force_login(self.support_user)
+        response = self.client.get(reverse("ticket_detail", args=[self.ticket.id]))
+
+        self.assertContains(
+            response,
+            reverse("attachment_download", args=[self.attachment.id]),
+        )
+        self.assertNotContains(response, self.attachment.file.url)
+
+    def test_submitter_detail_uses_protected_attachment_link(self):
+        self.client.force_login(self.submitter_user)
+        response = self.client.get(reverse("my_ticket_detail", args=[self.ticket.id]))
+
+        self.assertContains(
+            response,
+            reverse("attachment_download", args=[self.attachment.id]),
+        )
+        self.assertNotContains(response, self.attachment.file.url)
+
+
 class TicketSubmitterViewTests(TestCase):
     def setUp(self):
         User = get_user_model()
