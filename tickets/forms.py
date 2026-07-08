@@ -1,5 +1,10 @@
+# Student Name: Cian O'Connor
+# Student Number: x22109668
+# Module: Final Year Project
+
 from pathlib import Path
 
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 
@@ -29,6 +34,33 @@ class StaffTicketCommentForm(ModelForm):
     class Meta:
         model = TicketComment
         fields = ["body", "is_internal"]
+
+
+class StaffTicketAssignmentForm(ModelForm):
+    class Meta:
+        model = Ticket
+        fields = ["assigned_to"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        User = get_user_model()
+        self.fields["assigned_to"].queryset = (
+            User.objects.filter(groups__name="Support Staff")
+            .distinct()
+            .order_by("email")
+        )
+        self.fields["assigned_to"].required = False
+        self.fields["assigned_to"].empty_label = "Unassigned"
+        self.fields["assigned_to"].widget.attrs.update(
+            {
+                "class": (
+                    "mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 "
+                    "py-3 text-base font-semibold text-slate-800 shadow-sm "
+                    "focus:border-[#0756f8] focus:outline-none "
+                    "focus:ring-2 focus:ring-[#0756f8]/20"
+                )
+            }
+        )
 
 
 class TicketAttachmentForm(ModelForm):

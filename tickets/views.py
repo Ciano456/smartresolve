@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from accounts.decorators import admin_or_support_staff_required, submitter_required
 
 from .forms import (
+    StaffTicketAssignmentForm,
     StaffTicketCommentForm,
     TicketAttachmentForm,
     TicketCommentForm,
@@ -185,6 +186,7 @@ def ticket_detail(request, id):
     status_options = TicketStatus.objects.filter(is_active=True).order_by("sort_order")
     comments = ticket_detail.comments.all().order_by("-created_at")
     attachments = ticket_detail.attachments.all().order_by("-created_at")
+    assignment_form = StaffTicketAssignmentForm(instance=ticket_detail)
 
     if request.method == "POST":
         status_id = request.POST.get("ticket_status")
@@ -200,6 +202,7 @@ def ticket_detail(request, id):
                     "attachments": attachments,
                     "status_error": "Select a valid ticket status.",
                     "comment_form": StaffTicketCommentForm(),
+                    "assignment_form": assignment_form,
                 },
                 status=400,
             )
@@ -227,7 +230,55 @@ def ticket_detail(request, id):
             "comments": comments,
             "attachments": attachments,
             "comment_form": StaffTicketCommentForm(),
+            "assignment_form": assignment_form,
         },
+    )
+
+
+@login_required
+@admin_or_support_staff_required
+def ticket_assignment_update(request, ticket_id):
+    ticket = get_object_or_404(
+        Ticket.objects.select_related("assigned_to"),
+        id=ticket_id,
+    )
+    if request.method != "POST":
+        return redirect("ticket_detail", id=ticket_id)
+
+    old_assignee = ticket.assigned_to
+    form = StaffTicketAssignmentForm(request.POST, instance=ticket)
+    if form.is_valid():
+        updated_ticket = form.save(commit=False)
+        new_assignee = updated_ticket.assigned_to
+        if old_assignee != new_assignee:
+            updated_ticket.save(update_fields=["assigned_to", "updated_at"])
+            TicketHistory.objects.create(
+                ticket=updated_ticket,
+                changed_by=request.user,
+                change_type="ASSIGNMENT_CHANGED",
+                field_name="assigned_to",
+                old_value=str(old_assignee) if old_assignee else "Unassigned",
+                new_value=str(new_assignee) if new_assignee else "Unassigned",
+            )
+        return redirect("ticket_detail", id=ticket_id)
+
+    status_options = TicketStatus.objects.filter(is_active=True).order_by("sort_order")
+    comments = ticket.comments.select_related("author").order_by("-created_at")
+    attachments = ticket.attachments.select_related("uploaded_by").order_by(
+        "-created_at"
+    )
+    return render(
+        request,
+        "tickets/ticket_detail.html",
+        {
+            "ticket": ticket,
+            "status_options": status_options,
+            "comments": comments,
+            "attachments": attachments,
+            "comment_form": StaffTicketCommentForm(),
+            "assignment_form": form,
+        },
+        status=400,
     )
 
 
@@ -260,6 +311,7 @@ def staff_comment_create(request, ticket_id):
                 "comments": comments,
                 "attachments": attachments,
                 "comment_form": comment_form,
+                "assignment_form": StaffTicketAssignmentForm(instance=ticket),
             },
             status=400,
         )
