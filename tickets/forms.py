@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 
-from .models import Ticket, TicketAttachment, TicketComment
+from .models import Ticket, TicketAttachment, TicketComment, TicketPriority
 
 
 # Forms for creating and updating tickets, comments, and attachments
@@ -52,6 +52,28 @@ class StaffTicketAssignmentForm(ModelForm):
         self.fields["assigned_to"].required = False
         self.fields["assigned_to"].empty_label = "Unassigned"
         self.fields["assigned_to"].widget.attrs.update(
+            {
+                "class": (
+                    "mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 "
+                    "py-3 text-base font-semibold text-slate-800 shadow-sm "
+                    "focus:border-[#0756f8] focus:outline-none "
+                    "focus:ring-2 focus:ring-[#0756f8]/20"
+                )
+            }
+        )
+
+
+class StaffTicketPriorityForm(ModelForm):
+    class Meta:
+        model = Ticket
+        fields = ["ticket_priority"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["ticket_priority"].queryset = TicketPriority.objects.filter(
+            is_active=True
+        ).order_by("sort_order")
+        self.fields["ticket_priority"].widget.attrs.update(
             {
                 "class": (
                     "mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 "
