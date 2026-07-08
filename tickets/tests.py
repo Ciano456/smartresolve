@@ -278,7 +278,9 @@ class TicketStaffViewTests(TestCase):
         self.submitter_user.groups.add(self.submitter_group)
         self.ticket_type = TicketType.objects.get(code="INCIDENT")
         self.ticket_system = TicketSystem.objects.get(code="SOFTWARE")
+        self.low_priority = TicketPriority.objects.get(code="LOW")
         self.ticket_priority = TicketPriority.objects.get(code="MEDIUM")
+        self.high_priority = TicketPriority.objects.get(code="HIGH")
         self.open_status = TicketStatus.objects.get(code="OPEN")
         self.in_progress_status = TicketStatus.objects.get(code="IN_PROGRESS")
         self.closed_status = TicketStatus.objects.get(code="CLOSED")
@@ -405,6 +407,18 @@ class TicketStaffViewTests(TestCase):
         self.assertContains(response, "support-ticket@test.com")
         self.assertContains(response, "second-support-ticket@test.com")
 
+    def test_staff_ticket_detail_shows_priority_form(self):
+        self.client.force_login(self.support_user)
+        response = self.client.get(reverse("ticket_detail", args=[self.ticket.id]))
+
+        self.assertContains(
+            response,
+            reverse("ticket_priority_update", args=[self.ticket.id]),
+        )
+        self.assertContains(response, "Low")
+        self.assertContains(response, "Medium")
+        self.assertContains(response, "High")
+
     def test_support_staff_can_assign_ticket_to_support_staff(self):
         self.client.force_login(self.support_user)
         response = self.client.post(
@@ -509,6 +523,87 @@ class TicketStaffViewTests(TestCase):
         self.client.force_login(self.support_user)
         response = self.client.get(
             reverse("ticket_assignment_update", args=[self.ticket.id])
+        )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+
+    def test_support_staff_can_update_ticket_priority(self):
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("ticket_priority_update", args=[self.ticket.id]),
+            {"ticket_priority": self.high_priority.id},
+        )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_priority, self.high_priority)
+        self.assertTrue(
+            TicketHistory.objects.filter(
+                ticket=self.ticket,
+                changed_by=self.support_user,
+                change_type="PRIORITY_CHANGED",
+                field_name="ticket_priority",
+                old_value="Medium",
+                new_value="High",
+            ).exists()
+        )
+
+    def test_admin_can_update_ticket_priority(self):
+        self.client.force_login(self.admin_user)
+        response = self.client.post(
+            reverse("ticket_priority_update", args=[self.ticket.id]),
+            {"ticket_priority": self.low_priority.id},
+        )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_priority, self.low_priority)
+
+    def test_submitter_cannot_update_ticket_priority(self):
+        self.client.force_login(self.submitter_user)
+        response = self.client.post(
+            reverse("ticket_priority_update", args=[self.ticket.id]),
+            {"ticket_priority": self.high_priority.id},
+        )
+
+        self.assertRedirects(response, reverse("profile"))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_priority, self.ticket_priority)
+        self.assertFalse(TicketHistory.objects.filter(ticket=self.ticket).exists())
+
+    def test_invalid_priority_update_is_rejected(self):
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("ticket_priority_update", args=[self.ticket.id]),
+            {"ticket_priority": 999999},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_priority, self.ticket_priority)
+        self.assertFalse(TicketHistory.objects.filter(ticket=self.ticket).exists())
+
+    def test_same_priority_does_not_create_duplicate_history(self):
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("ticket_priority_update", args=[self.ticket.id]),
+            {"ticket_priority": self.ticket_priority.id},
+        )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_priority, self.ticket_priority)
+        self.assertFalse(
+            TicketHistory.objects.filter(
+                ticket=self.ticket,
+                change_type="PRIORITY_CHANGED",
+            ).exists()
+        )
+
+    def test_priority_get_redirects_to_ticket_detail(self):
+        self.client.force_login(self.support_user)
+        response = self.client.get(
+            reverse("ticket_priority_update", args=[self.ticket.id])
         )
 
         self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
