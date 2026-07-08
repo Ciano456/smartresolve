@@ -3,12 +3,19 @@
 # Module: Final Year Project
 
 from django.contrib.auth.decorators import login_required
+from django.http import FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from accounts.decorators import admin_or_support_staff_required, submitter_required
 
 from .forms import TicketAttachmentForm, TicketCommentForm, TicketForm
 from .models import Ticket, TicketAttachment, TicketComment, TicketHistory, TicketStatus
+
+
+def _can_download_attachment(user, attachment: TicketAttachment) -> bool:
+    if user.is_admin_role or user.is_support_staff_role:
+        return True
+    return user.is_submitter_role and attachment.ticket.submitter_id == user.id
 
 
 @login_required
@@ -216,3 +223,19 @@ def comment_list(request, ticket_id):
 def attachment_list(request, ticket_id):
     attachments = TicketAttachment.objects.filter(ticket_id=ticket_id)
     return render(request, "tickets/attachment_list.html", {"attachments": attachments})
+
+
+@login_required
+def attachment_download(request, attachment_id):
+    attachment = get_object_or_404(
+        TicketAttachment.objects.select_related("ticket__submitter"),
+        id=attachment_id,
+    )
+    if not _can_download_attachment(request.user, attachment):
+        return redirect("profile")
+
+    return FileResponse(
+        attachment.file.open("rb"),
+        as_attachment=True,
+        filename=attachment.original_filename,
+    )
