@@ -724,8 +724,13 @@ class TicketAttachmentDownloadTests(TestCase):
 class TicketCommentVisibilityTests(TestCase):
     def setUp(self):
         User = get_user_model()
+        self.admin_group = Group.objects.create(name="Admin")
         self.submitter_group = Group.objects.create(name="Submitter")
         self.support_staff_group = Group.objects.create(name="Support Staff")
+        self.admin_user = User.objects.create_user(
+            email="comment-admin@test.com",
+            password="password123",
+        )
         self.submitter_user = User.objects.create_user(
             email="comment-submitter@test.com",
             password="password123",
@@ -734,6 +739,7 @@ class TicketCommentVisibilityTests(TestCase):
             email="comment-support@test.com",
             password="password123",
         )
+        self.admin_user.groups.add(self.admin_group)
         self.submitter_user.groups.add(self.submitter_group)
         self.support_user.groups.add(self.support_staff_group)
         self.ticket_type = TicketType.objects.get(code="INCIDENT")
@@ -851,6 +857,110 @@ class TicketCommentVisibilityTests(TestCase):
             body="Submitter follow-up.",
         )
         self.assertFalse(comment.is_internal)
+
+    def test_staff_can_create_resolution_note(self):
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("ticket_resolution_note_create", args=[self.ticket.id]),
+            {"body": "Resolved after clearing the user's cached credentials."},
+        )
+
+        self.assertRedirects(
+            response,
+            reverse("ticket_detail", args=[self.ticket.id]),
+        )
+        note = TicketComment.objects.get(
+            ticket=self.ticket,
+            author=self.support_user,
+            body="Resolved after clearing the user's cached credentials.",
+        )
+        self.assertFalse(note.is_internal)
+        self.assertTrue(
+            TicketHistory.objects.filter(
+                ticket=self.ticket,
+                changed_by=self.support_user,
+                change_type="RESOLUTION_NOTE_ADDED",
+                field_name="comments",
+                new_value="Resolution note added",
+            ).exists()
+        )
+
+    def test_admin_can_create_resolution_note(self):
+        self.client.force_login(self.admin_user)
+        response = self.client.post(
+            reverse("ticket_resolution_note_create", args=[self.ticket.id]),
+            {"body": "Admin added final resolution details."},
+        )
+
+        self.assertRedirects(
+            response,
+            reverse("ticket_detail", args=[self.ticket.id]),
+        )
+        self.assertTrue(
+            TicketComment.objects.filter(
+                ticket=self.ticket,
+                author=self.admin_user,
+                body="Admin added final resolution details.",
+                is_internal=False,
+            ).exists()
+        )
+
+    def test_submitter_cannot_create_resolution_note(self):
+        self.client.force_login(self.submitter_user)
+        response = self.client.post(
+            reverse("ticket_resolution_note_create", args=[self.ticket.id]),
+            {"body": "Submitter should not add resolution notes."},
+        )
+
+        self.assertRedirects(response, reverse("profile"))
+        self.assertFalse(
+            TicketComment.objects.filter(
+                ticket=self.ticket,
+                body="Submitter should not add resolution notes.",
+            ).exists()
+        )
+
+    def test_resolution_note_is_visible_to_submitter(self):
+        TicketComment.objects.create(
+            ticket=self.ticket,
+            author=self.support_user,
+            body="Public resolution note for submitter.",
+            is_internal=False,
+        )
+
+        self.client.force_login(self.submitter_user)
+        response = self.client.get(reverse("my_ticket_detail", args=[self.ticket.id]))
+
+        self.assertContains(response, "Public resolution note for submitter.")
+
+    def test_blank_resolution_note_is_rejected(self):
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("ticket_resolution_note_create", args=[self.ticket.id]),
+            {"body": ""},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(
+            TicketComment.objects.filter(
+                ticket=self.ticket,
+                author=self.support_user,
+            ).exists()
+        )
+        self.assertFalse(
+            TicketHistory.objects.filter(
+                ticket=self.ticket,
+                change_type="RESOLUTION_NOTE_ADDED",
+            ).exists()
+        )
+
+    def test_resolution_note_get_redirects_to_ticket_detail(self):
+        self.client.force_login(self.support_user)
+        response = self.client.get(
+            reverse("ticket_resolution_note_create", args=[self.ticket.id])
+        )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
 
 
 class TicketSubmitterViewTests(TestCase):

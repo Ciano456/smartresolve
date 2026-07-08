@@ -26,6 +26,11 @@ urlpatterns = [
         name="ticket_priority_update",
     ),
     path(
+        "ticket/<int:ticket_id>/resolution-notes/create/",
+        views.ticket_resolution_note_create,
+        name="ticket_resolution_note_create",
+    ),
+    path(
         "ticket/<int:ticket_id>/attachments/",
         views.attachment_list,
         name="attachment_list",

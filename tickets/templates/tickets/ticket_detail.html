@@ -132,6 +132,18 @@
                                 </button>
                             </form>
 
+                            <form method="post" action="{% url 'ticket_resolution_note_create' ticket.id %}" class="rounded-2xl bg-white p-6 shadow-card">
+                                {% csrf_token %}
+                                <h2 class="text-xl font-bold">Resolution Note</h2>
+                                <div class="mt-4">
+                                    {{ resolution_note_form.body }}
+                                    {{ resolution_note_form.body.errors }}
+                                </div>
+                                <button type="submit" class="mt-4 w-full rounded-lg bg-slate-900 px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-slate-700">
+                                    Add Resolution Note
+                                </button>
+                            </form>
+
                             <section class="rounded-2xl bg-white p-6 shadow-card">
                                 <h2 class="text-xl font-bold">Attachments</h2>
                                 <div class="mt-4 grid gap-3">
