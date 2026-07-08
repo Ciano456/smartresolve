@@ -396,6 +396,76 @@ class TicketStaffViewTests(TestCase):
         self.assertContains(response, "staff-detail.txt")
         self.assertNotContains(response, "Hidden other ticket comment.")
 
+    def test_staff_ticket_detail_shows_ticket_history(self):
+        TicketHistory.objects.create(
+            ticket=self.ticket,
+            changed_by=self.support_user,
+            change_type="STATUS_CHANGED",
+            field_name="ticket_status",
+            old_value="Open",
+            new_value="In Progress",
+        )
+
+        self.client.force_login(self.support_user)
+        response = self.client.get(reverse("ticket_detail", args=[self.ticket.id]))
+
+        self.assertContains(response, "Ticket History")
+        self.assertContains(response, "STATUS_CHANGED")
+        self.assertContains(response, "Changed by support-ticket@test.com")
+        self.assertContains(response, "Field: ticket_status")
+        self.assertContains(response, "Open")
+        self.assertContains(response, "In Progress")
+
+    def test_staff_ticket_history_is_ordered_newest_first(self):
+        TicketHistory.objects.create(
+            ticket=self.ticket,
+            changed_by=self.support_user,
+            change_type="STATUS_CHANGED",
+            field_name="ticket_status",
+            old_value="Open",
+            new_value="Older history entry",
+        )
+        TicketHistory.objects.create(
+            ticket=self.ticket,
+            changed_by=self.support_user,
+            change_type="PRIORITY_CHANGED",
+            field_name="ticket_priority",
+            old_value="Medium",
+            new_value="Newer history entry",
+        )
+
+        self.client.force_login(self.support_user)
+        response = self.client.get(reverse("ticket_detail", args=[self.ticket.id]))
+        content = response.content.decode()
+
+        self.assertLess(
+            content.index("Newer history entry"),
+            content.index("Older history entry"),
+        )
+
+    def test_staff_ticket_detail_shows_empty_history_state(self):
+        self.client.force_login(self.support_user)
+        response = self.client.get(reverse("ticket_detail", args=[self.ticket.id]))
+
+        self.assertContains(response, "Ticket History")
+        self.assertContains(response, "No ticket history yet.")
+
+    def test_submitter_ticket_detail_does_not_show_staff_history_section(self):
+        TicketHistory.objects.create(
+            ticket=self.ticket,
+            changed_by=self.support_user,
+            change_type="STATUS_CHANGED",
+            field_name="ticket_status",
+            old_value="Open",
+            new_value="In Progress",
+        )
+
+        self.client.force_login(self.submitter_user)
+        response = self.client.get(reverse("my_ticket_detail", args=[self.ticket.id]))
+
+        self.assertNotContains(response, "Ticket History")
+        self.assertNotContains(response, "STATUS_CHANGED")
+
     def test_staff_ticket_detail_shows_assignment_form(self):
         self.client.force_login(self.support_user)
         response = self.client.get(reverse("ticket_detail", args=[self.ticket.id]))

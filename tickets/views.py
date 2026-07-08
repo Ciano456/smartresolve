@@ -3,6 +3,7 @@
 # Module: Final Year Project
 
 from django.contrib.auth.decorators import login_required
+from django.db.models import QuerySet
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -24,6 +25,10 @@ def _can_download_attachment(user, attachment: TicketAttachment) -> bool:
     if user.is_admin_role or user.is_support_staff_role:
         return True
     return user.is_submitter_role and attachment.ticket.submitter_id == user.id
+
+
+def _ticket_history_entries(ticket: Ticket) -> QuerySet[TicketHistory]:
+    return ticket.history.select_related("changed_by").order_by("-created_at")
 
 
 @login_required
@@ -188,6 +193,7 @@ def ticket_detail(request, id):
     status_options = TicketStatus.objects.filter(is_active=True).order_by("sort_order")
     comments = ticket_detail.comments.all().order_by("-created_at")
     attachments = ticket_detail.attachments.all().order_by("-created_at")
+    history_entries = _ticket_history_entries(ticket_detail)
     assignment_form = StaffTicketAssignmentForm(instance=ticket_detail)
     priority_form = StaffTicketPriorityForm(instance=ticket_detail)
     resolution_note_form = StaffTicketResolutionNoteForm()
@@ -204,6 +210,7 @@ def ticket_detail(request, id):
                     "status_options": status_options,
                     "comments": comments,
                     "attachments": attachments,
+                    "history_entries": history_entries,
                     "status_error": "Select a valid ticket status.",
                     "comment_form": StaffTicketCommentForm(),
                     "assignment_form": assignment_form,
@@ -235,6 +242,7 @@ def ticket_detail(request, id):
             "status_options": status_options,
             "comments": comments,
             "attachments": attachments,
+            "history_entries": history_entries,
             "comment_form": StaffTicketCommentForm(),
             "assignment_form": assignment_form,
             "priority_form": priority_form,
@@ -275,6 +283,7 @@ def ticket_assignment_update(request, ticket_id):
     attachments = ticket.attachments.select_related("uploaded_by").order_by(
         "-created_at"
     )
+    history_entries = _ticket_history_entries(ticket)
     return render(
         request,
         "tickets/ticket_detail.html",
@@ -283,6 +292,7 @@ def ticket_assignment_update(request, ticket_id):
             "status_options": status_options,
             "comments": comments,
             "attachments": attachments,
+            "history_entries": history_entries,
             "comment_form": StaffTicketCommentForm(),
             "assignment_form": form,
             "priority_form": StaffTicketPriorityForm(instance=ticket),
@@ -324,6 +334,7 @@ def ticket_priority_update(request, ticket_id):
     attachments = ticket.attachments.select_related("uploaded_by").order_by(
         "-created_at"
     )
+    history_entries = _ticket_history_entries(ticket)
     return render(
         request,
         "tickets/ticket_detail.html",
@@ -332,6 +343,7 @@ def ticket_priority_update(request, ticket_id):
             "status_options": status_options,
             "comments": comments,
             "attachments": attachments,
+            "history_entries": history_entries,
             "comment_form": StaffTicketCommentForm(),
             "assignment_form": StaffTicketAssignmentForm(instance=ticket),
             "priority_form": form,
@@ -370,6 +382,7 @@ def ticket_resolution_note_create(request, ticket_id):
     attachments = ticket.attachments.select_related("uploaded_by").order_by(
         "-created_at"
     )
+    history_entries = _ticket_history_entries(ticket)
     return render(
         request,
         "tickets/ticket_detail.html",
@@ -378,6 +391,7 @@ def ticket_resolution_note_create(request, ticket_id):
             "status_options": status_options,
             "comments": comments,
             "attachments": attachments,
+            "history_entries": history_entries,
             "comment_form": StaffTicketCommentForm(),
             "assignment_form": StaffTicketAssignmentForm(instance=ticket),
             "priority_form": StaffTicketPriorityForm(instance=ticket),
@@ -404,6 +418,7 @@ def staff_comment_create(request, ticket_id):
         attachments = ticket.attachments.select_related("uploaded_by").order_by(
             "-created_at"
         )
+        history_entries = _ticket_history_entries(ticket)
         status_options = TicketStatus.objects.filter(is_active=True).order_by(
             "sort_order"
         )
@@ -415,6 +430,7 @@ def staff_comment_create(request, ticket_id):
                 "status_options": status_options,
                 "comments": comments,
                 "attachments": attachments,
+                "history_entries": history_entries,
                 "comment_form": comment_form,
                 "assignment_form": StaffTicketAssignmentForm(instance=ticket),
                 "priority_form": StaffTicketPriorityForm(instance=ticket),
