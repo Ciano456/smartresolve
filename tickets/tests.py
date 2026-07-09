@@ -2,6 +2,8 @@
 # Student Number: x22109668
 # Module: Final Year Project
 
+from datetime import timedelta
+
 from django.test import TestCase
 from .models import Ticket, TicketType, TicketSystem, TicketPriority, TicketStatus, TicketComment, TicketAttachment, TicketHistory
 from django.contrib.auth import get_user_model
@@ -9,6 +11,9 @@ from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.deletion import ProtectedError
 from django.urls import reverse
+from django.utils import timezone
+
+
 class TicketModelTest(TestCase):
     def setUp(self):
         # Set up a user for testing ticket creation
@@ -272,12 +277,20 @@ class TicketStaffViewTests(TestCase):
             email="submitter-ticket@test.com",
             password="password123",
         )
+        self.other_submitter_user = User.objects.create_user(
+            email="other-submitter-ticket@test.com",
+            password="password123",
+        )
         self.admin_user.groups.add(self.admin_group)
         self.support_user.groups.add(self.support_staff_group)
         self.second_support_user.groups.add(self.support_staff_group)
         self.submitter_user.groups.add(self.submitter_group)
+        self.other_submitter_user.groups.add(self.submitter_group)
         self.ticket_type = TicketType.objects.get(code="INCIDENT")
+        self.service_type = TicketType.objects.get(code="SERVICE")
         self.ticket_system = TicketSystem.objects.get(code="SOFTWARE")
+        self.network_system = TicketSystem.objects.get(code="NETWORK")
+        self.hardware_system = TicketSystem.objects.get(code="HARDWARE")
         self.low_priority = TicketPriority.objects.get(code="LOW")
         self.ticket_priority = TicketPriority.objects.get(code="MEDIUM")
         self.high_priority = TicketPriority.objects.get(code="HIGH")
@@ -292,6 +305,27 @@ class TicketStaffViewTests(TestCase):
             ticket_system=self.ticket_system,
             ticket_priority=self.ticket_priority,
             ticket_status=self.open_status,
+        )
+
+    def _create_queue_ticket(
+        self,
+        title,
+        submitter=None,
+        assigned_to=None,
+        ticket_type=None,
+        ticket_system=None,
+        ticket_priority=None,
+        ticket_status=None,
+    ):
+        return Ticket.objects.create(
+            title=title,
+            description=f"{title} description.",
+            submitter=submitter or self.submitter_user,
+            assigned_to=assigned_to,
+            ticket_type=ticket_type or self.ticket_type,
+            ticket_system=ticket_system or self.ticket_system,
+            ticket_priority=ticket_priority or self.ticket_priority,
+            ticket_status=ticket_status or self.open_status,
         )
 
     def test_support_staff_can_update_ticket_status(self):
@@ -465,6 +499,128 @@ class TicketStaffViewTests(TestCase):
 
         self.assertNotContains(response, "Ticket History")
         self.assertNotContains(response, "STATUS_CHANGED")
+
+    def test_staff_ticket_queue_filters_by_status(self):
+        closed_ticket = self._create_queue_ticket(
+            "Closed queue filter ticket",
+            ticket_status=self.closed_status,
+        )
+
+        self.client.force_login(self.support_user)
+        response = self.client.get(
+            reverse("ticket_list"),
+            {"status": self.closed_status.id},
+        )
+
+        self.assertContains(response, closed_ticket.title)
+        self.assertNotContains(response, self.ticket.title)
+
+    def test_staff_ticket_queue_filters_by_priority(self):
+        high_priority_ticket = self._create_queue_ticket(
+            "High priority queue filter ticket",
+            ticket_priority=self.high_priority,
+        )
+
+        self.client.force_login(self.support_user)
+        response = self.client.get(
+            reverse("ticket_list"),
+            {"priority": self.high_priority.id},
+        )
+
+        self.assertContains(response, high_priority_ticket.title)
+        self.assertNotContains(response, self.ticket.title)
+
+    def test_staff_ticket_queue_filters_by_type_and_system(self):
+        matching_ticket = self._create_queue_ticket(
+            "Service network queue filter ticket",
+            ticket_type=self.service_type,
+            ticket_system=self.network_system,
+        )
+        self._create_queue_ticket(
+            "Service hardware hidden ticket",
+            ticket_type=self.service_type,
+            ticket_system=self.hardware_system,
+        )
+
+        self.client.force_login(self.support_user)
+        response = self.client.get(
+            reverse("ticket_list"),
+            {
+                "type": self.service_type.id,
+                "system": self.network_system.id,
+            },
+        )
+
+        self.assertContains(response, matching_ticket.title)
+        self.assertNotContains(response, "Service hardware hidden ticket")
+        self.assertNotContains(response, self.ticket.title)
+
+    def test_staff_ticket_queue_filters_by_submitter(self):
+        other_submitter_ticket = self._create_queue_ticket(
+            "Other submitter queue filter ticket",
+            submitter=self.other_submitter_user,
+        )
+
+        self.client.force_login(self.support_user)
+        response = self.client.get(
+            reverse("ticket_list"),
+            {"submitter": self.other_submitter_user.id},
+        )
+
+        self.assertContains(response, other_submitter_ticket.title)
+        self.assertNotContains(response, self.ticket.title)
+
+    def test_staff_ticket_queue_filters_by_assigned_user(self):
+        assigned_ticket = self._create_queue_ticket(
+            "Assigned queue filter ticket",
+            assigned_to=self.second_support_user,
+        )
+
+        self.client.force_login(self.support_user)
+        response = self.client.get(
+            reverse("ticket_list"),
+            {"assigned_to": self.second_support_user.id},
+        )
+
+        self.assertContains(response, assigned_ticket.title)
+        self.assertNotContains(response, self.ticket.title)
+
+    def test_staff_ticket_queue_filters_by_created_date_range(self):
+        old_ticket = self._create_queue_ticket("Old queue filter ticket")
+        new_ticket = self._create_queue_ticket("New queue filter ticket")
+        old_date = timezone.now() - timedelta(days=5)
+        new_date = timezone.now()
+        Ticket.objects.filter(id=old_ticket.id).update(created_at=old_date)
+        Ticket.objects.filter(id=new_ticket.id).update(created_at=new_date)
+
+        self.client.force_login(self.support_user)
+        response = self.client.get(
+            reverse("ticket_list"),
+            {"created_from": timezone.localdate().isoformat()},
+        )
+
+        self.assertContains(response, new_ticket.title)
+        self.assertNotContains(response, old_ticket.title)
+
+    def test_staff_ticket_queue_ignores_invalid_filters(self):
+        self.client.force_login(self.support_user)
+        response = self.client.get(
+            reverse("ticket_list"),
+            {
+                "status": "invalid",
+                "priority": "999999",
+                "created_from": "not-a-date",
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.ticket.title)
+
+    def test_submitter_cannot_access_staff_ticket_queue(self):
+        self.client.force_login(self.submitter_user)
+        response = self.client.get(reverse("ticket_list"))
+
+        self.assertRedirects(response, reverse("profile"))
 
     def test_staff_ticket_detail_shows_assignment_form(self):
         self.client.force_login(self.support_user)
