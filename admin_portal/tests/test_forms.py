@@ -228,6 +228,25 @@ class AdminPortalFormTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("code", form.errors)
 
+    def test_ticket_type_lookup_form_locks_code_on_edit(self):
+        ticket_type = TicketType.objects.get(code="INCIDENT")
+        form = TicketTypeLookupForm(
+            data={
+                "name": "Incident Updated",
+                "code": "CHANGED",
+                "description": ticket_type.description,
+                "is_active": True,
+                "sort_order": ticket_type.sort_order,
+            },
+            instance=ticket_type,
+        )
+
+        self.assertTrue(form.fields["code"].disabled)
+        self.assertTrue(form.is_valid())
+        updated_type = form.save()
+        self.assertEqual(updated_type.code, "INCIDENT")
+        self.assertEqual(updated_type.name, "Incident Updated")
+
     def test_ticket_status_lookup_form_includes_closed_flag(self):
         form = TicketStatusLookupForm(
             data={

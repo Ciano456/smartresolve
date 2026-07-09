@@ -3,6 +3,7 @@
 # Module: Final Year Project
 
 from django.contrib import messages
+from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -29,6 +30,7 @@ from tickets.models import (
 )
 
 AUDIT_LOG_LIMIT = 100
+ADMIN_TICKET_LIST_PAGE_SIZE = 25
 
 LOOKUP_CONFIG = {
     "types": {
@@ -166,10 +168,15 @@ def admin_ticket_list(request: HttpRequest) -> HttpResponse:
         "ticket_priority",
         "ticket_status",
     ).order_by("-created_at")
+    paginator = Paginator(tickets, ADMIN_TICKET_LIST_PAGE_SIZE)
+    page_obj = paginator.get_page(request.GET.get("page"))
     return render(
         request,
         "admin_portal/ticket_list.html",
-        {"tickets": tickets},
+        {
+            "tickets": page_obj,
+            "page_obj": page_obj,
+        },
     )
 
 

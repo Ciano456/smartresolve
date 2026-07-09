@@ -103,6 +103,11 @@ class BaseLookupForm(forms.ModelForm):
                 field.widget.attrs.update({"class": self.checkbox_class})
             else:
                 field.widget.attrs.update({"class": self.text_input_class})
+        if self.instance and self.instance.pk:
+            self.fields["code"].disabled = True
+            self.fields["code"].help_text = (
+                "Codes are locked after creation because workflow logic may depend on them."
+            )
 
     class Meta:
         fields = [

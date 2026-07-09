@@ -4,8 +4,9 @@
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
+from django.core.paginator import Page, Paginator
 from django.db.models import QuerySet
-from django.http import FileResponse
+from django.http import FileResponse, HttpRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.dateparse import parse_date
 
@@ -31,6 +32,8 @@ from .models import (
     TicketType,
 )
 
+TICKET_LIST_PAGE_SIZE = 25
+
 
 def _can_download_attachment(user, attachment: TicketAttachment) -> bool:
     if user.is_admin_role or user.is_support_staff_role:
@@ -49,6 +52,11 @@ def _valid_filter_id(raw_value: str | None, queryset: QuerySet) -> int | None:
     if queryset.filter(id=value).exists():
         return value
     return None
+
+
+def _paginate_queryset(request: HttpRequest, queryset: QuerySet) -> Page:
+    paginator = Paginator(queryset, TICKET_LIST_PAGE_SIZE)
+    return paginator.get_page(request.GET.get("page"))
 
 
 @login_required
@@ -251,11 +259,16 @@ def ticket_list(request):
         tickets = tickets.filter(created_at__date__lte=created_to)
 
     tickets = tickets.order_by("-created_at")
+    page_obj = _paginate_queryset(request, tickets)
+    filter_query = request.GET.copy()
+    filter_query.pop("page", None)
     return render(
         request,
         "tickets/ticket_list.html",
         {
-            "tickets": tickets,
+            "tickets": page_obj,
+            "page_obj": page_obj,
+            "filter_query": filter_query.urlencode(),
             "status_options": status_options,
             "priority_options": priority_options,
             "type_options": type_options,

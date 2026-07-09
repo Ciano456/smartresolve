@@ -118,8 +118,9 @@ class TicketAttachmentForm(ModelForm):
             )
 
         if file.size > self.max_file_size:
+            max_file_size_mb = self.max_file_size // (1024 * 1024)
             raise ValidationError(
-                f"File size must be less than {self.max_file_size} MB"
+                f"File size must be less than {max_file_size_mb} MB"
             )
 
         return file
