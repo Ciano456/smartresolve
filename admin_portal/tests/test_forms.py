@@ -5,7 +5,14 @@
 from django.test import TestCase
 from accounts.models import User
 from django.contrib.auth.models import Group
-from admin_portal.forms import AdminPortalUserCreateForm, AdminPortalUserEditForm
+from admin_portal.forms import (
+    AdminPortalUserCreateForm,
+    AdminPortalUserEditForm,
+    TicketPriorityLookupForm,
+    TicketStatusLookupForm,
+    TicketTypeLookupForm,
+)
+from tickets.models import TicketType
 
 
 class AdminPortalFormTests(TestCase):
@@ -192,3 +199,61 @@ class AdminPortalFormTests(TestCase):
         user.groups.add(self.support_staff_group)
         form = AdminPortalUserEditForm(instance=user)
         self.assertEqual(form.fields["role"].initial, "Support Staff")
+
+    def test_ticket_type_lookup_form_valid_data(self):
+        form = TicketTypeLookupForm(
+            data={
+                "name": "Change Request",
+                "code": "CHANGE",
+                "description": "Request to change a system or service.",
+                "is_active": True,
+                "sort_order": 10,
+            }
+        )
+
+        self.assertTrue(form.is_valid())
+
+    def test_ticket_type_lookup_form_rejects_duplicate_code(self):
+        existing_type = TicketType.objects.get(code="INCIDENT")
+        form = TicketTypeLookupForm(
+            data={
+                "name": "Duplicate Incident",
+                "code": existing_type.code,
+                "description": "Duplicate lookup code.",
+                "is_active": True,
+                "sort_order": 10,
+            }
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("code", form.errors)
+
+    def test_ticket_status_lookup_form_includes_closed_flag(self):
+        form = TicketStatusLookupForm(
+            data={
+                "name": "Resolved",
+                "code": "RESOLVED",
+                "description": "Ticket work is resolved.",
+                "is_active": True,
+                "sort_order": 4,
+                "is_closed": True,
+            }
+        )
+
+        self.assertTrue(form.is_valid())
+        self.assertIn("is_closed", form.fields)
+
+    def test_ticket_priority_lookup_form_can_save_inactive_value(self):
+        form = TicketPriorityLookupForm(
+            data={
+                "name": "Emergency",
+                "code": "EMERGENCY",
+                "description": "Emergency priority.",
+                "is_active": False,
+                "sort_order": 99,
+            }
+        )
+
+        self.assertTrue(form.is_valid())
+        priority = form.save()
+        self.assertFalse(priority.is_active)

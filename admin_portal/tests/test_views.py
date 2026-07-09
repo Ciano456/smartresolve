@@ -151,6 +151,102 @@ class AdminPortalViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "admin_portal/user_form.html")
 
+    def test_lookup_list_view_accessible_by_admin(self):
+        self._login_admin_user()
+        response = self.client.get(reverse("lookup_list", args=["types"]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "admin_portal/lookup_list.html")
+        self.assertContains(response, "Ticket Types")
+        self.assertContains(response, "Incident")
+
+    def test_lookup_list_view_inaccessible_by_non_admin(self):
+        self._login_non_admin_user()
+        response = self.client.get(reverse("lookup_list", args=["types"]))
+
+        self.assertRedirects(response, "/accounts/profile/")
+
+    def test_lookup_create_view_creates_lookup_value(self):
+        self._login_admin_user()
+        response = self.client.post(
+            reverse("lookup_create", args=["types"]),
+            {
+                "name": "Change Request",
+                "code": "CHANGE",
+                "description": "Request to change a system or service.",
+                "is_active": True,
+                "sort_order": 10,
+            },
+        )
+
+        self.assertRedirects(response, reverse("lookup_list", args=["types"]))
+        self.assertTrue(TicketType.objects.filter(code="CHANGE").exists())
+
+    def test_lookup_create_rejects_duplicate_code(self):
+        self._login_admin_user()
+        response = self.client.post(
+            reverse("lookup_create", args=["types"]),
+            {
+                "name": "Duplicate Incident",
+                "code": "INCIDENT",
+                "description": "Duplicate lookup code.",
+                "is_active": True,
+                "sort_order": 10,
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "admin_portal/lookup_form.html")
+        self.assertContains(response, "Ticket type with this Code already exists.")
+
+    def test_lookup_edit_view_updates_lookup_value(self):
+        ticket_type = TicketType.objects.get(code="INCIDENT")
+
+        self._login_admin_user()
+        response = self.client.post(
+            reverse("lookup_edit", args=["types", ticket_type.id]),
+            {
+                "name": "Incident Updated",
+                "code": ticket_type.code,
+                "description": ticket_type.description,
+                "is_active": True,
+                "sort_order": ticket_type.sort_order,
+            },
+        )
+
+        self.assertRedirects(response, reverse("lookup_list", args=["types"]))
+        ticket_type.refresh_from_db()
+        self.assertEqual(ticket_type.name, "Incident Updated")
+
+    def test_lookup_toggle_active_updates_lookup_value(self):
+        ticket_type = TicketType.objects.get(code="INCIDENT")
+        self.assertTrue(ticket_type.is_active)
+
+        self._login_admin_user()
+        response = self.client.post(
+            reverse("lookup_toggle_active", args=["types", ticket_type.id])
+        )
+
+        self.assertRedirects(response, reverse("lookup_list", args=["types"]))
+        ticket_type.refresh_from_db()
+        self.assertFalse(ticket_type.is_active)
+
+    def test_lookup_toggle_active_requires_post(self):
+        ticket_type = TicketType.objects.get(code="INCIDENT")
+
+        self._login_admin_user()
+        response = self.client.get(
+            reverse("lookup_toggle_active", args=["types", ticket_type.id])
+        )
+
+        self.assertEqual(response.status_code, 405)
+
+    def test_invalid_lookup_slug_returns_404(self):
+        self._login_admin_user()
+        response = self.client.get(reverse("lookup_list", args=["unknown"]))
+
+        self.assertEqual(response.status_code, 404)
+
     def test_user_deactivate_view_accessible_by_admin(self):
         managed_user = self._create_managed_user()
         self._login_admin_user()
