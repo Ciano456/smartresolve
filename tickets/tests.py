@@ -13,6 +13,8 @@ from django.db.models.deletion import ProtectedError
 from django.urls import reverse
 from django.utils import timezone
 
+from .forms import TicketAttachmentForm
+
 
 class TicketModelTest(TestCase):
     def setUp(self):
@@ -602,6 +604,40 @@ class TicketStaffViewTests(TestCase):
         self.assertContains(response, new_ticket.title)
         self.assertNotContains(response, old_ticket.title)
 
+    def test_staff_ticket_queue_is_paginated_and_preserves_filters(self):
+        for index in range(26):
+            self._create_queue_ticket(
+                f"High priority paginated ticket {index:02d}",
+                ticket_priority=self.high_priority,
+            )
+
+        self.client.force_login(self.support_user)
+        response = self.client.get(
+            reverse("ticket_list"),
+            {"priority": self.high_priority.id},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Page 1 of 2")
+        self.assertContains(
+            response,
+            f"?priority={self.high_priority.id}&page=2",
+            html=False,
+        )
+        self.assertEqual(response.context["page_obj"].paginator.count, 26)
+        self.assertEqual(len(response.context["tickets"]), 25)
+
+        second_page_response = self.client.get(
+            reverse("ticket_list"),
+            {
+                "priority": self.high_priority.id,
+                "page": 2,
+            },
+        )
+
+        self.assertContains(second_page_response, "Page 2 of 2")
+        self.assertEqual(len(second_page_response.context["tickets"]), 1)
+
     def test_staff_ticket_queue_ignores_invalid_filters(self):
         self.client.force_login(self.support_user)
         response = self.client.get(
@@ -945,6 +981,17 @@ class TicketAttachmentDownloadTests(TestCase):
             reverse("attachment_download", args=[self.attachment.id]),
         )
         self.assertNotContains(response, self.attachment.file.url)
+
+    def test_attachment_size_validation_shows_mb_limit(self):
+        large_file = SimpleUploadedFile(
+            "too-large.txt",
+            b"x" * ((5 * 1024 * 1024) + 1),
+            content_type="text/plain",
+        )
+        form = TicketAttachmentForm(data={}, files={"file": large_file})
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("File size must be less than 5 MB", form.errors["file"])
 
 
 class TicketCommentVisibilityTests(TestCase):

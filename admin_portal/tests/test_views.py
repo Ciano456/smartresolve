@@ -199,6 +199,26 @@ class AdminPortalViewTests(TestCase):
             content.index(first_ticket.title),
         )
 
+    def test_admin_ticket_list_is_paginated(self):
+        for index in range(30):
+            self._create_ticket(f"Admin paginated ticket {index:02d}")
+
+        self._login_admin_user()
+        response = self.client.get(reverse("admin_ticket_list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Page 1 of 2")
+        self.assertEqual(response.context["page_obj"].paginator.count, 30)
+        self.assertEqual(len(response.context["tickets"]), 25)
+
+        second_page_response = self.client.get(
+            reverse("admin_ticket_list"),
+            {"page": 2},
+        )
+
+        self.assertContains(second_page_response, "Page 2 of 2")
+        self.assertEqual(len(second_page_response.context["tickets"]), 5)
+
     def test_admin_dashboard_links_to_admin_ticket_list(self):
         self._login_admin_user()
         response = self.client.get(reverse("admin_dashboard"))
