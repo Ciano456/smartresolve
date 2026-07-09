@@ -49,6 +49,17 @@ class AdminPortalViewTests(TestCase):
         managed_user.groups.add(self.submitter_group)
         return managed_user
 
+    def _create_ticket(self, title, submitter=None):
+        return Ticket.objects.create(
+            title=title,
+            description=f"{title} description.",
+            submitter=submitter or self.user,
+            ticket_type=TicketType.objects.get(code="INCIDENT"),
+            ticket_system=TicketSystem.objects.get(code="NETWORK"),
+            ticket_priority=TicketPriority.objects.get(code="HIGH"),
+            ticket_status=TicketStatus.objects.get(code="OPEN"),
+        )
+
     def test_admin_dashboard_view_requires_login(self):
         response = self.client.get("/admin_portal/")
         self.assertRedirects(response, "/accounts/login/")
@@ -150,6 +161,50 @@ class AdminPortalViewTests(TestCase):
         response = self.client.get(f"/admin_portal/users/{self.user.id}/edit/")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "admin_portal/user_form.html")
+
+    def test_admin_ticket_list_view_accessible_by_admin(self):
+        ticket = self._create_ticket("Admin visible ticket")
+
+        self._login_admin_user()
+        response = self.client.get(reverse("admin_ticket_list"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "admin_portal/ticket_list.html")
+        self.assertContains(response, "Admin Tickets")
+        self.assertContains(response, ticket.title)
+        self.assertContains(response, ticket.ticket_number)
+
+    def test_admin_ticket_list_view_inaccessible_by_non_admin(self):
+        self._login_non_admin_user()
+        response = self.client.get(reverse("admin_ticket_list"))
+
+        self.assertRedirects(response, "/accounts/profile/")
+
+    def test_admin_ticket_list_shows_all_tickets(self):
+        managed_user = self._create_managed_user()
+        first_ticket = self._create_ticket("First admin list ticket")
+        second_ticket = self._create_ticket(
+            "Second admin list ticket",
+            submitter=managed_user,
+        )
+
+        self._login_admin_user()
+        response = self.client.get(reverse("admin_ticket_list"))
+        content = response.content.decode()
+
+        self.assertContains(response, first_ticket.title)
+        self.assertContains(response, second_ticket.title)
+        self.assertLess(
+            content.index(second_ticket.title),
+            content.index(first_ticket.title),
+        )
+
+    def test_admin_dashboard_links_to_admin_ticket_list(self):
+        self._login_admin_user()
+        response = self.client.get(reverse("admin_dashboard"))
+
+        self.assertContains(response, reverse("admin_ticket_list"))
+        self.assertContains(response, "View All Tickets")
 
     def test_lookup_list_view_accessible_by_admin(self):
         self._login_admin_user()

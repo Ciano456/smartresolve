@@ -157,6 +157,23 @@ def audit_log_list(request: HttpRequest) -> HttpResponse:
 
 
 @admin_required
+def admin_ticket_list(request: HttpRequest) -> HttpResponse:
+    tickets = Ticket.objects.select_related(
+        "submitter",
+        "assigned_to",
+        "ticket_type",
+        "ticket_system",
+        "ticket_priority",
+        "ticket_status",
+    ).order_by("-created_at")
+    return render(
+        request,
+        "admin_portal/ticket_list.html",
+        {"tickets": tickets},
+    )
+
+
+@admin_required
 def lookup_list(request: HttpRequest, lookup_slug: str) -> HttpResponse:
     config = _lookup_config(lookup_slug)
     lookup_values = config["model"].objects.order_by("sort_order", "name")
