@@ -4,17 +4,69 @@
 
 from django.contrib import messages
 from django.db.models import Count, Q
-from django.http import HttpRequest, HttpResponse
+from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from accounts.decorators import admin_required
 from accounts.models import User
-from admin_portal.forms import AdminPortalUserCreateForm, AdminPortalUserEditForm
+from admin_portal.forms import (
+    AdminPortalUserCreateForm,
+    AdminPortalUserEditForm,
+    TicketPriorityLookupForm,
+    TicketStatusLookupForm,
+    TicketSystemLookupForm,
+    TicketTypeLookupForm,
+)
 from admin_portal.models import AuditLog
-from tickets.models import Ticket, TicketHistory
+from tickets.models import (
+    Ticket,
+    TicketHistory,
+    TicketPriority,
+    TicketStatus,
+    TicketSystem,
+    TicketType,
+)
 
 AUDIT_LOG_LIMIT = 100
+
+LOOKUP_CONFIG = {
+    "types": {
+        "model": TicketType,
+        "form": TicketTypeLookupForm,
+        "title": "Ticket Types",
+        "singular": "Ticket Type",
+        "description": "Manage the request categories users choose when creating tickets.",
+    },
+    "systems": {
+        "model": TicketSystem,
+        "form": TicketSystemLookupForm,
+        "title": "Ticket Systems",
+        "singular": "Ticket System",
+        "description": "Manage the systems or technology areas tickets can be linked to.",
+    },
+    "priorities": {
+        "model": TicketPriority,
+        "form": TicketPriorityLookupForm,
+        "title": "Ticket Priorities",
+        "singular": "Ticket Priority",
+        "description": "Manage the priority values used to triage support work.",
+    },
+    "statuses": {
+        "model": TicketStatus,
+        "form": TicketStatusLookupForm,
+        "title": "Ticket Statuses",
+        "singular": "Ticket Status",
+        "description": "Manage ticket lifecycle statuses and closed-state behaviour.",
+    },
+}
+
+
+def _lookup_config(lookup_slug: str) -> dict:
+    try:
+        return LOOKUP_CONFIG[lookup_slug]
+    except KeyError as exc:
+        raise Http404("Lookup type not found.") from exc
 
 
 def _record_user_audit_log(
@@ -102,6 +154,91 @@ def audit_log_list(request: HttpRequest) -> HttpResponse:
         "admin_portal/audit_log_list.html",
         {"audit_entries": _build_audit_log_entries()},
     )
+
+
+@admin_required
+def lookup_list(request: HttpRequest, lookup_slug: str) -> HttpResponse:
+    config = _lookup_config(lookup_slug)
+    lookup_values = config["model"].objects.order_by("sort_order", "name")
+    return render(
+        request,
+        "admin_portal/lookup_list.html",
+        {
+            "lookup_slug": lookup_slug,
+            "lookup_config": config,
+            "lookup_values": lookup_values,
+        },
+    )
+
+
+@admin_required
+def lookup_create(request: HttpRequest, lookup_slug: str) -> HttpResponse:
+    config = _lookup_config(lookup_slug)
+    form_class = config["form"]
+    if request.method == "POST":
+        form = form_class(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("lookup_list", lookup_slug=lookup_slug)
+    else:
+        form = form_class()
+
+    return render(
+        request,
+        "admin_portal/lookup_form.html",
+        {
+            "lookup_slug": lookup_slug,
+            "lookup_config": config,
+            "form": form,
+            "form_mode": "create",
+            "submit_label": f"Create {config['singular']}",
+        },
+    )
+
+
+@admin_required
+def lookup_edit(
+    request: HttpRequest,
+    lookup_slug: str,
+    lookup_id: int,
+) -> HttpResponse:
+    config = _lookup_config(lookup_slug)
+    lookup_value = get_object_or_404(config["model"], id=lookup_id)
+    form_class = config["form"]
+    if request.method == "POST":
+        form = form_class(request.POST, instance=lookup_value)
+        if form.is_valid():
+            form.save()
+            return redirect("lookup_list", lookup_slug=lookup_slug)
+    else:
+        form = form_class(instance=lookup_value)
+
+    return render(
+        request,
+        "admin_portal/lookup_form.html",
+        {
+            "lookup_slug": lookup_slug,
+            "lookup_config": config,
+            "lookup_value": lookup_value,
+            "form": form,
+            "form_mode": "edit",
+            "submit_label": f"Save {config['singular']}",
+        },
+    )
+
+
+@admin_required
+@require_POST
+def lookup_toggle_active(
+    request: HttpRequest,
+    lookup_slug: str,
+    lookup_id: int,
+) -> HttpResponse:
+    config = _lookup_config(lookup_slug)
+    lookup_value = get_object_or_404(config["model"], id=lookup_id)
+    lookup_value.is_active = not lookup_value.is_active
+    lookup_value.save(update_fields=["is_active"])
+    return redirect("lookup_list", lookup_slug=lookup_slug)
 
 
 @admin_required

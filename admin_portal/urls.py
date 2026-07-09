@@ -5,6 +5,10 @@
 from admin_portal.views import (
     audit_log_list,
     admin_dashboard,
+    lookup_create,
+    lookup_edit,
+    lookup_list,
+    lookup_toggle_active,
     user_list,
     user_detail,
     user_create,
@@ -17,6 +21,22 @@ from django.urls import path
 urlpatterns = [
     path("", admin_dashboard, name="admin_dashboard"),
     path("audit-logs/", audit_log_list, name="audit_log_list"),
+    path("lookups/<str:lookup_slug>/", lookup_list, name="lookup_list"),
+    path(
+        "lookups/<str:lookup_slug>/create/",
+        lookup_create,
+        name="lookup_create",
+    ),
+    path(
+        "lookups/<str:lookup_slug>/<int:lookup_id>/edit/",
+        lookup_edit,
+        name="lookup_edit",
+    ),
+    path(
+        "lookups/<str:lookup_slug>/<int:lookup_id>/toggle-active/",
+        lookup_toggle_active,
+        name="lookup_toggle_active",
+    ),
     path("users/", user_list, name="user_list"),
     path("users/<int:user_id>/", user_detail, name="user_detail"),
     path("users/create/", user_create, name="user_create"),

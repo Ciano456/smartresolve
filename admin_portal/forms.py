@@ -7,6 +7,7 @@ from django import forms
 from django.contrib.auth.models import Group
 
 from accounts.models import User
+from tickets.models import TicketPriority, TicketStatus, TicketSystem, TicketType
 
 ROLE_CHOICES = [
     ("Admin", "Admin"),
@@ -85,3 +86,57 @@ class AdminPortalUserEditForm(forms.ModelForm):
             # Editing follows the same single-role rule as user creation.
             user.groups.set([group])
         return user
+
+
+class BaseLookupForm(forms.ModelForm):
+    text_input_class = (
+        "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base "
+        "font-semibold text-slate-800 shadow-sm focus:border-[#0756f8] "
+        "focus:outline-none focus:ring-2 focus:ring-[#0756f8]/20"
+    )
+    checkbox_class = "h-5 w-5 rounded border-slate-300 text-[#0756f8]"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            if isinstance(field.widget, forms.CheckboxInput):
+                field.widget.attrs.update({"class": self.checkbox_class})
+            else:
+                field.widget.attrs.update({"class": self.text_input_class})
+
+    class Meta:
+        fields = [
+            "name",
+            "code",
+            "description",
+            "is_active",
+            "sort_order",
+        ]
+
+
+class TicketTypeLookupForm(BaseLookupForm):
+    class Meta(BaseLookupForm.Meta):
+        model = TicketType
+
+
+class TicketSystemLookupForm(BaseLookupForm):
+    class Meta(BaseLookupForm.Meta):
+        model = TicketSystem
+
+
+class TicketPriorityLookupForm(BaseLookupForm):
+    class Meta(BaseLookupForm.Meta):
+        model = TicketPriority
+
+
+class TicketStatusLookupForm(BaseLookupForm):
+    class Meta(BaseLookupForm.Meta):
+        model = TicketStatus
+        fields = [
+            "name",
+            "code",
+            "description",
+            "is_active",
+            "sort_order",
+            "is_closed",
+        ]
