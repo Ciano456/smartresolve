@@ -3,9 +3,11 @@
 # Module: Final Year Project
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
 from django.db.models import QuerySet
 from django.http import FileResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.dateparse import parse_date
 
 from accounts.decorators import admin_or_support_staff_required, submitter_required
 
@@ -18,7 +20,16 @@ from .forms import (
     TicketCommentForm,
     TicketForm,
 )
-from .models import Ticket, TicketAttachment, TicketComment, TicketHistory, TicketStatus
+from .models import (
+    Ticket,
+    TicketAttachment,
+    TicketComment,
+    TicketHistory,
+    TicketPriority,
+    TicketStatus,
+    TicketSystem,
+    TicketType,
+)
 
 
 def _can_download_attachment(user, attachment: TicketAttachment) -> bool:
@@ -29,6 +40,15 @@ def _can_download_attachment(user, attachment: TicketAttachment) -> bool:
 
 def _ticket_history_entries(ticket: Ticket) -> QuerySet[TicketHistory]:
     return ticket.history.select_related("changed_by").order_by("-created_at")
+
+
+def _valid_filter_id(raw_value: str | None, queryset: QuerySet) -> int | None:
+    if not raw_value or not raw_value.isdigit():
+        return None
+    value = int(raw_value)
+    if queryset.filter(id=value).exists():
+        return value
+    return None
 
 
 @login_required
@@ -162,6 +182,33 @@ def attachment_create(request, ticket_id):
 @login_required
 @admin_or_support_staff_required
 def ticket_list(request):
+    status_options = TicketStatus.objects.filter(is_active=True).order_by("sort_order")
+    priority_options = TicketPriority.objects.filter(is_active=True).order_by(
+        "sort_order"
+    )
+    type_options = TicketType.objects.filter(is_active=True).order_by("sort_order")
+    system_options = TicketSystem.objects.filter(is_active=True).order_by("sort_order")
+    User = get_user_model()
+    submitter_options = (
+        User.objects.filter(submitted_tickets__isnull=False)
+        .distinct()
+        .order_by("email")
+    )
+    assignee_options = (
+        User.objects.filter(groups__name="Support Staff")
+        .distinct()
+        .order_by("email")
+    )
+    active_filters = {
+        "status": request.GET.get("status", ""),
+        "priority": request.GET.get("priority", ""),
+        "type": request.GET.get("type", ""),
+        "system": request.GET.get("system", ""),
+        "submitter": request.GET.get("submitter", ""),
+        "assigned_to": request.GET.get("assigned_to", ""),
+        "created_from": request.GET.get("created_from", ""),
+        "created_to": request.GET.get("created_to", ""),
+    }
     tickets = Ticket.objects.select_related(
         "submitter",
         "assigned_to",
@@ -170,7 +217,54 @@ def ticket_list(request):
         "ticket_priority",
         "ticket_status",
     )
-    return render(request, "tickets/ticket_list.html", {"tickets": tickets})
+
+    status_id = _valid_filter_id(active_filters["status"], status_options)
+    if status_id:
+        tickets = tickets.filter(ticket_status_id=status_id)
+
+    priority_id = _valid_filter_id(active_filters["priority"], priority_options)
+    if priority_id:
+        tickets = tickets.filter(ticket_priority_id=priority_id)
+
+    type_id = _valid_filter_id(active_filters["type"], type_options)
+    if type_id:
+        tickets = tickets.filter(ticket_type_id=type_id)
+
+    system_id = _valid_filter_id(active_filters["system"], system_options)
+    if system_id:
+        tickets = tickets.filter(ticket_system_id=system_id)
+
+    submitter_id = _valid_filter_id(active_filters["submitter"], submitter_options)
+    if submitter_id:
+        tickets = tickets.filter(submitter_id=submitter_id)
+
+    assignee_id = _valid_filter_id(active_filters["assigned_to"], assignee_options)
+    if assignee_id:
+        tickets = tickets.filter(assigned_to_id=assignee_id)
+
+    created_from = parse_date(active_filters["created_from"])
+    if created_from:
+        tickets = tickets.filter(created_at__date__gte=created_from)
+
+    created_to = parse_date(active_filters["created_to"])
+    if created_to:
+        tickets = tickets.filter(created_at__date__lte=created_to)
+
+    tickets = tickets.order_by("-created_at")
+    return render(
+        request,
+        "tickets/ticket_list.html",
+        {
+            "tickets": tickets,
+            "status_options": status_options,
+            "priority_options": priority_options,
+            "type_options": type_options,
+            "system_options": system_options,
+            "submitter_options": submitter_options,
+            "assignee_options": assignee_options,
+            "active_filters": active_filters,
+        },
+    )
 
 
 @login_required
