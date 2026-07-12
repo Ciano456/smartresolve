@@ -21,13 +21,14 @@ In progress:
 - foundation and repo setup
 - documentation
 - CI setup
+- notification service foundation
 
 Not started yet:
 - full authentication flow
 - groups and role permissions
 - ticket models and workflows
 - dashboard reporting
-- notifications
+- Microsoft Graph notifications
 
 ## Tech Stack
 
@@ -36,6 +37,7 @@ Not started yet:
 - SQLite for local development
 - Pytest / Django test tools
 - Ruff and Black listed in requirements for code quality
+- Microsoft Graph for email delivery
 
 ## Project Structure
 
@@ -87,6 +89,10 @@ Example values:
 ```env
 DJANGO_SECRET_KEY=your-secret-key-here
 DJANGO_DEBUG=True
+GRAPH_TENANT_ID=your-tenant-id
+GRAPH_CLIENT_ID=your-client-id
+GRAPH_CLIENT_SECRET=your-client-secret
+GRAPH_SENDER_USER=sender@yourdomain.com
 ```
 
 ## Database Setup
@@ -165,6 +171,11 @@ This project is being built in phases.
 - notifications
 - dashboard reporting
 - deployment preparation
+
+### Sprint 7
+- Microsoft Graph notification foundation
+- reusable notification templates
+- notification event logging
 
 ## Branch Strategy
 

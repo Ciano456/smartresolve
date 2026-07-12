@@ -1,0 +1,5 @@
+{{ subject }}
+
+Hello {{ recipient_name|default:"there" }},
+
+{{ body }}

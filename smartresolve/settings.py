@@ -36,6 +36,22 @@ DEBUG = os.getenv("DJANGO_DEBUG",) == "True" if os.getenv("DJANGO_DEBUG") else F
 
 ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
 
+GRAPH_TENANT_ID = os.getenv("GRAPH_TENANT_ID", "").strip()
+GRAPH_CLIENT_ID = os.getenv("GRAPH_CLIENT_ID", "").strip()
+GRAPH_CLIENT_SECRET = os.getenv("GRAPH_CLIENT_SECRET", "").strip()
+GRAPH_SENDER_USER = os.getenv("GRAPH_SENDER_USER", "").strip()
+GRAPH_SCOPE = "https://graph.microsoft.com/.default"
+GRAPH_TOKEN_URL = (
+    f"https://login.microsoftonline.com/{GRAPH_TENANT_ID}/oauth2/v2.0/token"
+    if GRAPH_TENANT_ID
+    else ""
+)
+GRAPH_SEND_MAIL_URL = (
+    f"https://graph.microsoft.com/v1.0/users/{GRAPH_SENDER_USER}/sendMail"
+    if GRAPH_SENDER_USER
+    else ""
+)
+
 
 # Application definition
 
