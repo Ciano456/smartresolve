@@ -13,9 +13,11 @@ from django.utils.dateparse import parse_date
 from accounts.decorators import admin_or_support_staff_required, submitter_required
 
 from .forms import (
+    StaffTicketCancelForm,
     StaffTicketAssignmentForm,
     StaffTicketCommentForm,
     StaffTicketPriorityForm,
+    StaffTicketResolveForm,
     StaffTicketResolutionNoteForm,
     TicketAttachmentForm,
     TicketCommentForm,
@@ -54,9 +56,40 @@ def _valid_filter_id(raw_value: str | None, queryset: QuerySet) -> int | None:
     return None
 
 
-def _paginate_queryset(request: HttpRequest, queryset: QuerySet) -> Page:
+def _paginate_queryset(request: HttpRequest, queryset: QuerySet[object]) -> Page:
     paginator = Paginator(queryset, TICKET_LIST_PAGE_SIZE)
     return paginator.get_page(request.GET.get("page"))
+
+
+def _staff_ticket_detail_context(
+    ticket: Ticket,
+    comment_form: StaffTicketCommentForm | None = None,
+    assignment_form: StaffTicketAssignmentForm | None = None,
+    priority_form: StaffTicketPriorityForm | None = None,
+    resolution_note_form: StaffTicketResolutionNoteForm | None = None,
+    resolve_form: StaffTicketResolveForm | None = None,
+    cancel_form: StaffTicketCancelForm | None = None,
+    status_error: str = "",
+) -> dict:
+    return {
+        "ticket": ticket,
+        "status_options": TicketStatus.objects.filter(
+            is_active=True,
+            is_closed=False,
+        ).order_by("sort_order"),
+        "comments": ticket.comments.select_related("author").order_by("-created_at"),
+        "attachments": ticket.attachments.select_related("uploaded_by").order_by(
+            "-created_at"
+        ),
+        "history_entries": _ticket_history_entries(ticket),
+        "status_error": status_error,
+        "comment_form": comment_form or StaffTicketCommentForm(),
+        "assignment_form": assignment_form or StaffTicketAssignmentForm(instance=ticket),
+        "priority_form": priority_form or StaffTicketPriorityForm(instance=ticket),
+        "resolution_note_form": resolution_note_form or StaffTicketResolutionNoteForm(),
+        "resolve_form": resolve_form or StaffTicketResolveForm(instance=ticket),
+        "cancel_form": cancel_form or StaffTicketCancelForm(instance=ticket),
+    }
 
 
 @login_required
@@ -297,13 +330,10 @@ def ticket_detail(request, id):
         ),
         id=id,
     )
-    status_options = TicketStatus.objects.filter(is_active=True).order_by("sort_order")
-    comments = ticket_detail.comments.all().order_by("-created_at")
-    attachments = ticket_detail.attachments.all().order_by("-created_at")
-    history_entries = _ticket_history_entries(ticket_detail)
-    assignment_form = StaffTicketAssignmentForm(instance=ticket_detail)
-    priority_form = StaffTicketPriorityForm(instance=ticket_detail)
-    resolution_note_form = StaffTicketResolutionNoteForm()
+    status_options = TicketStatus.objects.filter(
+        is_active=True,
+        is_closed=False,
+    ).order_by("sort_order")
 
     if request.method == "POST":
         status_id = request.POST.get("ticket_status")
@@ -312,18 +342,23 @@ def ticket_detail(request, id):
             return render(
                 request,
                 "tickets/ticket_detail.html",
-                {
-                    "ticket": ticket_detail,
-                    "status_options": status_options,
-                    "comments": comments,
-                    "attachments": attachments,
-                    "history_entries": history_entries,
-                    "status_error": "Select a valid ticket status.",
-                    "comment_form": StaffTicketCommentForm(),
-                    "assignment_form": assignment_form,
-                    "priority_form": priority_form,
-                    "resolution_note_form": resolution_note_form,
-                },
+                _staff_ticket_detail_context(
+                    ticket_detail,
+                    status_error="Select a valid ticket status.",
+                ),
+                status=400,
+            )
+        if new_status.is_closed:
+            return render(
+                request,
+                "tickets/ticket_detail.html",
+                _staff_ticket_detail_context(
+                    ticket_detail,
+                    status_error=(
+                        "Use Resolve Ticket or Cancel Ticket to close this ticket "
+                        "with the required note."
+                    ),
+                ),
                 status=400,
             )
 
@@ -344,17 +379,7 @@ def ticket_detail(request, id):
     return render(
         request,
         "tickets/ticket_detail.html",
-        {
-            "ticket": ticket_detail,
-            "status_options": status_options,
-            "comments": comments,
-            "attachments": attachments,
-            "history_entries": history_entries,
-            "comment_form": StaffTicketCommentForm(),
-            "assignment_form": assignment_form,
-            "priority_form": priority_form,
-            "resolution_note_form": resolution_note_form,
-        },
+        _staff_ticket_detail_context(ticket_detail),
     )
 
 
@@ -385,26 +410,10 @@ def ticket_assignment_update(request, ticket_id):
             )
         return redirect("ticket_detail", id=ticket_id)
 
-    status_options = TicketStatus.objects.filter(is_active=True).order_by("sort_order")
-    comments = ticket.comments.select_related("author").order_by("-created_at")
-    attachments = ticket.attachments.select_related("uploaded_by").order_by(
-        "-created_at"
-    )
-    history_entries = _ticket_history_entries(ticket)
     return render(
         request,
         "tickets/ticket_detail.html",
-        {
-            "ticket": ticket,
-            "status_options": status_options,
-            "comments": comments,
-            "attachments": attachments,
-            "history_entries": history_entries,
-            "comment_form": StaffTicketCommentForm(),
-            "assignment_form": form,
-            "priority_form": StaffTicketPriorityForm(instance=ticket),
-            "resolution_note_form": StaffTicketResolutionNoteForm(),
-        },
+        _staff_ticket_detail_context(ticket, assignment_form=form),
         status=400,
     )
 
@@ -436,26 +445,108 @@ def ticket_priority_update(request, ticket_id):
             )
         return redirect("ticket_detail", id=ticket_id)
 
-    status_options = TicketStatus.objects.filter(is_active=True).order_by("sort_order")
-    comments = ticket.comments.select_related("author").order_by("-created_at")
-    attachments = ticket.attachments.select_related("uploaded_by").order_by(
-        "-created_at"
-    )
-    history_entries = _ticket_history_entries(ticket)
     return render(
         request,
         "tickets/ticket_detail.html",
-        {
-            "ticket": ticket,
-            "status_options": status_options,
-            "comments": comments,
-            "attachments": attachments,
-            "history_entries": history_entries,
-            "comment_form": StaffTicketCommentForm(),
-            "assignment_form": StaffTicketAssignmentForm(instance=ticket),
-            "priority_form": form,
-            "resolution_note_form": StaffTicketResolutionNoteForm(),
-        },
+        _staff_ticket_detail_context(ticket, priority_form=form),
+        status=400,
+    )
+
+
+@login_required
+@admin_or_support_staff_required
+def ticket_resolve(request, ticket_id):
+    ticket = get_object_or_404(
+        Ticket.objects.select_related("ticket_status"),
+        id=ticket_id,
+    )
+    if request.method != "POST":
+        return redirect("ticket_detail", id=ticket_id)
+
+    form = StaffTicketResolveForm(request.POST, instance=ticket)
+    if ticket.ticket_status.is_closed:
+        form.add_error(
+            None,
+            "Closed or cancelled tickets cannot be resolved again.",
+        )
+    if form.is_valid():
+        closed_status = TicketStatus.objects.get(code="CLOSED")
+        old_status = ticket.ticket_status
+        updated_ticket = form.save(commit=False)
+        updated_ticket.ticket_status = closed_status
+        updated_ticket.cancellation_reason = ""
+        updated_ticket.save(
+            update_fields=[
+                "resolution_summary",
+                "cancellation_reason",
+                "ticket_status",
+                "closed_at",
+                "updated_at",
+            ]
+        )
+        TicketHistory.objects.create(
+            ticket=updated_ticket,
+            changed_by=request.user,
+            change_type="RESOLVED",
+            field_name="ticket_status",
+            old_value=old_status.name,
+            new_value=closed_status.name,
+        )
+        return redirect("ticket_detail", id=ticket_id)
+
+    return render(
+        request,
+        "tickets/ticket_detail.html",
+        _staff_ticket_detail_context(ticket, resolve_form=form),
+        status=400,
+    )
+
+
+@login_required
+@admin_or_support_staff_required
+def ticket_cancel(request, ticket_id):
+    ticket = get_object_or_404(
+        Ticket.objects.select_related("ticket_status"),
+        id=ticket_id,
+    )
+    if request.method != "POST":
+        return redirect("ticket_detail", id=ticket_id)
+
+    form = StaffTicketCancelForm(request.POST, instance=ticket)
+    if ticket.ticket_status.is_closed:
+        form.add_error(
+            None,
+            "Closed or cancelled tickets cannot be cancelled again.",
+        )
+    if form.is_valid():
+        cancelled_status = TicketStatus.objects.get(code="CANCELLED")
+        old_status = ticket.ticket_status
+        updated_ticket = form.save(commit=False)
+        updated_ticket.ticket_status = cancelled_status
+        updated_ticket.resolution_summary = ""
+        updated_ticket.save(
+            update_fields=[
+                "resolution_summary",
+                "cancellation_reason",
+                "ticket_status",
+                "closed_at",
+                "updated_at",
+            ]
+        )
+        TicketHistory.objects.create(
+            ticket=updated_ticket,
+            changed_by=request.user,
+            change_type="CANCELLED",
+            field_name="ticket_status",
+            old_value=old_status.name,
+            new_value=cancelled_status.name,
+        )
+        return redirect("ticket_detail", id=ticket_id)
+
+    return render(
+        request,
+        "tickets/ticket_detail.html",
+        _staff_ticket_detail_context(ticket, cancel_form=form),
         status=400,
     )
 
@@ -484,26 +575,10 @@ def ticket_resolution_note_create(request, ticket_id):
         )
         return redirect("ticket_detail", id=ticket_id)
 
-    status_options = TicketStatus.objects.filter(is_active=True).order_by("sort_order")
-    comments = ticket.comments.select_related("author").order_by("-created_at")
-    attachments = ticket.attachments.select_related("uploaded_by").order_by(
-        "-created_at"
-    )
-    history_entries = _ticket_history_entries(ticket)
     return render(
         request,
         "tickets/ticket_detail.html",
-        {
-            "ticket": ticket,
-            "status_options": status_options,
-            "comments": comments,
-            "attachments": attachments,
-            "history_entries": history_entries,
-            "comment_form": StaffTicketCommentForm(),
-            "assignment_form": StaffTicketAssignmentForm(instance=ticket),
-            "priority_form": StaffTicketPriorityForm(instance=ticket),
-            "resolution_note_form": resolution_note_form,
-        },
+        _staff_ticket_detail_context(ticket, resolution_note_form=resolution_note_form),
         status=400,
     )
 
@@ -521,28 +596,10 @@ def staff_comment_create(request, ticket_id):
             comment.save()
             return redirect("ticket_detail", id=ticket_id)
 
-        comments = ticket.comments.select_related("author").order_by("-created_at")
-        attachments = ticket.attachments.select_related("uploaded_by").order_by(
-            "-created_at"
-        )
-        history_entries = _ticket_history_entries(ticket)
-        status_options = TicketStatus.objects.filter(is_active=True).order_by(
-            "sort_order"
-        )
         return render(
             request,
             "tickets/ticket_detail.html",
-            {
-                "ticket": ticket,
-                "status_options": status_options,
-                "comments": comments,
-                "attachments": attachments,
-                "history_entries": history_entries,
-                "comment_form": comment_form,
-                "assignment_form": StaffTicketAssignmentForm(instance=ticket),
-                "priority_form": StaffTicketPriorityForm(instance=ticket),
-                "resolution_note_form": StaffTicketResolutionNoteForm(),
-            },
+            _staff_ticket_detail_context(ticket, comment_form=comment_form),
             status=400,
         )
 

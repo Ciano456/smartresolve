@@ -54,6 +54,19 @@
                                         <dd class="mt-2 font-bold text-slate-900">{{ ticket.created_at|date:"d M Y" }}</dd>
                                     </div>
                                 </dl>
+
+                                {% if ticket.resolution_summary or ticket.cancellation_reason %}
+                                <section class="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                                    {% if ticket.resolution_summary %}
+                                    <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Resolution Summary</p>
+                                    <p class="mt-2 whitespace-pre-line text-slate-700">{{ ticket.resolution_summary }}</p>
+                                    {% endif %}
+                                    {% if ticket.cancellation_reason %}
+                                    <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Cancellation Reason</p>
+                                    <p class="mt-2 whitespace-pre-line text-slate-700">{{ ticket.cancellation_reason }}</p>
+                                    {% endif %}
+                                </section>
+                                {% endif %}
                             </article>
 
                             <article class="rounded-2xl bg-white p-6 shadow-card">

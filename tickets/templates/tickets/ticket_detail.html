@@ -38,6 +38,19 @@
                                     <div class="rounded-xl bg-slate-50 p-4"><dt class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">System</dt><dd class="mt-2 font-bold">{{ ticket.ticket_system.name }}</dd></div>
                                 </dl>
 
+                                {% if ticket.resolution_summary or ticket.cancellation_reason %}
+                                <section class="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                                    {% if ticket.resolution_summary %}
+                                    <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Resolution Summary</p>
+                                    <p class="mt-2 whitespace-pre-line text-slate-700">{{ ticket.resolution_summary }}</p>
+                                    {% endif %}
+                                    {% if ticket.cancellation_reason %}
+                                    <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Cancellation Reason</p>
+                                    <p class="mt-2 whitespace-pre-line text-slate-700">{{ ticket.cancellation_reason }}</p>
+                                    {% endif %}
+                                </section>
+                                {% endif %}
+
                                 <form method="post" class="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-5">
                                     {% csrf_token %}
                                     <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -175,6 +188,38 @@
                                 </div>
                                 <button type="submit" class="mt-4 w-full rounded-lg bg-slate-900 px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-slate-700">
                                     Add Resolution Note
+                                </button>
+                            </form>
+
+                            <form method="post" action="{% url 'ticket_resolve' ticket.id %}" class="rounded-2xl bg-white p-6 shadow-card">
+                                {% csrf_token %}
+                                <h2 class="text-xl font-bold">Resolve Ticket</h2>
+                                {% if resolve_form.non_field_errors %}
+                                <div class="mt-3 text-sm font-semibold text-rose-600">{{ resolve_form.non_field_errors }}</div>
+                                {% endif %}
+                                <div class="mt-4">
+                                    <label for="{{ resolve_form.resolution_summary.id_for_label }}" class="block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Resolution Summary</label>
+                                    {{ resolve_form.resolution_summary }}
+                                    {{ resolve_form.resolution_summary.errors }}
+                                </div>
+                                <button type="submit" class="mt-4 w-full rounded-lg bg-emerald-700 px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-emerald-800">
+                                    Resolve Ticket
+                                </button>
+                            </form>
+
+                            <form method="post" action="{% url 'ticket_cancel' ticket.id %}" class="rounded-2xl bg-white p-6 shadow-card">
+                                {% csrf_token %}
+                                <h2 class="text-xl font-bold">Cancel Ticket</h2>
+                                {% if cancel_form.non_field_errors %}
+                                <div class="mt-3 text-sm font-semibold text-rose-600">{{ cancel_form.non_field_errors }}</div>
+                                {% endif %}
+                                <div class="mt-4">
+                                    <label for="{{ cancel_form.cancellation_reason.id_for_label }}" class="block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Cancellation Reason</label>
+                                    {{ cancel_form.cancellation_reason }}
+                                    {{ cancel_form.cancellation_reason.errors }}
+                                </div>
+                                <button type="submit" class="mt-4 w-full rounded-lg bg-rose-700 px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-rose-800">
+                                    Cancel Ticket
                                 </button>
                             </form>
 

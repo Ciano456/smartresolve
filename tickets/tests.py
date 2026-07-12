@@ -299,6 +299,7 @@ class TicketStaffViewTests(TestCase):
         self.open_status = TicketStatus.objects.get(code="OPEN")
         self.in_progress_status = TicketStatus.objects.get(code="IN_PROGRESS")
         self.closed_status = TicketStatus.objects.get(code="CLOSED")
+        self.cancelled_status = TicketStatus.objects.get(code="CANCELLED")
         self.ticket = Ticket.objects.create(
             title="Staff status test",
             description="Ticket used for staff status update tests.",
@@ -352,18 +353,222 @@ class TicketStaffViewTests(TestCase):
             ).exists()
         )
 
-    def test_admin_closing_ticket_sets_closed_at(self):
-        # Closed statuses should trigger the model-level closed_at timestamp.
+    def test_closed_status_requires_dedicated_resolve_action(self):
         self.client.force_login(self.admin_user)
         response = self.client.post(
             reverse("ticket_detail", args=[self.ticket.id]),
             {"ticket_status": self.closed_status.id},
         )
 
+        self.assertEqual(response.status_code, 400)
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_status, self.open_status)
+        self.assertIsNone(self.ticket.closed_at)
+        self.assertContains(
+            response,
+            "Select a valid ticket status.",
+            status_code=400,
+        )
+
+    def test_cancelled_status_requires_dedicated_cancel_action(self):
+        self.client.force_login(self.admin_user)
+        response = self.client.post(
+            reverse("ticket_detail", args=[self.ticket.id]),
+            {"ticket_status": self.cancelled_status.id},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_status, self.open_status)
+        self.assertIsNone(self.ticket.closed_at)
+        self.assertContains(
+            response,
+            "Select a valid ticket status.",
+            status_code=400,
+        )
+
+    def test_support_staff_can_resolve_ticket_with_summary(self):
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("ticket_resolve", args=[self.ticket.id]),
+            {"resolution_summary": "Resolved by clearing cached credentials."},
+        )
+
         self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
         self.ticket.refresh_from_db()
         self.assertEqual(self.ticket.ticket_status, self.closed_status)
+        self.assertEqual(
+            self.ticket.resolution_summary,
+            "Resolved by clearing cached credentials.",
+        )
+        self.assertEqual(self.ticket.cancellation_reason, "")
         self.assertIsNotNone(self.ticket.closed_at)
+        self.assertFalse(
+            TicketComment.objects.filter(
+                ticket=self.ticket,
+                body="Resolved by clearing cached credentials.",
+            ).exists()
+        )
+        self.assertTrue(
+            TicketHistory.objects.filter(
+                ticket=self.ticket,
+                changed_by=self.support_user,
+                change_type="RESOLVED",
+                field_name="ticket_status",
+                old_value="Open",
+                new_value="Closed",
+            ).exists()
+        )
+
+    def test_blank_resolution_summary_is_rejected(self):
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("ticket_resolve", args=[self.ticket.id]),
+            {"resolution_summary": ""},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_status, self.open_status)
+        self.assertEqual(self.ticket.resolution_summary, "")
+        self.assertFalse(
+            TicketHistory.objects.filter(
+                ticket=self.ticket,
+                change_type="RESOLVED",
+            ).exists()
+        )
+
+    def test_submitter_cannot_resolve_ticket(self):
+        self.client.force_login(self.submitter_user)
+        response = self.client.post(
+            reverse("ticket_resolve", args=[self.ticket.id]),
+            {"resolution_summary": "Submitter should not resolve this."},
+        )
+
+        self.assertRedirects(response, reverse("profile"))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_status, self.open_status)
+        self.assertEqual(self.ticket.resolution_summary, "")
+        self.assertFalse(TicketHistory.objects.filter(ticket=self.ticket).exists())
+
+    def test_closed_ticket_cannot_be_resolved_again(self):
+        self.ticket.ticket_status = self.closed_status
+        self.ticket.resolution_summary = "Already resolved."
+        self.ticket.save()
+
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("ticket_resolve", args=[self.ticket.id]),
+            {"resolution_summary": "Duplicate resolution."},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.resolution_summary, "Already resolved.")
+        self.assertFalse(
+            TicketHistory.objects.filter(
+                ticket=self.ticket,
+                change_type="RESOLVED",
+            ).exists()
+        )
+
+    def test_admin_can_cancel_ticket_with_reason(self):
+        self.client.force_login(self.admin_user)
+        response = self.client.post(
+            reverse("ticket_cancel", args=[self.ticket.id]),
+            {"cancellation_reason": "Duplicate request raised by mistake."},
+        )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_status, self.cancelled_status)
+        self.assertEqual(
+            self.ticket.cancellation_reason,
+            "Duplicate request raised by mistake.",
+        )
+        self.assertEqual(self.ticket.resolution_summary, "")
+        self.assertIsNotNone(self.ticket.closed_at)
+        self.assertFalse(
+            TicketComment.objects.filter(
+                ticket=self.ticket,
+                body="Ticket cancelled: Duplicate request raised by mistake.",
+            ).exists()
+        )
+        self.assertTrue(
+            TicketHistory.objects.filter(
+                ticket=self.ticket,
+                changed_by=self.admin_user,
+                change_type="CANCELLED",
+                field_name="ticket_status",
+                old_value="Open",
+                new_value="Cancelled",
+            ).exists()
+        )
+
+    def test_blank_cancellation_reason_is_rejected(self):
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("ticket_cancel", args=[self.ticket.id]),
+            {"cancellation_reason": ""},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_status, self.open_status)
+        self.assertEqual(self.ticket.cancellation_reason, "")
+        self.assertFalse(
+            TicketHistory.objects.filter(
+                ticket=self.ticket,
+                change_type="CANCELLED",
+            ).exists()
+        )
+
+    def test_submitter_cannot_cancel_ticket(self):
+        self.client.force_login(self.submitter_user)
+        response = self.client.post(
+            reverse("ticket_cancel", args=[self.ticket.id]),
+            {"cancellation_reason": "Submitter should not cancel this."},
+        )
+
+        self.assertRedirects(response, reverse("profile"))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_status, self.open_status)
+        self.assertEqual(self.ticket.cancellation_reason, "")
+        self.assertFalse(TicketHistory.objects.filter(ticket=self.ticket).exists())
+
+    def test_closed_ticket_cannot_be_cancelled_again(self):
+        self.ticket.ticket_status = self.cancelled_status
+        self.ticket.cancellation_reason = "Already cancelled."
+        self.ticket.save()
+
+        self.client.force_login(self.support_user)
+        response = self.client.post(
+            reverse("ticket_cancel", args=[self.ticket.id]),
+            {"cancellation_reason": "Duplicate cancellation."},
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.cancellation_reason, "Already cancelled.")
+        self.assertFalse(
+            TicketHistory.objects.filter(
+                ticket=self.ticket,
+                change_type="CANCELLED",
+            ).exists()
+        )
+
+    def test_resolve_and_cancel_get_redirect_to_ticket_detail(self):
+        self.client.force_login(self.support_user)
+
+        resolve_response = self.client.get(
+            reverse("ticket_resolve", args=[self.ticket.id])
+        )
+        cancel_response = self.client.get(
+            reverse("ticket_cancel", args=[self.ticket.id])
+        )
+
+        self.assertRedirects(resolve_response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.assertRedirects(cancel_response, reverse("ticket_detail", args=[self.ticket.id]))
 
     def test_submitter_cannot_update_ticket_status_from_staff_view(self):
         # Submitters must not be able to use the staff ticket detail POST endpoint.
@@ -1205,6 +1410,29 @@ class TicketCommentVisibilityTests(TestCase):
         response = self.client.get(reverse("my_ticket_detail", args=[self.ticket.id]))
 
         self.assertContains(response, "Public resolution note for submitter.")
+
+    def test_resolution_summary_is_visible_to_submitter(self):
+        self.ticket.resolution_summary = "Resolved by resetting the account lockout."
+        self.ticket.save()
+
+        self.client.force_login(self.submitter_user)
+        response = self.client.get(reverse("my_ticket_detail", args=[self.ticket.id]))
+
+        self.assertContains(response, "Resolution Summary")
+        self.assertContains(response, "Resolved by resetting the account lockout.")
+
+    def test_cancellation_reason_is_visible_to_submitter(self):
+        self.ticket.cancellation_reason = "Request cancelled because access is no longer needed."
+        self.ticket.save()
+
+        self.client.force_login(self.submitter_user)
+        response = self.client.get(reverse("my_ticket_detail", args=[self.ticket.id]))
+
+        self.assertContains(response, "Cancellation Reason")
+        self.assertContains(
+            response,
+            "Request cancelled because access is no longer needed.",
+        )
 
     def test_blank_resolution_note_is_rejected(self):
         self.client.force_login(self.support_user)

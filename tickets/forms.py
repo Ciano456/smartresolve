@@ -11,7 +11,6 @@ from django.forms import ModelForm
 from .models import Ticket, TicketAttachment, TicketComment, TicketPriority
 
 
-# Forms for creating and updating tickets, comments, and attachments
 class TicketForm(ModelForm):
     class Meta:
         model = Ticket
@@ -40,6 +39,48 @@ class StaffTicketResolutionNoteForm(ModelForm):
     class Meta:
         model = TicketComment
         fields = ["body"]
+
+
+class StaffTicketResolveForm(ModelForm):
+    class Meta:
+        model = Ticket
+        fields = ["resolution_summary"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["resolution_summary"].required = True
+        self.fields["resolution_summary"].widget.attrs.update(
+            {
+                "class": (
+                    "mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 "
+                    "py-3 text-base font-semibold text-slate-800 shadow-sm "
+                    "focus:border-[#0756f8] focus:outline-none "
+                    "focus:ring-2 focus:ring-[#0756f8]/20"
+                ),
+                "rows": 4,
+            }
+        )
+
+
+class StaffTicketCancelForm(ModelForm):
+    class Meta:
+        model = Ticket
+        fields = ["cancellation_reason"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["cancellation_reason"].required = True
+        self.fields["cancellation_reason"].widget.attrs.update(
+            {
+                "class": (
+                    "mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 "
+                    "py-3 text-base font-semibold text-slate-800 shadow-sm "
+                    "focus:border-[#0756f8] focus:outline-none "
+                    "focus:ring-2 focus:ring-[#0756f8]/20"
+                ),
+                "rows": 4,
+            }
+        )
 
 
 class StaffTicketAssignmentForm(ModelForm):
