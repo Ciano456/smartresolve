@@ -51,6 +51,7 @@ GRAPH_SEND_MAIL_URL = (
     if GRAPH_SENDER_USER
     else ""
 )
+IT_SUPPORT_EMAIL = os.getenv("IT_SUPPORT_EMAIL", "").strip()
 
 
 # Application definition

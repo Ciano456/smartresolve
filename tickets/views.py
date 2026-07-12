@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.dateparse import parse_date
 
 from accounts.decorators import admin_or_support_staff_required, submitter_required
+from . import notifications as ticket_notifications
 
 from .forms import (
     StaffTicketCancelForm,
@@ -156,6 +157,10 @@ def ticket_create(request):
                 new_value=f"Ticket created with title: {ticket.title}",
             )
             ticket_history.save()
+            ticket_notifications.notify_ticket_created(
+                ticket,
+                created_by_id=request.user.id,
+            )
             return redirect("my_ticket_detail", id=ticket.id)
         else:
             return render(request, "tickets/ticket_form.html", {"form": form})
@@ -374,6 +379,11 @@ def ticket_detail(request, id):
                 old_value=old_status.name,
                 new_value=new_status.name,
             )
+            ticket_notifications.notify_ticket_status_changed(
+                ticket_detail,
+                previous_status_name=old_status.name,
+                created_by_id=request.user.id,
+            )
         return redirect("ticket_detail", id=ticket_detail.id)
 
     return render(
@@ -407,6 +417,10 @@ def ticket_assignment_update(request, ticket_id):
                 field_name="assigned_to",
                 old_value=str(old_assignee) if old_assignee else "Unassigned",
                 new_value=str(new_assignee) if new_assignee else "Unassigned",
+            )
+            ticket_notifications.notify_ticket_assigned(
+                updated_ticket,
+                created_by_id=request.user.id,
             )
         return redirect("ticket_detail", id=ticket_id)
 
@@ -489,8 +503,12 @@ def ticket_resolve(request, ticket_id):
             changed_by=request.user,
             change_type="RESOLVED",
             field_name="ticket_status",
-            old_value=old_status.name,
-            new_value=closed_status.name,
+                old_value=old_status.name,
+                new_value=closed_status.name,
+            )
+        ticket_notifications.notify_ticket_resolved(
+            updated_ticket,
+            created_by_id=request.user.id,
         )
         return redirect("ticket_detail", id=ticket_id)
 
@@ -538,8 +556,12 @@ def ticket_cancel(request, ticket_id):
             changed_by=request.user,
             change_type="CANCELLED",
             field_name="ticket_status",
-            old_value=old_status.name,
-            new_value=cancelled_status.name,
+                old_value=old_status.name,
+                new_value=cancelled_status.name,
+            )
+        ticket_notifications.notify_ticket_cancelled(
+            updated_ticket,
+            created_by_id=request.user.id,
         )
         return redirect("ticket_detail", id=ticket_id)
 
@@ -565,6 +587,11 @@ def ticket_resolution_note_create(request, ticket_id):
         resolution_note.author = request.user
         resolution_note.is_internal = False
         resolution_note.save()
+        ticket_notifications.notify_public_comment(
+            ticket,
+            comment=resolution_note,
+            created_by_id=request.user.id,
+        )
         TicketHistory.objects.create(
             ticket=ticket,
             changed_by=request.user,
@@ -594,6 +621,12 @@ def staff_comment_create(request, ticket_id):
             comment.ticket = ticket
             comment.author = request.user
             comment.save()
+            if not comment.is_internal:
+                ticket_notifications.notify_public_comment(
+                    ticket,
+                    comment=comment,
+                    created_by_id=request.user.id,
+                )
             return redirect("ticket_detail", id=ticket_id)
 
         return render(

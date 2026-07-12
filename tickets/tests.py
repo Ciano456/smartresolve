@@ -3,8 +3,9 @@
 # Module: Final Year Project
 
 from datetime import timedelta
+from unittest.mock import patch
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from .models import Ticket, TicketType, TicketSystem, TicketPriority, TicketStatus, TicketComment, TicketAttachment, TicketHistory
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -14,6 +15,8 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .forms import TicketAttachmentForm
+from . import notifications as ticket_notifications
+from notifications.models import NotificationEvent
 
 
 class TicketModelTest(TestCase):
@@ -257,9 +260,17 @@ class TicketModelTest(TestCase):
         self.assertFalse(TicketHistory.objects.filter(id=ticket_history.id).exists())
         
         
+@override_settings(IT_SUPPORT_EMAIL="itsupport@test.com")
 class TicketStaffViewTests(TestCase):
     def setUp(self):
         User = get_user_model()
+        self.notification_send_patcher = patch(
+            "tickets.notifications.NotificationService.send_notification",
+            autospec=True,
+            return_value=None,
+        )
+        self.notification_send_patcher.start()
+        self.addCleanup(self.notification_send_patcher.stop)
         self.admin_group = Group.objects.create(name="Admin")
         self.submitter_group = Group.objects.create(name="Submitter")
         self.support_staff_group = Group.objects.create(name="Support Staff")
@@ -1075,6 +1086,338 @@ class TicketStaffViewTests(TestCase):
 
         self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
 
+    def test_ticket_create_triggers_notification_helper(self):
+        self.client.force_login(self.submitter_user)
+        with patch("tickets.views.ticket_notifications.notify_ticket_created") as notify_created:
+            response = self.client.post(
+                reverse("ticket_create"),
+                {
+                    "title": "Notification create test",
+                    "description": "Testing ticket creation notifications.",
+                    "ticket_priority": self.ticket_priority.id,
+                    "ticket_system": self.ticket_system.id,
+                    "ticket_type": self.ticket_type.id,
+                },
+            )
+
+        created_ticket = Ticket.objects.get(title="Notification create test")
+        self.assertRedirects(
+            response,
+            reverse("my_ticket_detail", args=[created_ticket.id]),
+        )
+        notify_created.assert_called_once_with(
+            created_ticket,
+            created_by_id=self.submitter_user.id,
+        )
+
+    def test_ticket_assignment_triggers_notification_helper(self):
+        self.client.force_login(self.support_user)
+        with patch("tickets.views.ticket_notifications.notify_ticket_assigned") as notify_assigned:
+            response = self.client.post(
+                reverse("ticket_assignment_update", args=[self.ticket.id]),
+                {"assigned_to": self.second_support_user.id},
+            )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.assigned_to, self.second_support_user)
+        notify_assigned.assert_called_once_with(
+            self.ticket,
+            created_by_id=self.support_user.id,
+        )
+
+    def test_status_change_triggers_notification_helper(self):
+        self.client.force_login(self.support_user)
+        with patch("tickets.views.ticket_notifications.notify_ticket_status_changed") as notify_status_changed:
+            response = self.client.post(
+                reverse("ticket_detail", args=[self.ticket.id]),
+                {"ticket_status": self.in_progress_status.id},
+            )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_status, self.in_progress_status)
+        notify_status_changed.assert_called_once()
+        self.assertEqual(
+            notify_status_changed.call_args.kwargs["previous_status_name"],
+            "Open",
+        )
+        self.assertEqual(
+            notify_status_changed.call_args.kwargs["created_by_id"],
+            self.support_user.id,
+        )
+
+    def test_public_staff_comment_triggers_notification_helper(self):
+        self.client.force_login(self.support_user)
+        with patch("tickets.views.ticket_notifications.notify_public_comment") as notify_public_comment:
+            response = self.client.post(
+                reverse("staff_comment_create", args=[self.ticket.id]),
+                {
+                    "body": "Public reply from staff.",
+                },
+            )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        comment = TicketComment.objects.get(
+            ticket=self.ticket,
+            author=self.support_user,
+            body="Public reply from staff.",
+        )
+        notify_public_comment.assert_called_once()
+        self.assertEqual(notify_public_comment.call_args.kwargs["comment"].id, comment.id)
+        self.assertEqual(
+            notify_public_comment.call_args.kwargs["created_by_id"],
+            self.support_user.id,
+        )
+
+    def test_internal_staff_comment_does_not_trigger_public_notification(self):
+        self.client.force_login(self.support_user)
+        with patch("tickets.views.ticket_notifications.notify_public_comment") as notify_public_comment:
+            response = self.client.post(
+                reverse("staff_comment_create", args=[self.ticket.id]),
+                {
+                    "body": "Internal note only.",
+                    "is_internal": "on",
+                },
+            )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.assertTrue(
+            TicketComment.objects.filter(
+                ticket=self.ticket,
+                author=self.support_user,
+                body="Internal note only.",
+                is_internal=True,
+            ).exists()
+        )
+        notify_public_comment.assert_not_called()
+
+    def test_resolve_triggers_notification_helper(self):
+        self.client.force_login(self.support_user)
+        with patch("tickets.views.ticket_notifications.notify_ticket_resolved") as notify_resolved:
+            response = self.client.post(
+                reverse("ticket_resolve", args=[self.ticket.id]),
+                {"resolution_summary": "Resolved after updating the account."},
+            )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_status, self.closed_status)
+        notify_resolved.assert_called_once_with(
+            self.ticket,
+            created_by_id=self.support_user.id,
+        )
+
+    def test_cancel_triggers_notification_helper(self):
+        self.client.force_login(self.admin_user)
+        with patch("tickets.views.ticket_notifications.notify_ticket_cancelled") as notify_cancelled:
+            response = self.client.post(
+                reverse("ticket_cancel", args=[self.ticket.id]),
+                {"cancellation_reason": "Request duplicated elsewhere."},
+            )
+
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.ticket.refresh_from_db()
+        self.assertEqual(self.ticket.ticket_status, self.cancelled_status)
+        notify_cancelled.assert_called_once_with(
+            self.ticket,
+            created_by_id=self.admin_user.id,
+        )
+
+
+@override_settings(IT_SUPPORT_EMAIL="itsupport@test.com")
+class TicketNotificationRecipientTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.submitter = User.objects.create_user(
+            email="recipient-submitter@test.com",
+            password="password123",
+        )
+        self.assignee = User.objects.create_user(
+            email="recipient-assignee@test.com",
+            password="password123",
+        )
+        self.staff_author = User.objects.create_user(
+            email="recipient-staff@test.com",
+            password="password123",
+        )
+        self.ticket_type = TicketType.objects.get(code="INCIDENT")
+        self.ticket_system = TicketSystem.objects.get(code="SOFTWARE")
+        self.ticket_priority = TicketPriority.objects.get(code="MEDIUM")
+        self.open_status = TicketStatus.objects.get(code="OPEN")
+        self.in_progress_status = TicketStatus.objects.get(code="IN_PROGRESS")
+        self.closed_status = TicketStatus.objects.get(code="CLOSED")
+
+    def _create_ticket(self, *, assigned_to=None, status=None):
+        return Ticket.objects.create(
+            title="Recipient rule ticket",
+            description="Ticket used to verify notification recipient rules.",
+            submitter=self.submitter,
+            assigned_to=assigned_to,
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=status or self.open_status,
+        )
+
+    def _recipient_emails(self, mocked_send):
+        return [call_args.kwargs["recipient_email"] for call_args in mocked_send.call_args_list]
+
+    def test_created_ticket_notifies_assignee_and_support_inbox(self):
+        ticket = self._create_ticket(assigned_to=self.assignee)
+
+        with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+            ticket_notifications.notify_ticket_created(
+                ticket,
+                created_by_id=self.submitter.id,
+            )
+
+        self.assertEqual(
+            self._recipient_emails(mocked_send),
+            [self.assignee.email, "itsupport@test.com"],
+        )
+        self.assertEqual(
+            mocked_send.call_args_list[0].kwargs["event_type"],
+            NotificationEvent.EventType.TICKET_CREATED,
+        )
+        self.assertEqual(
+            mocked_send.call_args_list[0].kwargs["context"]["subject"],
+            f"New ticket created: {ticket.ticket_number}",
+        )
+
+    def test_created_ticket_without_assignee_notifies_support_only(self):
+        ticket = self._create_ticket()
+
+        with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+            ticket_notifications.notify_ticket_created(
+                ticket,
+                created_by_id=self.submitter.id,
+            )
+
+        self.assertEqual(
+            self._recipient_emails(mocked_send),
+            ["itsupport@test.com"],
+        )
+
+    def test_created_ticket_without_support_inbox_still_notifies_assignee(self):
+        ticket = self._create_ticket(assigned_to=self.assignee)
+
+        with override_settings(IT_SUPPORT_EMAIL=""):
+            with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+                ticket_notifications.notify_ticket_created(
+                    ticket,
+                    created_by_id=self.submitter.id,
+                )
+
+        self.assertEqual(self._recipient_emails(mocked_send), [self.assignee.email])
+
+    def test_assignment_notifies_assignee_only(self):
+        ticket = self._create_ticket(assigned_to=self.assignee)
+
+        with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+            ticket_notifications.notify_ticket_assigned(
+                ticket,
+                created_by_id=self.staff_author.id,
+            )
+
+        self.assertEqual(self._recipient_emails(mocked_send), [self.assignee.email])
+        self.assertEqual(
+            mocked_send.call_args_list[0].kwargs["event_type"],
+            NotificationEvent.EventType.TICKET_ASSIGNED,
+        )
+
+    def test_public_comment_notifies_submitter_and_assignee(self):
+        ticket = self._create_ticket(assigned_to=self.assignee)
+        comment = TicketComment.objects.create(
+            ticket=ticket,
+            author=self.staff_author,
+            body="Public update for the submitter.",
+            is_internal=False,
+        )
+
+        with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+            ticket_notifications.notify_public_comment(
+                ticket,
+                comment=comment,
+                created_by_id=self.staff_author.id,
+            )
+
+        self.assertEqual(
+            self._recipient_emails(mocked_send),
+            [self.submitter.email, self.assignee.email],
+        )
+        self.assertEqual(
+            mocked_send.call_args_list[0].kwargs["event_type"],
+            NotificationEvent.EventType.TICKET_COMMENTED,
+        )
+
+    def test_public_comment_skips_the_comment_author(self):
+        ticket = self._create_ticket(assigned_to=self.assignee)
+        comment = TicketComment.objects.create(
+            ticket=ticket,
+            author=self.submitter,
+            body="Submitter follow-up.",
+            is_internal=False,
+        )
+
+        with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+            ticket_notifications.notify_public_comment(
+                ticket,
+                comment=comment,
+                created_by_id=self.submitter.id,
+            )
+
+        self.assertEqual(self._recipient_emails(mocked_send), [self.assignee.email])
+
+    def test_internal_comment_does_not_send_notification(self):
+        ticket = self._create_ticket(assigned_to=self.assignee)
+        comment = TicketComment.objects.create(
+            ticket=ticket,
+            author=self.staff_author,
+            body="Internal note only.",
+            is_internal=True,
+        )
+
+        with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+            if not comment.is_internal:
+                ticket_notifications.notify_public_comment(
+                    ticket,
+                    comment=comment,
+                    created_by_id=self.staff_author.id,
+                )
+
+        mocked_send.assert_not_called()
+
+    def test_resolved_notifies_support_inbox_only(self):
+        ticket = self._create_ticket(status=self.in_progress_status)
+        ticket.ticket_status = self.closed_status
+
+        with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+            ticket_notifications.notify_ticket_resolved(
+                ticket,
+                created_by_id=self.staff_author.id,
+            )
+
+        self.assertEqual(
+            self._recipient_emails(mocked_send),
+            ["itsupport@test.com"],
+        )
+
+    def test_cancelled_notifies_support_inbox_only(self):
+        ticket = self._create_ticket(status=self.in_progress_status)
+        ticket.ticket_status = self.closed_status
+
+        with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+            ticket_notifications.notify_ticket_cancelled(
+                ticket,
+                created_by_id=self.staff_author.id,
+            )
+
+        self.assertEqual(
+            self._recipient_emails(mocked_send),
+            ["itsupport@test.com"],
+        )
+
 
 class TicketAttachmentDownloadTests(TestCase):
     def setUp(self):
@@ -1199,9 +1542,17 @@ class TicketAttachmentDownloadTests(TestCase):
         self.assertIn("File size must be less than 5 MB", form.errors["file"])
 
 
+@override_settings(IT_SUPPORT_EMAIL="itsupport@test.com")
 class TicketCommentVisibilityTests(TestCase):
     def setUp(self):
         User = get_user_model()
+        self.notification_send_patcher = patch(
+            "tickets.notifications.NotificationService.send_notification",
+            autospec=True,
+            return_value=None,
+        )
+        self.notification_send_patcher.start()
+        self.addCleanup(self.notification_send_patcher.stop)
         self.admin_group = Group.objects.create(name="Admin")
         self.submitter_group = Group.objects.create(name="Submitter")
         self.support_staff_group = Group.objects.create(name="Support Staff")

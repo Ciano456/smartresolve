@@ -93,6 +93,7 @@ GRAPH_TENANT_ID=your-tenant-id
 GRAPH_CLIENT_ID=your-client-id
 GRAPH_CLIENT_SECRET=your-client-secret
 GRAPH_SENDER_USER=sender@yourdomain.com
+IT_SUPPORT_EMAIL=itsupport@premierlifesciences.ie
 ```
 
 ## Database Setup
