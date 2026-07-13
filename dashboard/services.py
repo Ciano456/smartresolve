@@ -4,8 +4,10 @@
 
 from __future__ import annotations
 
+import csv
 from datetime import date
 from datetime import timedelta
+from io import StringIO
 from typing import Any
 
 from django.db.models import (
@@ -18,6 +20,7 @@ from django.db.models import (
     Q,
 )
 from django.db.models.functions import TruncMonth
+from django.http import HttpResponse
 from django.utils import timezone
 
 from tickets.models import Ticket
@@ -132,6 +135,73 @@ def _build_resolution_trend(queryset: QuerySet[Ticket]) -> dict[str, list[Any]]:
         "labels": [month.strftime("%b %Y") for month in months],
         "counts": [trend_map.get(month, 0) for month in months],
     }
+
+
+def _ticket_export_rows(queryset: QuerySet[Ticket]) -> list[dict[str, str]]:
+    rows = []
+    for ticket in queryset.select_related(
+        "ticket_type",
+        "ticket_system",
+        "ticket_priority",
+        "ticket_status",
+        "submitter",
+        "assigned_to",
+    ).order_by("-updated_at"):
+        rows.append(
+            {
+                "ticket_number": ticket.ticket_number,
+                "title": ticket.title,
+                "type": ticket.ticket_type.name,
+                "system": ticket.ticket_system.name,
+                "priority": ticket.ticket_priority.name,
+                "status": ticket.ticket_status.name,
+                "submitter": ticket.submitter.email,
+                "assignee": ticket.assigned_to.email if ticket.assigned_to else "",
+                "created": ticket.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                "updated": ticket.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
+                "closed": ticket.closed_at.strftime("%Y-%m-%d %H:%M:%S")
+                if ticket.closed_at
+                else "",
+            }
+        )
+    return rows
+
+
+def build_dashboard_export_response() -> HttpResponse:
+    tickets = Ticket.objects.select_related(
+        "ticket_status",
+        "ticket_priority",
+        "ticket_type",
+        "ticket_system",
+        "assigned_to",
+        "submitter",
+    )
+    export_rows = _ticket_export_rows(tickets)
+
+    buffer = StringIO()
+    writer = csv.DictWriter(
+        buffer,
+        fieldnames=[
+            "ticket_number",
+            "title",
+            "type",
+            "system",
+            "priority",
+            "status",
+            "submitter",
+            "assignee",
+            "created",
+            "updated",
+            "closed",
+        ],
+        lineterminator="\n",
+    )
+    writer.writeheader()
+    writer.writerows(export_rows)
+
+    response = HttpResponse(buffer.getvalue(), content_type="text/csv")
+    response["Content-Disposition"] = 'attachment; filename="dashboard-report.csv"'
+    return response
 
 
 def build_dashboard_context() -> dict[str, Any]:
