@@ -2,7 +2,9 @@
 # Student Number: x22109668
 # Module: Final Year Project
 
+import csv
 from datetime import timedelta
+from io import StringIO
 
 from django.contrib.auth.models import Group
 from django.test import TestCase
@@ -10,6 +12,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from accounts.models import User
+from dashboard.services import CSV_EXPORT_FIELDNAMES
 from tickets.models import (
     Ticket,
     TicketPriority,
@@ -185,3 +188,115 @@ class DashboardViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "dashboard/dashboard.html")
+
+
+class DashboardExportViewTests(TestCase):
+    def setUp(self) -> None:
+        self.submitter_group = Group.objects.create(name="Submitter")
+        self.support_group = Group.objects.create(name="Support Staff")
+        self.admin_group = Group.objects.create(name="Admin")
+
+        self.submitter = User.objects.create_user(
+            email="submitter@test.com",
+            password="password123",
+        )
+        self.submitter.groups.add(self.submitter_group)
+
+        self.support_user = User.objects.create_user(
+            email="support@test.com",
+            password="password123",
+        )
+        self.support_user.groups.add(self.support_group)
+
+        self.admin_user = User.objects.create_user(
+            email="admin@test.com",
+            password="password123",
+        )
+        self.admin_user.groups.add(self.admin_group)
+
+        self.ticket_type_incident = TicketType.objects.get(code="INCIDENT")
+        self.ticket_system_network = TicketSystem.objects.get(code="NETWORK")
+        self.ticket_priority_high = TicketPriority.objects.get(code="HIGH")
+        self.status_open = TicketStatus.objects.get(code="OPEN")
+
+        self.assignee = User.objects.create_user(
+            email="staff@test.com",
+            password="password123",
+        )
+        self.assignee.groups.add(self.support_group)
+
+        self.ticket = Ticket.objects.create(
+            title="Export ticket",
+            description="Export ticket description",
+            submitter=self.submitter,
+            assigned_to=self.assignee,
+            ticket_type=self.ticket_type_incident,
+            ticket_system=self.ticket_system_network,
+            ticket_priority=self.ticket_priority_high,
+            ticket_status=self.status_open,
+        )
+
+    def test_export_requires_login(self) -> None:
+        response = self.client.get(reverse("dashboard_export"))
+        self.assertRedirects(response, "/accounts/login/")
+
+    def test_submitter_is_redirected_from_export(self) -> None:
+        self.client.force_login(self.submitter)
+        response = self.client.get(reverse("dashboard_export"))
+        self.assertRedirects(response, "/accounts/profile/")
+
+    def test_support_staff_can_download_csv_export(self) -> None:
+        self.client.force_login(self.support_user)
+        response = self.client.get(reverse("dashboard_export"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/csv")
+        self.assertEqual(
+            response["Content-Disposition"],
+            'attachment; filename="dashboard-report.csv"',
+        )
+
+        reader = csv.reader(StringIO(response.content.decode("utf-8")))
+        rows = list(reader)
+
+        self.assertEqual(
+            rows[0],
+            CSV_EXPORT_FIELDNAMES,
+        )
+        self.assertEqual(rows[1][0], self.ticket.ticket_number)
+        self.assertEqual(rows[1][1], "Export ticket")
+        self.assertEqual(rows[1][2], "Incident")
+        self.assertEqual(rows[1][3], "Network")
+        self.assertEqual(rows[1][4], "High")
+        self.assertEqual(rows[1][5], "Open")
+        self.assertEqual(rows[1][6], "submitter@test.com")
+        self.assertEqual(rows[1][7], "staff@test.com")
+        self.assertEqual(rows[1][10], "")
+
+    def test_csv_export_escapes_formula_like_values(self) -> None:
+        malicious_ticket = Ticket.objects.create(
+            title='=HYPERLINK("https://example.com","click")',
+            description="Malicious export title",
+            submitter=self.submitter,
+            assigned_to=self.assignee,
+            ticket_type=self.ticket_type_incident,
+            ticket_system=self.ticket_system_network,
+            ticket_priority=self.ticket_priority_high,
+            ticket_status=self.status_open,
+        )
+
+        self.client.force_login(self.support_user)
+        response = self.client.get(reverse("dashboard_export"))
+
+        reader = csv.reader(StringIO(response.content.decode("utf-8")))
+        rows = list(reader)
+        exported_titles = [row[1] for row in rows[1:]]
+
+        self.assertIn(f"'{malicious_ticket.title}", exported_titles)
+        self.assertNotIn(malicious_ticket.title, exported_titles)
+
+    def test_admin_can_download_csv_export(self) -> None:
+        self.client.force_login(self.admin_user)
+        response = self.client.get(reverse("dashboard_export"))
+
+        self.assertEqual(response.status_code, 200)

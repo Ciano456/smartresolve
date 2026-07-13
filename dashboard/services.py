@@ -4,8 +4,10 @@
 
 from __future__ import annotations
 
+import csv
 from datetime import date
 from datetime import timedelta
+from io import StringIO
 from typing import Any
 
 from django.db.models import (
@@ -18,9 +20,26 @@ from django.db.models import (
     Q,
 )
 from django.db.models.functions import TruncMonth
+from django.http import HttpResponse
 from django.utils import timezone
 
 from tickets.models import Ticket
+
+CSV_DANGEROUS_PREFIXES = ("=", "+", "-", "@")
+CSV_EXPORT_FIELDNAMES = [
+    "ticket_number",
+    "title",
+    "type",
+    "system",
+    "priority",
+    "status",
+    "submitter",
+    "assignee",
+    "created",
+    "updated",
+    "closed",
+]
+CSV_EXPORT_FILENAME = "dashboard-report.csv"
 
 
 def _ticket_percentage(count: int, total: int) -> int:
@@ -132,6 +151,74 @@ def _build_resolution_trend(queryset: QuerySet[Ticket]) -> dict[str, list[Any]]:
         "labels": [month.strftime("%b %Y") for month in months],
         "counts": [trend_map.get(month, 0) for month in months],
     }
+
+
+def _sanitize_csv_value(value: str) -> str:
+    stripped_value = value.lstrip()
+    if stripped_value and stripped_value[0] in CSV_DANGEROUS_PREFIXES:
+        return f"'{value}"
+    return value
+
+
+def _ticket_export_rows(queryset: QuerySet[Ticket]) -> list[dict[str, str]]:
+    rows: list[dict[str, str]] = []
+    for ticket in queryset.select_related(
+        "ticket_type",
+        "ticket_system",
+        "ticket_priority",
+        "ticket_status",
+        "submitter",
+        "assigned_to",
+    ).order_by("-updated_at"):
+        rows.append(
+            {
+                "ticket_number": _sanitize_csv_value(ticket.ticket_number),
+                "title": _sanitize_csv_value(ticket.title),
+                "type": _sanitize_csv_value(ticket.ticket_type.name),
+                "system": _sanitize_csv_value(ticket.ticket_system.name),
+                "priority": _sanitize_csv_value(ticket.ticket_priority.name),
+                "status": _sanitize_csv_value(ticket.ticket_status.name),
+                "submitter": _sanitize_csv_value(ticket.submitter.email),
+                "assignee": (
+                    _sanitize_csv_value(ticket.assigned_to.email)
+                    if ticket.assigned_to
+                    else ""
+                ),
+                "created": ticket.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+                "updated": ticket.updated_at.strftime("%Y-%m-%d %H:%M:%S"),
+                "closed": (
+                    ticket.closed_at.strftime("%Y-%m-%d %H:%M:%S")
+                    if ticket.closed_at
+                    else ""
+                ),
+            }
+        )
+    return rows
+
+
+def build_dashboard_export_response() -> HttpResponse:
+    tickets = Ticket.objects.select_related(
+        "ticket_status",
+        "ticket_priority",
+        "ticket_type",
+        "ticket_system",
+        "assigned_to",
+        "submitter",
+    )
+    export_rows = _ticket_export_rows(tickets)
+
+    buffer = StringIO()
+    writer = csv.DictWriter(
+        buffer,
+        fieldnames=CSV_EXPORT_FIELDNAMES,
+        lineterminator="\n",
+    )
+    writer.writeheader()
+    writer.writerows(export_rows)
+
+    response = HttpResponse(buffer.getvalue(), content_type="text/csv")
+    response["Content-Disposition"] = f'attachment; filename="{CSV_EXPORT_FILENAME}"'
+    return response
 
 
 def build_dashboard_context() -> dict[str, Any]:

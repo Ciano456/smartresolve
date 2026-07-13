@@ -22,6 +22,13 @@
                 {{ chart_data|json_script:"dashboard-chart-data" }}
 
                 <section class="space-y-8 p-5 md:p-8">
+                    <div class="flex justify-end">
+                        <a href="{% url 'dashboard_export' %}" class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
+                            <span aria-hidden="true">⇩</span>
+                            Export CSV
+                        </a>
+                    </div>
+
                     <div class="grid gap-5 xl:grid-cols-4">
                         <article class="rounded-[22px] bg-white p-6 shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
                             <p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Open tickets</p>
