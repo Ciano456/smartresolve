@@ -3,8 +3,8 @@
 # Module: Final Year Project
 
 import csv
-from io import StringIO
 from datetime import timedelta
+from io import StringIO
 
 from django.contrib.auth.models import Group
 from django.test import TestCase
@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from accounts.models import User
+from dashboard.services import CSV_EXPORT_FIELDNAMES
 from tickets.models import (
     Ticket,
     TicketPriority,
@@ -260,19 +261,7 @@ class DashboardExportViewTests(TestCase):
 
         self.assertEqual(
             rows[0],
-            [
-                "ticket_number",
-                "title",
-                "type",
-                "system",
-                "priority",
-                "status",
-                "submitter",
-                "assignee",
-                "created",
-                "updated",
-                "closed",
-            ],
+            CSV_EXPORT_FIELDNAMES,
         )
         self.assertEqual(rows[1][0], self.ticket.ticket_number)
         self.assertEqual(rows[1][1], "Export ticket")
@@ -283,6 +272,28 @@ class DashboardExportViewTests(TestCase):
         self.assertEqual(rows[1][6], "submitter@test.com")
         self.assertEqual(rows[1][7], "staff@test.com")
         self.assertEqual(rows[1][10], "")
+
+    def test_csv_export_escapes_formula_like_values(self) -> None:
+        malicious_ticket = Ticket.objects.create(
+            title='=HYPERLINK("https://example.com","click")',
+            description="Malicious export title",
+            submitter=self.submitter,
+            assigned_to=self.assignee,
+            ticket_type=self.ticket_type_incident,
+            ticket_system=self.ticket_system_network,
+            ticket_priority=self.ticket_priority_high,
+            ticket_status=self.status_open,
+        )
+
+        self.client.force_login(self.support_user)
+        response = self.client.get(reverse("dashboard_export"))
+
+        reader = csv.reader(StringIO(response.content.decode("utf-8")))
+        rows = list(reader)
+        exported_titles = [row[1] for row in rows[1:]]
+
+        self.assertIn(f"'{malicious_ticket.title}", exported_titles)
+        self.assertNotIn(malicious_ticket.title, exported_titles)
 
     def test_admin_can_download_csv_export(self) -> None:
         self.client.force_login(self.admin_user)
