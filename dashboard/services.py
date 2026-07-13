@@ -1,0 +1,184 @@
+# Student Name: Cian O'Connor
+# Student Number: x22109668
+# Module: Final Year Project
+
+from __future__ import annotations
+
+from datetime import date
+from datetime import timedelta
+from typing import Any
+
+from django.db.models import (
+    Avg,
+    Count,
+    DurationField,
+    ExpressionWrapper,
+    F,
+    QuerySet,
+    Q,
+)
+from django.db.models.functions import TruncMonth
+from django.utils import timezone
+
+from tickets.models import Ticket
+
+
+def _ticket_percentage(count: int, total: int) -> int:
+    if total == 0:
+        return 0
+    return round((count / total) * 100)
+
+
+def _format_duration(duration: timedelta | None) -> str | None:
+    if duration is None:
+        return None
+
+    total_seconds = int(duration.total_seconds())
+    if total_seconds < 0:
+        return None
+
+    days, remainder = divmod(total_seconds, 24 * 60 * 60)
+    hours, remainder = divmod(remainder, 60 * 60)
+    minutes = remainder // 60
+
+    parts: list[str] = []
+    if days:
+        parts.append(f"{days}d")
+    if hours:
+        parts.append(f"{hours}h")
+    if not parts and minutes:
+        parts.append(f"{minutes}m")
+    if not parts:
+        parts.append("0m")
+    return " ".join(parts)
+
+
+def _month_sequence(months: int = 6) -> list[date]:
+    current = timezone.localdate().replace(day=1)
+    sequence: list[date] = []
+
+    year = current.year
+    month = current.month
+    for _ in range(months):
+        sequence.append(date(year, month, 1))
+        if month == 1:
+            year -= 1
+            month = 12
+        else:
+            month -= 1
+
+    return list(reversed(sequence))
+
+
+def _build_breakdown(
+    queryset: QuerySet[Ticket],
+    field_name: str,
+) -> dict[str, list[Any]]:
+    rows = (
+        queryset.values(
+            f"{field_name}__name",
+        )
+        .annotate(ticket_count=Count("id"))
+        .order_by(f"{field_name}__sort_order", f"{field_name}__name")
+    )
+    return {
+        "labels": [row[f"{field_name}__name"] for row in rows],
+        "counts": [row["ticket_count"] for row in rows],
+    }
+
+
+def _build_assigned_workload(queryset: QuerySet[Ticket]) -> dict[str, list[Any]]:
+    rows = (
+        queryset.filter(assigned_to__isnull=False)
+        .values(
+            "assigned_to__first_name",
+            "assigned_to__last_name",
+            "assigned_to__email",
+        )
+        .annotate(ticket_count=Count("id"))
+        .order_by("-ticket_count", "assigned_to__first_name", "assigned_to__last_name")
+    )
+
+    labels = []
+    counts = []
+    for row in rows:
+        full_name = " ".join(
+            part
+            for part in [row["assigned_to__first_name"], row["assigned_to__last_name"]]
+            if part
+        ).strip()
+        labels.append(full_name or row["assigned_to__email"])
+        counts.append(row["ticket_count"])
+
+    return {"labels": labels, "counts": counts}
+
+
+def _build_resolution_trend(queryset: QuerySet[Ticket]) -> dict[str, list[Any]]:
+    months = _month_sequence()
+    rows = (
+        queryset.filter(closed_at__isnull=False)
+        .annotate(closed_month=TruncMonth("closed_at"))
+        .values("closed_month")
+        .annotate(ticket_count=Count("id"))
+    )
+    trend_map = {}
+    for row in rows:
+        closed_month = row["closed_month"]
+        if closed_month is None:
+            continue
+        trend_map[closed_month.date()] = row["ticket_count"]
+
+    return {
+        "labels": [month.strftime("%b %Y") for month in months],
+        "counts": [trend_map.get(month, 0) for month in months],
+    }
+
+
+def build_dashboard_context() -> dict[str, Any]:
+    tickets = Ticket.objects.select_related(
+        "ticket_status",
+        "ticket_priority",
+        "ticket_type",
+        "ticket_system",
+        "assigned_to",
+        "submitter",
+    )
+
+    dashboard_stats = tickets.aggregate(
+        total_tickets=Count("id"),
+        open_tickets=Count("id", filter=Q(ticket_status__is_closed=False)),
+        resolved_tickets=Count("id", filter=Q(ticket_status__is_closed=True)),
+        average_resolution_time=Avg(
+            ExpressionWrapper(
+                F("closed_at") - F("created_at"),
+                output_field=DurationField(),
+            ),
+            filter=Q(closed_at__isnull=False),
+        ),
+    )
+
+    total_tickets = dashboard_stats["total_tickets"]
+    dashboard_stats["open_percentage"] = _ticket_percentage(
+        dashboard_stats["open_tickets"], total_tickets
+    )
+    dashboard_stats["resolved_percentage"] = _ticket_percentage(
+        dashboard_stats["resolved_tickets"], total_tickets
+    )
+    dashboard_stats["average_resolution_time_display"] = _format_duration(
+        dashboard_stats["average_resolution_time"]
+    )
+
+    recent_tickets = tickets.order_by("-updated_at")[:5]
+
+    return {
+        "dashboard_stats": dashboard_stats,
+        "recent_tickets": recent_tickets,
+        "chart_data": {
+            "status": _build_breakdown(tickets, "ticket_status"),
+            "priority": _build_breakdown(tickets, "ticket_priority"),
+            "type": _build_breakdown(tickets, "ticket_type"),
+            "system": _build_breakdown(tickets, "ticket_system"),
+            "workload": _build_assigned_workload(tickets),
+            "trend": _build_resolution_trend(tickets),
+        },
+    }
