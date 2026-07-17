@@ -26,7 +26,7 @@ audited and are not stored. Antivirus scanning remains an infrastructure enhance
 
 ## Verification
 
-- Full local suite: 186 tests passed on 17 July 2026.
+- Full local pre-deployment suite: 196 tests passed on 17 July 2026.
 - Django system check: no issues.
 - Migration consistency check: no changes detected.
 - Production deployment checks still report development-setting warnings; these are
@@ -34,6 +34,24 @@ audited and are not stored. Antivirus scanning remains an infrastructure enhance
 
 ## Current Deliverable Status
 
-Security hardening is complete subject to PR CI and merge. Production configuration,
-deployment checklists, formal UAT, manual screenshots, user feedback, and final demo
-evidence remain outstanding under issues #25 and #26.
+Security hardening was completed and merged through PR #43. Live deployment, formal
+UAT, manual screenshots, user feedback, and final demo evidence remain outstanding
+under issues #25 and #26.
+
+## Railway Preparation
+
+The codebase now separates shared, development, and production settings. Production
+requires PostgreSQL, Redis, a strong secret key, and an explicit Railway/allowed host.
+It enables HTTPS redirect, secure cookies, HSTS, WhiteNoise static serving, persistent
+media configuration, and structured console logging. `railway.json` defines build,
+migration, Gunicorn, restart, and health-check behaviour.
+
+Operational runbooks now cover Railway setup, environment variables, deployment,
+release, rollback, backup/restore, and smoke testing. UAT scripts, feedback forms,
+screenshot requirements, a demo script, and known limitations are prepared without
+claiming results that require a live service.
+
+Issue #25 must remain open until the Railway services are provisioned and live
+PostgreSQL, Redis, HTTPS, media persistence, Graph delivery, backup, and smoke-test
+evidence are captured. Issue #26 remains open until three genuine UAT participants
+complete the prepared script.

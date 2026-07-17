@@ -17,6 +17,8 @@ status, tests, and assessment evidence can be reviewed together.
 - `testing_and_evaluation.md` - testing, evaluation, and evidence plan.
 - `proposal_context.md` - summary of the DOCX proposal context.
 - `sprints/` - sprint plans, checklists, and write-ups.
+- `../deployment/` - Railway setup, release, rollback, backup, and smoke-test runbooks.
+- `../uat/` - UAT script, feedback form, evidence checklist, and demo material.
 
 ## Status Labels
 

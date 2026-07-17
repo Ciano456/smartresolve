@@ -62,19 +62,22 @@ Add later:
 
 ## Deploy Workflow
 
-Do not automate deployment yet.
+Railway deployment preparation is defined in `railway.json` and `build.sh`. Railway
+must not be connected until the preparation PR is reviewed and merged.
 
 Current deployment approach:
 
 1. Work on a feature branch.
 2. Merge to `develop`.
-3. Test locally or on staging.
+3. Test locally and through GitHub CI.
 4. Merge stable work to `main`.
-5. Deploy manually to internal app server.
+5. Deploy the approved branch through Railway.
 6. Smoke test live system.
 
-Later:
+Current Railway flow:
 
-- add staging deploy workflow
-- add production deploy with approval
-- consider a self-hosted runner if internal network access is needed
+- Railpack build compiles Tailwind and collects static files
+- pre-deploy command applies migrations once
+- Gunicorn starts the application
+- `/health/` gates live traffic
+- deployment remains a manual approval step during UAT

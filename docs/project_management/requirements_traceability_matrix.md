@@ -24,10 +24,11 @@ screenshots, performance measurements, UAT, and deployment evidence remain open.
 | NFR-05 | AI accuracy | UC-10 | Not implemented | None | Metrics output pending | [ ] |
 | NFR-06 | Audit logging | UC-ALL | `admin_portal.models.AuditLog`, `admin_portal/audit.py`, `TicketHistory` | Login, denial, upload, admin, and ticket audit tests | Audit-log screenshot pending | [x] |
 | NFR-07 | GDPR/data minimisation | UC-ALL | Object permissions, hashed throttle identifiers, protected files | Access and security tests | Formal GDPR review pending | [~] |
+| NFR-08 | Deployment security and recoverability | UC-ALL | Production settings, `railway.json`, `build.sh`, deployment runbooks | Settings/health tests and deployment check | Live Railway, backup, restore, and smoke evidence pending | [~] |
 
 ## Latest Automated Test Evidence
 
-- Local full suite on 17 July 2026: `186 passed`.
+- Local pre-deployment suite on 17 July 2026: `196 passed`.
 - Migration consistency: no changes detected.
 - Django system check: no issues.
 - GitHub CI evidence will be linked from the issue #24 pull request.

@@ -20,13 +20,14 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
-from accounts import urls as accounts_urls
-from admin_portal import urls as admin_portal_urls
+from django.urls import include, path
+
+from smartresolve.views import HealthCheckView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("accounts/", include(accounts_urls)),
+    path("health/", HealthCheckView.as_view(), name="health_check"),
+    path("accounts/", include("accounts.urls")),
     path("admin_portal/", include("admin_portal.urls")),
     path("tickets/", include("tickets.urls")),
-] 
+]
