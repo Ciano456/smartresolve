@@ -17,22 +17,22 @@
 
 ## Production Readiness
 
-- [ ] Settings split for base/dev/prod.
-- [ ] Production environment variable list.
-- [ ] Static files deployment process.
-- [ ] Media storage plan.
-- [ ] Gunicorn/Uvicorn setup.
-- [ ] Reverse proxy plan if used.
-- [ ] `collectstatic` process.
-- [ ] Logging configuration.
-- [ ] Error reporting.
-- [ ] Manual deployment checklist.
-- [ ] Release checklist.
+- [x] Settings split for base/development/production.
+- [x] Production environment variable list.
+- [x] WhiteNoise static deployment process.
+- [x] Railway persistent media-volume plan.
+- [x] Gunicorn setup.
+- [x] Railway proxy/TLS handling configured.
+- [x] `collectstatic` build process.
+- [x] Console logging configuration.
+- [~] Railway log review prepared; live error evidence pending.
+- [x] Manual deployment checklist.
+- [x] Release and rollback checklists.
 
 ## UAT And Evidence
 
-- [ ] UAT setup.
-- [ ] Smoke test checklist.
+- [x] UAT script and feedback form prepared.
+- [x] Smoke test checklist prepared.
 - [ ] User feedback from three testers.
 - [~] RTM implementation/test statuses updated; manual evidence remains.
 - [ ] Final screenshot/log evidence pack.

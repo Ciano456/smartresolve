@@ -5,7 +5,8 @@
 - Phases 0-8 are complete for the agreed MVP, including CSV export.
 - Phase 9 security hardening is complete; its deployment, backup, GDPR, and optional
   security-dashboard items remain open.
-- Phase 10 deployment is not started and is tracked by issue #25.
+- Phase 10 code/configuration and runbooks are prepared; live Railway deployment and
+  evidence remain tracked by issue #25.
 - UAT and final evidence are tracked by issue #26.
 - Phase 11 remains future enhancement work.
 

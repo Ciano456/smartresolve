@@ -19,7 +19,7 @@ Implemented and tested:
 
 Outstanding release work:
 
-- production settings and deployment checklist (issue #25)
+- live Railway provisioning and deployment evidence (issue #25)
 - UAT, screenshots, final RTM evidence, and demo material (issue #26)
 - AI classification and response suggestions remain future enhancements
 
@@ -27,7 +27,7 @@ Outstanding release work:
 
 - Python 3.12
 - Django 6
-- SQLite for local development; PostgreSQL planned for production
+- SQLite for local development and Railway PostgreSQL in production
 - Django templates and Tailwind CSS
 - Chart.js
 - Microsoft Graph
@@ -95,4 +95,6 @@ pytest
 - `hotfix/<name>` is reserved for urgent stable-release fixes.
 
 See [project management notes](docs/project_management/README.md) and
-[security controls](SECURITY.md) for further detail.
+[security controls](SECURITY.md) for further detail. Railway setup, release, backup,
+and smoke-test runbooks are under `docs/deployment/`; UAT templates are under
+`docs/uat/`.

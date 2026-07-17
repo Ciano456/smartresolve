@@ -22,12 +22,15 @@ LOGIN_RATE_LIMIT_WINDOW_SECONDS=900
 LOGIN_RATE_LIMIT_BLOCK_SECONDS=900
 ```
 
-Development uses Django's local-memory cache. Production should use a shared cache
-such as Redis when more than one application process or instance is deployed.
+Development uses Django's local-memory cache. Production requires Railway Redis so
+all Gunicorn workers share the same throttle state.
+
+Production settings also enforce HTTPS redirection, secure session/CSRF cookies,
+HSTS, explicit allowed hosts and trusted CSRF origins, PostgreSQL SSL, and a strong
+environment-provided secret key.
 
 ## Deferred infrastructure controls
 
-- Configure trusted proxy headers before using forwarded client addresses.
 - Add reverse-proxy or platform-level request throttling.
 - Add antivirus or malware scanning for uploaded files.
 - Add central log collection, alerting and retention policies.
@@ -43,5 +46,5 @@ such as Redis when more than one application process or instance is deployed.
 .venv/bin/python manage.py check --deploy
 ```
 
-The deployment check is expected to report development-setting warnings until the
-production configuration work tracked separately from security issue #24 is done.
+The production deployment check intentionally leaves HSTS browser-preload submission
+disabled because SmartResolve does not control the parent `railway.app` domain.

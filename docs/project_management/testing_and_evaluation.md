@@ -2,9 +2,9 @@
 
 ## Automated Test Status
 
-The final local issue #24 verification on 17 July 2026 completed with 186 passing
-tests. The suite uses pytest, pytest-django, Django `TestCase`, the Django test
-client, and targeted mocking at the Microsoft Graph boundary.
+The latest pre-deployment verification on 17 July 2026 completed with 196 passing
+tests. The suite uses pytest, pytest-django, Django `TestCase`, the Django test client,
+and targeted mocking at the Microsoft Graph boundary.
 
 Implemented functional coverage includes:
 
@@ -17,6 +17,7 @@ Implemented functional coverage includes:
 - Microsoft Graph client, notification service, event records, and ticket triggers
 - dashboard permissions, KPIs, chart datasets, and CSV export
 - audit events for login failures, throttling, access denials, uploads, and ticket actions
+- production settings validation and database-aware health checks
 
 ## Security Testing
 
@@ -62,3 +63,10 @@ and overall clarity. Names should be anonymised in assessment evidence where nee
 - deployment and smoke-test evidence after issue #25
 - feedback from three UAT participants
 - final demo script and known-limitations section
+
+## Deployment Configuration Testing
+
+Automated tests load production settings in isolated subprocesses. They confirm that
+valid Railway-style configuration imports successfully and that missing PostgreSQL,
+Redis, or a strong signing key causes a clear startup failure. Health tests cover the
+healthy database path, generic unavailable response, and rejection of POST requests.
