@@ -11,6 +11,7 @@ from django.views.decorators.http import require_POST
 
 from accounts.decorators import admin_required
 from accounts.models import User
+from admin_portal.audit import record_audit_log
 from admin_portal.forms import (
     AdminPortalUserCreateForm,
     AdminPortalUserEditForm,
@@ -78,7 +79,7 @@ def _record_user_audit_log(
     target_user: User,
     message: str,
 ) -> None:
-    AuditLog.objects.create(
+    record_audit_log(
         actor=actor,
         action=action,
         target_type="User",

@@ -20,6 +20,14 @@ from dotenv import load_dotenv
 
 load_dotenv()  # Load environment variables from .env file
 
+
+def _positive_env_int(name: str, default: int) -> int:
+    try:
+        value = int(os.getenv(name, str(default)))
+    except (TypeError, ValueError):
+        return default
+    return value if value > 0 else default
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -52,6 +60,15 @@ GRAPH_SEND_MAIL_URL = (
     else ""
 )
 IT_SUPPORT_EMAIL = os.getenv("IT_SUPPORT_EMAIL", "").strip()
+LOGIN_RATE_LIMIT_ATTEMPTS = _positive_env_int("LOGIN_RATE_LIMIT_ATTEMPTS", 5)
+LOGIN_RATE_LIMIT_WINDOW_SECONDS = _positive_env_int(
+    "LOGIN_RATE_LIMIT_WINDOW_SECONDS",
+    900,
+)
+LOGIN_RATE_LIMIT_BLOCK_SECONDS = _positive_env_int(
+    "LOGIN_RATE_LIMIT_BLOCK_SECONDS",
+    900,
+)
 
 
 # Application definition

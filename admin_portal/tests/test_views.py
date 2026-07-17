@@ -63,6 +63,13 @@ class AdminPortalViewTests(TestCase):
     def test_admin_dashboard_view_requires_login(self):
         response = self.client.get("/admin_portal/")
         self.assertRedirects(response, "/accounts/login/")
+        self.assertTrue(
+            AuditLog.objects.filter(
+                action=AuditLog.ACTION_ACCESS_DENIED,
+                target_repr="/admin_portal/",
+                actor__isnull=True,
+            ).exists()
+        )
 
     def test_admin_dashboard_view_accessible_by_admin(self):
         self._login_admin_user()
@@ -179,6 +186,13 @@ class AdminPortalViewTests(TestCase):
         response = self.client.get(reverse("admin_ticket_list"))
 
         self.assertRedirects(response, "/accounts/profile/")
+        self.assertTrue(
+            AuditLog.objects.filter(
+                actor=self.user,
+                action=AuditLog.ACTION_ACCESS_DENIED,
+                target_repr=reverse("admin_ticket_list"),
+            ).exists()
+        )
 
     def test_admin_ticket_list_shows_all_tickets(self):
         managed_user = self._create_managed_user()
@@ -489,6 +503,13 @@ class AdminPortalViewTests(TestCase):
         self._login_non_admin_user()
         response = self.client.get("/admin_portal/")
         self.assertRedirects(response, "/accounts/profile/")
+        self.assertTrue(
+            AuditLog.objects.filter(
+                actor=self.user,
+                action=AuditLog.ACTION_ACCESS_DENIED,
+                target_repr="/admin_portal/",
+            ).exists()
+        )
 
     def test_user_list_view_inaccessible_by_non_admin(self):
         self._login_non_admin_user()

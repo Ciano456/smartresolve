@@ -2,6 +2,8 @@
 # Student Number: x22109668
 # Module: Final Year Project
 
+from pathlib import Path
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
 from django.core.paginator import Page, Paginator
@@ -11,6 +13,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.dateparse import parse_date
 
 from accounts.decorators import admin_or_support_staff_required, submitter_required
+from admin_portal.audit import record_audit_log
+from admin_portal.models import AuditLog
 from . import notifications as ticket_notifications
 
 from .forms import (
@@ -36,6 +40,23 @@ from .models import (
 )
 
 TICKET_LIST_PAGE_SIZE = 25
+
+
+def _record_ticket_audit_log(
+    *,
+    actor,
+    action: str,
+    ticket: Ticket,
+    message: str,
+) -> None:
+    record_audit_log(
+        actor=actor,
+        action=action,
+        target_type="Ticket",
+        target_id=ticket.id,
+        target_repr=ticket.ticket_number,
+        message=message,
+    )
 
 
 def _can_download_attachment(user, attachment: TicketAttachment) -> bool:
@@ -85,7 +106,8 @@ def _staff_ticket_detail_context(
         "history_entries": _ticket_history_entries(ticket),
         "status_error": status_error,
         "comment_form": comment_form or StaffTicketCommentForm(),
-        "assignment_form": assignment_form or StaffTicketAssignmentForm(instance=ticket),
+        "assignment_form": assignment_form
+        or StaffTicketAssignmentForm(instance=ticket),
         "priority_form": priority_form or StaffTicketPriorityForm(instance=ticket),
         "resolution_note_form": resolution_note_form or StaffTicketResolutionNoteForm(),
         "resolve_form": resolve_form or StaffTicketResolveForm(instance=ticket),
@@ -157,6 +179,12 @@ def ticket_create(request):
                 new_value=f"Ticket created with title: {ticket.title}",
             )
             ticket_history.save()
+            _record_ticket_audit_log(
+                actor=request.user,
+                action=AuditLog.ACTION_TICKET_CREATED,
+                ticket=ticket,
+                message=f"Ticket created with title: {ticket.title}.",
+            )
             ticket_notifications.notify_ticket_created(
                 ticket,
                 created_by_id=request.user.id,
@@ -177,6 +205,12 @@ def comment_create(request, ticket_id):
             comment.ticket = ticket
             comment.author = request.user
             comment.save()
+            _record_ticket_audit_log(
+                actor=request.user,
+                action=AuditLog.ACTION_TICKET_COMMENT_ADDED,
+                ticket=ticket,
+                message="Public ticket comment added.",
+            )
             return redirect("my_ticket_detail", id=ticket_id)
         else:
             return render(
@@ -209,6 +243,16 @@ def attachment_create(request, ticket_id):
             attachment.save()
             return redirect("my_ticket_detail", id=ticket_id)
         else:
+            uploaded_file = request.FILES.get("file")
+            if uploaded_file is not None:
+                record_audit_log(
+                    actor=request.user,
+                    action=AuditLog.ACTION_UPLOAD_BLOCKED,
+                    target_type="Ticket",
+                    target_id=ticket.id,
+                    target_repr=Path(uploaded_file.name).name[:255],
+                    message="Ticket attachment was rejected by upload validation.",
+                )
             return render(
                 request,
                 "tickets/my_ticket_detail.html",
@@ -241,9 +285,7 @@ def ticket_list(request):
         .order_by("email")
     )
     assignee_options = (
-        User.objects.filter(groups__name="Support Staff")
-        .distinct()
-        .order_by("email")
+        User.objects.filter(groups__name="Support Staff").distinct().order_by("email")
     )
     active_filters = {
         "status": request.GET.get("status", ""),
@@ -379,6 +421,14 @@ def ticket_detail(request, id):
                 old_value=old_status.name,
                 new_value=new_status.name,
             )
+            _record_ticket_audit_log(
+                actor=request.user,
+                action=AuditLog.ACTION_TICKET_STATUS_CHANGED,
+                ticket=ticket_detail,
+                message=(
+                    f"Ticket status changed from {old_status.name} to {new_status.name}."
+                ),
+            )
             ticket_notifications.notify_ticket_status_changed(
                 ticket_detail,
                 previous_status_name=old_status.name,
@@ -418,6 +468,15 @@ def ticket_assignment_update(request, ticket_id):
                 old_value=str(old_assignee) if old_assignee else "Unassigned",
                 new_value=str(new_assignee) if new_assignee else "Unassigned",
             )
+            _record_ticket_audit_log(
+                actor=request.user,
+                action=AuditLog.ACTION_TICKET_ASSIGNED,
+                ticket=updated_ticket,
+                message=(
+                    f"Ticket assigned from {old_assignee or 'Unassigned'} "
+                    f"to {new_assignee or 'Unassigned'}."
+                ),
+            )
             ticket_notifications.notify_ticket_assigned(
                 updated_ticket,
                 created_by_id=request.user.id,
@@ -456,6 +515,15 @@ def ticket_priority_update(request, ticket_id):
                 field_name="ticket_priority",
                 old_value=old_priority.name,
                 new_value=new_priority.name,
+            )
+            _record_ticket_audit_log(
+                actor=request.user,
+                action=AuditLog.ACTION_TICKET_PRIORITY_CHANGED,
+                ticket=updated_ticket,
+                message=(
+                    f"Ticket priority changed from {old_priority.name} "
+                    f"to {new_priority.name}."
+                ),
             )
         return redirect("ticket_detail", id=ticket_id)
 
@@ -503,9 +571,15 @@ def ticket_resolve(request, ticket_id):
             changed_by=request.user,
             change_type="RESOLVED",
             field_name="ticket_status",
-                old_value=old_status.name,
-                new_value=closed_status.name,
-            )
+            old_value=old_status.name,
+            new_value=closed_status.name,
+        )
+        _record_ticket_audit_log(
+            actor=request.user,
+            action=AuditLog.ACTION_TICKET_RESOLVED,
+            ticket=updated_ticket,
+            message="Ticket resolved with a closure summary.",
+        )
         ticket_notifications.notify_ticket_resolved(
             updated_ticket,
             created_by_id=request.user.id,
@@ -556,9 +630,15 @@ def ticket_cancel(request, ticket_id):
             changed_by=request.user,
             change_type="CANCELLED",
             field_name="ticket_status",
-                old_value=old_status.name,
-                new_value=cancelled_status.name,
-            )
+            old_value=old_status.name,
+            new_value=cancelled_status.name,
+        )
+        _record_ticket_audit_log(
+            actor=request.user,
+            action=AuditLog.ACTION_TICKET_CANCELLED,
+            ticket=updated_ticket,
+            message="Ticket cancelled with a cancellation reason.",
+        )
         ticket_notifications.notify_ticket_cancelled(
             updated_ticket,
             created_by_id=request.user.id,
@@ -587,6 +667,12 @@ def ticket_resolution_note_create(request, ticket_id):
         resolution_note.author = request.user
         resolution_note.is_internal = False
         resolution_note.save()
+        _record_ticket_audit_log(
+            actor=request.user,
+            action=AuditLog.ACTION_RESOLUTION_NOTE_ADDED,
+            ticket=ticket,
+            message="Resolution note added.",
+        )
         ticket_notifications.notify_public_comment(
             ticket,
             comment=resolution_note,
@@ -621,6 +707,16 @@ def staff_comment_create(request, ticket_id):
             comment.ticket = ticket
             comment.author = request.user
             comment.save()
+            _record_ticket_audit_log(
+                actor=request.user,
+                action=AuditLog.ACTION_TICKET_COMMENT_ADDED,
+                ticket=ticket,
+                message=(
+                    "Internal ticket comment added."
+                    if comment.is_internal
+                    else "Public ticket comment added."
+                ),
+            )
             if not comment.is_internal:
                 ticket_notifications.notify_public_comment(
                     ticket,
