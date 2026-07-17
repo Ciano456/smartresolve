@@ -16,7 +16,7 @@ staticfiles/
 # Environment variables
 .env
 .env.*
- !.env.example
+!.env.example
 
 # macOS
 .DS_Store
@@ -37,7 +37,3 @@ coverage/
 
 # Misc
 *.log
-
-# docs
-docs/
-docs/project_management/

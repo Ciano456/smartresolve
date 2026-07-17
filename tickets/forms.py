@@ -144,6 +144,14 @@ class TicketAttachmentForm(ModelForm):
         ".jpg",
         ".jpeg",
     }
+    binary_signatures = {
+        ".pdf": (b"%PDF-",),
+        ".png": (b"\x89PNG\r\n\x1a\n",),
+        ".jpg": (b"\xff\xd8\xff",),
+        ".jpeg": (b"\xff\xd8\xff",),
+        ".docx": (b"PK\x03\x04",),
+        ".xlsx": (b"PK\x03\x04",),
+    }
 
     class Meta:
         model = TicketAttachment
@@ -163,5 +171,21 @@ class TicketAttachmentForm(ModelForm):
             raise ValidationError(
                 f"File size must be less than {max_file_size_mb} MB"
             )
+
+        header = file.read(16)
+        file.seek(0)
+        expected_signatures = self.binary_signatures.get(extension)
+        if expected_signatures and not header.startswith(expected_signatures):
+            raise ValidationError("File content does not match its extension.")
+
+        if extension in {".txt", ".csv"}:
+            sample = file.read(4096)
+            file.seek(0)
+            try:
+                sample.decode("utf-8")
+            except UnicodeDecodeError as exc:
+                raise ValidationError("Text files must use UTF-8 encoding.") from exc
+            if b"\x00" in sample:
+                raise ValidationError("Text files cannot contain binary content.")
 
         return file

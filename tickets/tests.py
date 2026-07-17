@@ -6,7 +6,16 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from django.test import TestCase, override_settings
-from .models import Ticket, TicketType, TicketSystem, TicketPriority, TicketStatus, TicketComment, TicketAttachment, TicketHistory
+from .models import (
+    Ticket,
+    TicketType,
+    TicketSystem,
+    TicketPriority,
+    TicketStatus,
+    TicketComment,
+    TicketAttachment,
+    TicketHistory,
+)
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -16,6 +25,7 @@ from django.utils import timezone
 
 from .forms import TicketAttachmentForm
 from . import notifications as ticket_notifications
+from admin_portal.models import AuditLog
 from notifications.models import NotificationEvent
 
 
@@ -23,13 +33,15 @@ class TicketModelTest(TestCase):
     def setUp(self):
         # Set up a user for testing ticket creation
         User = get_user_model()
-        self.user = User.objects.create_user(email='testuser@gmail.com', password='testpass')
+        self.user = User.objects.create_user(
+            email="testuser@gmail.com", password="testpass"
+        )
 
         # Set up lookup data for testing
-        self.ticket_type = TicketType.objects.get(code="INCIDENT") 
-        self.ticket_system = TicketSystem.objects.get(code="SOFTWARE")  
-        self.ticket_priority = TicketPriority.objects.get(code="MEDIUM")  
-        self.ticket_status = TicketStatus.objects.get(code="OPEN") 
+        self.ticket_type = TicketType.objects.get(code="INCIDENT")
+        self.ticket_system = TicketSystem.objects.get(code="SOFTWARE")
+        self.ticket_priority = TicketPriority.objects.get(code="MEDIUM")
+        self.ticket_status = TicketStatus.objects.get(code="OPEN")
 
     def test_ticket_creation(self):
         # Test creating a ticket and checking its attributes
@@ -37,10 +49,10 @@ class TicketModelTest(TestCase):
             title="Test Ticket",
             description="This is a test ticket.",
             submitter=self.user,
-            ticket_type = self.ticket_type,
-            ticket_system = self.ticket_system,
-            ticket_priority = self.ticket_priority,
-            ticket_status = self.ticket_status, 
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.ticket_status,
         )
         self.assertEqual(ticket.title, "Test Ticket")
         self.assertEqual(ticket.submitter, self.user)
@@ -52,13 +64,14 @@ class TicketModelTest(TestCase):
             title="Test Ticket 1",
             description="This is the first test ticket.",
             submitter=self.user,
-            ticket_type = self.ticket_type,
-            ticket_system = self.ticket_system,
-            ticket_priority = self.ticket_priority,
-            ticket_status = self.ticket_status, 
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.ticket_status,
         )
-        self.assertIsNotNone(Ticket.objects.first().ticket_number)  # Ensure ticket number is generated
-        
+        self.assertIsNotNone(
+            Ticket.objects.first().ticket_number
+        )  # Ensure ticket number is generated
 
     def test_ticket_status_transitions(self):
         # Test changing the status of a ticket and ensuring it behaves as expected
@@ -66,15 +79,17 @@ class TicketModelTest(TestCase):
             title="Test Ticket 2",
             description="This is the second test ticket.",
             submitter=self.user,
-            ticket_type = self.ticket_type,
-            ticket_system = self.ticket_system,
-            ticket_priority = self.ticket_priority,
-            ticket_status = self.ticket_status, 
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.ticket_status,
         )
         in_progress_status = TicketStatus.objects.get(code="IN_PROGRESS")
         ticket_status.ticket_status = in_progress_status
         ticket_status.save()
-        self.assertEqual(ticket_status.ticket_status, in_progress_status)  # Check if status is updated correctly
+        self.assertEqual(
+            ticket_status.ticket_status, in_progress_status
+        )  # Check if status is updated correctly
 
     def test_ticket_assignment(self):
         # Test assigning a ticket to a user and checking the assigned_to field
@@ -84,10 +99,10 @@ class TicketModelTest(TestCase):
             description="This is the third test ticket.",
             submitter=self.user,
             assigned_to=assignee,
-            ticket_type = self.ticket_type,
-            ticket_system = self.ticket_system,
-            ticket_priority = self.ticket_priority,
-            ticket_status = self.ticket_status, 
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.ticket_status,
         )
         self.assertEqual(ticket_assignment.assigned_to, assignee)
 
@@ -97,16 +112,18 @@ class TicketModelTest(TestCase):
             title="Test Ticket 4",
             description="This is the fourth test ticket.",
             submitter=self.user,
-            ticket_type = self.ticket_type,
-            ticket_system = self.ticket_system,
-            ticket_priority = self.ticket_priority,
-            ticket_status = self.ticket_status, 
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.ticket_status,
         )
         closed_status = TicketStatus.objects.get(code="CLOSED")
         ticket.ticket_status = closed_status
         ticket.save()
         self.assertEqual(ticket.ticket_status, closed_status)
-        self.assertIsNotNone(ticket.closed_at)  # Ensure closed_at is set when ticket is closed
+        self.assertIsNotNone(
+            ticket.closed_at
+        )  # Ensure closed_at is set when ticket is closed
 
     def test_ticket_priority(self):
         # Test setting a priority for a ticket and ensuring it is stored correctly
@@ -114,10 +131,10 @@ class TicketModelTest(TestCase):
             title="Test Ticket 5",
             description="This is the fifth test ticket.",
             submitter=self.user,
-            ticket_type = self.ticket_type,
-            ticket_system = self.ticket_system,
-            ticket_priority = self.ticket_priority,
-            ticket_status = self.ticket_status,
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.ticket_status,
         )
         low_priority = TicketPriority.objects.get(code="LOW")
         ticket_priority.ticket_priority = low_priority
@@ -130,12 +147,14 @@ class TicketModelTest(TestCase):
             title="Test Ticket 6",
             description="This is the sixth test ticket.",
             submitter=self.user,
-            ticket_type = self.ticket_type,
-            ticket_system = self.ticket_system,
-            ticket_priority = self.ticket_priority,
-            ticket_status = self.ticket_status,
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.ticket_status,
         )
-        self.assertTrue(str(ticket).startswith(ticket.ticket_number))  # Ensure string representation starts with ticket number
+        self.assertTrue(
+            str(ticket).startswith(ticket.ticket_number)
+        )  # Ensure string representation starts with ticket number
 
     def test_delete_ticket(self):
         # Test deleting a ticket and ensuring it is removed from the database
@@ -143,10 +162,10 @@ class TicketModelTest(TestCase):
             title="Test Ticket 7",
             description="This is the seventh test ticket.",
             submitter=self.user,
-            ticket_type = self.ticket_type,
-            ticket_system = self.ticket_system,
-            ticket_priority = self.ticket_priority,
-            ticket_status = self.ticket_status,
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.ticket_status,
         )
         ticket_id = ticket.id
         ticket.delete()
@@ -155,18 +174,18 @@ class TicketModelTest(TestCase):
     def test_set_null_on_user_deletion(self):
         # Test that assigned_to is set to null when the assigned user is deleted
         assignee = get_user_model().objects.create_user(
-            email='assignee@gmail.com',
-            password='testpass',
+            email="assignee@gmail.com",
+            password="testpass",
         )
         ticket = Ticket.objects.create(
             title="Test Ticket 8",
             description="This is the eighth test ticket.",
             submitter=self.user,
             assigned_to=assignee,
-            ticket_type = self.ticket_type,
-            ticket_system = self.ticket_system,
-            ticket_priority = self.ticket_priority,
-            ticket_status = self.ticket_status,
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.ticket_status,
         )
         assignee.delete()
         ticket.refresh_from_db()
@@ -179,10 +198,10 @@ class TicketModelTest(TestCase):
             title="Test Ticket 9",
             description="This is the ninth test ticket.",
             submitter=submitter,
-            ticket_type = self.ticket_type,
-            ticket_system = self.ticket_system,
-            ticket_priority = self.ticket_priority,
-            ticket_status = self.ticket_status,
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.ticket_status,
         )
         with self.assertRaises(ProtectedError):
             submitter.delete()
@@ -190,8 +209,8 @@ class TicketModelTest(TestCase):
 
     def test_set_null_on_comment_author_deletion(self):
         author = get_user_model().objects.create_user(
-            email='author@gmail.com',
-            password='testpass',
+            email="author@gmail.com",
+            password="testpass",
         )
         comment = TicketComment.objects.create(
             ticket=Ticket.objects.create(
@@ -213,10 +232,12 @@ class TicketModelTest(TestCase):
 
     def test_set_null_on_attachment_uploader_deletion(self):
         uploader = get_user_model().objects.create_user(
-            email='uploader@gmail.com',
-            password='testpass',
+            email="uploader@gmail.com",
+            password="testpass",
         )
-        simple_file = SimpleUploadedFile("uploader-test.txt", b"file_content", content_type="text/plain")
+        simple_file = SimpleUploadedFile(
+            "uploader-test.txt", b"file_content", content_type="text/plain"
+        )
         ticket = Ticket.objects.create(
             title="Test Ticket 9B",
             description="Attachment uploader null test.",
@@ -236,30 +257,50 @@ class TicketModelTest(TestCase):
         uploader.delete()
         attachment.refresh_from_db()
         self.assertIsNone(attachment.uploaded_by)
-        
+
     def test_cascade_on_ticket_deletion(self):
         # Test that deleting a ticket also deletes related comments, attachments, and history entries due to CASCADE on_delete behavior
-        simple_file = SimpleUploadedFile("testfile.txt", b"file_content", content_type="text/plain")
+        simple_file = SimpleUploadedFile(
+            "testfile.txt", b"file_content", content_type="text/plain"
+        )
         ticket = Ticket.objects.create(
             title="Test Ticket 10",
             description="This is the tenth test ticket.",
             submitter=self.user,
             ticket_type=self.ticket_type,
-            ticket_system = self.ticket_system,
-            ticket_priority = self.ticket_priority,
-            ticket_status = self.ticket_status,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.ticket_priority,
+            ticket_status=self.ticket_status,
         )
-        ticket_comment = TicketComment.objects.create(ticket=ticket, author=self.user, body="This is a comment for the tenth test ticket.")
-        ticket_attachment = TicketAttachment.objects.create(ticket=ticket, uploaded_by=self.user, file=simple_file, original_filename="testfile.txt")
-        ticket_history = TicketHistory.objects.create(ticket=ticket, changed_by=self.user, change_type="Status Change", field_name="ticket_status", old_value=self.ticket_status.name, new_value=self.ticket_status.name)
+        ticket_comment = TicketComment.objects.create(
+            ticket=ticket,
+            author=self.user,
+            body="This is a comment for the tenth test ticket.",
+        )
+        ticket_attachment = TicketAttachment.objects.create(
+            ticket=ticket,
+            uploaded_by=self.user,
+            file=simple_file,
+            original_filename="testfile.txt",
+        )
+        ticket_history = TicketHistory.objects.create(
+            ticket=ticket,
+            changed_by=self.user,
+            change_type="Status Change",
+            field_name="ticket_status",
+            old_value=self.ticket_status.name,
+            new_value=self.ticket_status.name,
+        )
 
         ticket.delete()
         self.assertFalse(Ticket.objects.filter(id=ticket.id).exists())
         self.assertFalse(TicketComment.objects.filter(id=ticket_comment.id).exists())
-        self.assertFalse(TicketAttachment.objects.filter(id=ticket_attachment.id).exists())
+        self.assertFalse(
+            TicketAttachment.objects.filter(id=ticket_attachment.id).exists()
+        )
         self.assertFalse(TicketHistory.objects.filter(id=ticket_history.id).exists())
-        
-        
+
+
 @override_settings(IT_SUPPORT_EMAIL="itsupport@test.com")
 class TicketStaffViewTests(TestCase):
     def setUp(self):
@@ -363,6 +404,13 @@ class TicketStaffViewTests(TestCase):
                 new_value="In Progress",
             ).exists()
         )
+        self.assertTrue(
+            AuditLog.objects.filter(
+                actor=self.support_user,
+                action=AuditLog.ACTION_TICKET_STATUS_CHANGED,
+                target_id=self.ticket.id,
+            ).exists()
+        )
 
     def test_closed_status_requires_dedicated_resolve_action(self):
         self.client.force_login(self.admin_user)
@@ -428,6 +476,13 @@ class TicketStaffViewTests(TestCase):
                 field_name="ticket_status",
                 old_value="Open",
                 new_value="Closed",
+            ).exists()
+        )
+        self.assertTrue(
+            AuditLog.objects.filter(
+                actor=self.support_user,
+                action=AuditLog.ACTION_TICKET_RESOLVED,
+                target_id=self.ticket.id,
             ).exists()
         )
 
@@ -515,6 +570,13 @@ class TicketStaffViewTests(TestCase):
                 new_value="Cancelled",
             ).exists()
         )
+        self.assertTrue(
+            AuditLog.objects.filter(
+                actor=self.admin_user,
+                action=AuditLog.ACTION_TICKET_CANCELLED,
+                target_id=self.ticket.id,
+            ).exists()
+        )
 
     def test_blank_cancellation_reason_is_rejected(self):
         self.client.force_login(self.support_user)
@@ -578,8 +640,12 @@ class TicketStaffViewTests(TestCase):
             reverse("ticket_cancel", args=[self.ticket.id])
         )
 
-        self.assertRedirects(resolve_response, reverse("ticket_detail", args=[self.ticket.id]))
-        self.assertRedirects(cancel_response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.assertRedirects(
+            resolve_response, reverse("ticket_detail", args=[self.ticket.id])
+        )
+        self.assertRedirects(
+            cancel_response, reverse("ticket_detail", args=[self.ticket.id])
+        )
 
     def test_submitter_cannot_update_ticket_status_from_staff_view(self):
         # Submitters must not be able to use the staff ticket detail POST endpoint.
@@ -917,6 +983,13 @@ class TicketStaffViewTests(TestCase):
                 new_value="second-support-ticket@test.com",
             ).exists()
         )
+        self.assertTrue(
+            AuditLog.objects.filter(
+                actor=self.support_user,
+                action=AuditLog.ACTION_TICKET_ASSIGNED,
+                target_id=self.ticket.id,
+            ).exists()
+        )
 
     def test_admin_can_assign_ticket_to_support_staff(self):
         self.client.force_login(self.admin_user)
@@ -1088,7 +1161,9 @@ class TicketStaffViewTests(TestCase):
 
     def test_ticket_create_triggers_notification_helper(self):
         self.client.force_login(self.submitter_user)
-        with patch("tickets.views.ticket_notifications.notify_ticket_created") as notify_created:
+        with patch(
+            "tickets.views.ticket_notifications.notify_ticket_created"
+        ) as notify_created:
             response = self.client.post(
                 reverse("ticket_create"),
                 {
@@ -1112,7 +1187,9 @@ class TicketStaffViewTests(TestCase):
 
     def test_ticket_assignment_triggers_notification_helper(self):
         self.client.force_login(self.support_user)
-        with patch("tickets.views.ticket_notifications.notify_ticket_assigned") as notify_assigned:
+        with patch(
+            "tickets.views.ticket_notifications.notify_ticket_assigned"
+        ) as notify_assigned:
             response = self.client.post(
                 reverse("ticket_assignment_update", args=[self.ticket.id]),
                 {"assigned_to": self.second_support_user.id},
@@ -1125,10 +1202,19 @@ class TicketStaffViewTests(TestCase):
             self.ticket,
             created_by_id=self.support_user.id,
         )
+        self.assertTrue(
+            AuditLog.objects.filter(
+                actor=self.support_user,
+                action=AuditLog.ACTION_TICKET_ASSIGNED,
+                target_id=self.ticket.id,
+            ).exists()
+        )
 
     def test_status_change_triggers_notification_helper(self):
         self.client.force_login(self.support_user)
-        with patch("tickets.views.ticket_notifications.notify_ticket_status_changed") as notify_status_changed:
+        with patch(
+            "tickets.views.ticket_notifications.notify_ticket_status_changed"
+        ) as notify_status_changed:
             response = self.client.post(
                 reverse("ticket_detail", args=[self.ticket.id]),
                 {"ticket_status": self.in_progress_status.id},
@@ -1149,7 +1235,9 @@ class TicketStaffViewTests(TestCase):
 
     def test_public_staff_comment_triggers_notification_helper(self):
         self.client.force_login(self.support_user)
-        with patch("tickets.views.ticket_notifications.notify_public_comment") as notify_public_comment:
+        with patch(
+            "tickets.views.ticket_notifications.notify_public_comment"
+        ) as notify_public_comment:
             response = self.client.post(
                 reverse("staff_comment_create", args=[self.ticket.id]),
                 {
@@ -1164,15 +1252,26 @@ class TicketStaffViewTests(TestCase):
             body="Public reply from staff.",
         )
         notify_public_comment.assert_called_once()
-        self.assertEqual(notify_public_comment.call_args.kwargs["comment"].id, comment.id)
+        self.assertEqual(
+            notify_public_comment.call_args.kwargs["comment"].id, comment.id
+        )
         self.assertEqual(
             notify_public_comment.call_args.kwargs["created_by_id"],
             self.support_user.id,
         )
+        self.assertTrue(
+            AuditLog.objects.filter(
+                actor=self.support_user,
+                action=AuditLog.ACTION_TICKET_COMMENT_ADDED,
+                target_id=self.ticket.id,
+            ).exists()
+        )
 
     def test_internal_staff_comment_does_not_trigger_public_notification(self):
         self.client.force_login(self.support_user)
-        with patch("tickets.views.ticket_notifications.notify_public_comment") as notify_public_comment:
+        with patch(
+            "tickets.views.ticket_notifications.notify_public_comment"
+        ) as notify_public_comment:
             response = self.client.post(
                 reverse("staff_comment_create", args=[self.ticket.id]),
                 {
@@ -1194,7 +1293,9 @@ class TicketStaffViewTests(TestCase):
 
     def test_resolve_triggers_notification_helper(self):
         self.client.force_login(self.support_user)
-        with patch("tickets.views.ticket_notifications.notify_ticket_resolved") as notify_resolved:
+        with patch(
+            "tickets.views.ticket_notifications.notify_ticket_resolved"
+        ) as notify_resolved:
             response = self.client.post(
                 reverse("ticket_resolve", args=[self.ticket.id]),
                 {"resolution_summary": "Resolved after updating the account."},
@@ -1210,7 +1311,9 @@ class TicketStaffViewTests(TestCase):
 
     def test_cancel_triggers_notification_helper(self):
         self.client.force_login(self.admin_user)
-        with patch("tickets.views.ticket_notifications.notify_ticket_cancelled") as notify_cancelled:
+        with patch(
+            "tickets.views.ticket_notifications.notify_ticket_cancelled"
+        ) as notify_cancelled:
             response = self.client.post(
                 reverse("ticket_cancel", args=[self.ticket.id]),
                 {"cancellation_reason": "Request duplicated elsewhere."},
@@ -1261,12 +1364,17 @@ class TicketNotificationRecipientTests(TestCase):
         )
 
     def _recipient_emails(self, mocked_send):
-        return [call_args.kwargs["recipient_email"] for call_args in mocked_send.call_args_list]
+        return [
+            call_args.kwargs["recipient_email"]
+            for call_args in mocked_send.call_args_list
+        ]
 
     def test_created_ticket_notifies_assignee_and_support_inbox(self):
         ticket = self._create_ticket(assigned_to=self.assignee)
 
-        with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+        with patch(
+            "tickets.notifications.NotificationService.send_notification"
+        ) as mocked_send:
             ticket_notifications.notify_ticket_created(
                 ticket,
                 created_by_id=self.submitter.id,
@@ -1288,7 +1396,9 @@ class TicketNotificationRecipientTests(TestCase):
     def test_created_ticket_without_assignee_notifies_support_only(self):
         ticket = self._create_ticket()
 
-        with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+        with patch(
+            "tickets.notifications.NotificationService.send_notification"
+        ) as mocked_send:
             ticket_notifications.notify_ticket_created(
                 ticket,
                 created_by_id=self.submitter.id,
@@ -1303,7 +1413,9 @@ class TicketNotificationRecipientTests(TestCase):
         ticket = self._create_ticket(assigned_to=self.assignee)
 
         with override_settings(IT_SUPPORT_EMAIL=""):
-            with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+            with patch(
+                "tickets.notifications.NotificationService.send_notification"
+            ) as mocked_send:
                 ticket_notifications.notify_ticket_created(
                     ticket,
                     created_by_id=self.submitter.id,
@@ -1314,7 +1426,9 @@ class TicketNotificationRecipientTests(TestCase):
     def test_assignment_notifies_assignee_only(self):
         ticket = self._create_ticket(assigned_to=self.assignee)
 
-        with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+        with patch(
+            "tickets.notifications.NotificationService.send_notification"
+        ) as mocked_send:
             ticket_notifications.notify_ticket_assigned(
                 ticket,
                 created_by_id=self.staff_author.id,
@@ -1335,7 +1449,9 @@ class TicketNotificationRecipientTests(TestCase):
             is_internal=False,
         )
 
-        with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+        with patch(
+            "tickets.notifications.NotificationService.send_notification"
+        ) as mocked_send:
             ticket_notifications.notify_public_comment(
                 ticket,
                 comment=comment,
@@ -1360,7 +1476,9 @@ class TicketNotificationRecipientTests(TestCase):
             is_internal=False,
         )
 
-        with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+        with patch(
+            "tickets.notifications.NotificationService.send_notification"
+        ) as mocked_send:
             ticket_notifications.notify_public_comment(
                 ticket,
                 comment=comment,
@@ -1378,7 +1496,9 @@ class TicketNotificationRecipientTests(TestCase):
             is_internal=True,
         )
 
-        with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+        with patch(
+            "tickets.notifications.NotificationService.send_notification"
+        ) as mocked_send:
             if not comment.is_internal:
                 ticket_notifications.notify_public_comment(
                     ticket,
@@ -1392,7 +1512,9 @@ class TicketNotificationRecipientTests(TestCase):
         ticket = self._create_ticket(status=self.in_progress_status)
         ticket.ticket_status = self.closed_status
 
-        with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+        with patch(
+            "tickets.notifications.NotificationService.send_notification"
+        ) as mocked_send:
             ticket_notifications.notify_ticket_resolved(
                 ticket,
                 created_by_id=self.staff_author.id,
@@ -1407,7 +1529,9 @@ class TicketNotificationRecipientTests(TestCase):
         ticket = self._create_ticket(status=self.in_progress_status)
         ticket.ticket_status = self.closed_status
 
-        with patch("tickets.notifications.NotificationService.send_notification") as mocked_send:
+        with patch(
+            "tickets.notifications.NotificationService.send_notification"
+        ) as mocked_send:
             ticket_notifications.notify_ticket_cancelled(
                 ticket,
                 created_by_id=self.staff_author.id,
@@ -1541,6 +1665,64 @@ class TicketAttachmentDownloadTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("File size must be less than 5 MB", form.errors["file"])
 
+    def test_attachment_rejects_content_that_does_not_match_extension(self):
+        # File signatures must agree with trusted extensions, regardless of MIME claims.
+        disguised_file = SimpleUploadedFile(
+            "disguised.pdf",
+            b"This is not a PDF file.",
+            content_type="application/pdf",
+        )
+        form = TicketAttachmentForm(data={}, files={"file": disguised_file})
+
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            "File content does not match its extension.",
+            form.errors["file"],
+        )
+
+    def test_attachment_rejects_binary_content_in_text_file(self):
+        # A text extension must not allow null-byte binary content through validation.
+        binary_file = SimpleUploadedFile(
+            "binary.txt",
+            b"valid prefix\x00binary content",
+            content_type="text/plain",
+        )
+        form = TicketAttachmentForm(data={}, files={"file": binary_file})
+
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            "Text files cannot contain binary content.",
+            form.errors["file"],
+        )
+
+    def test_rejected_attachment_upload_is_audited_and_not_stored(self):
+        # Suspicious rejected uploads must leave an audit trail but no stored file.
+        self.client.force_login(self.submitter_user)
+        upload_url = reverse("attachment_create", args=[self.ticket.id])
+        initial_attachment_count = TicketAttachment.objects.count()
+
+        response = self.client.post(
+            upload_url,
+            {
+                "file": SimpleUploadedFile(
+                    "disguised.pdf",
+                    b"This is not a PDF file.",
+                    content_type="application/pdf",
+                )
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(TicketAttachment.objects.count(), initial_attachment_count)
+        self.assertTrue(
+            AuditLog.objects.filter(
+                actor=self.submitter_user,
+                action=AuditLog.ACTION_UPLOAD_BLOCKED,
+                target_id=self.ticket.id,
+                target_repr="disguised.pdf",
+            ).exists()
+        )
+
 
 @override_settings(IT_SUPPORT_EMAIL="itsupport@test.com")
 class TicketCommentVisibilityTests(TestCase):
@@ -1600,9 +1782,7 @@ class TicketCommentVisibilityTests(TestCase):
         )
 
         self.client.force_login(self.submitter_user)
-        response = self.client.get(
-            reverse("my_ticket_detail", args=[self.ticket.id])
-        )
+        response = self.client.get(reverse("my_ticket_detail", args=[self.ticket.id]))
 
         self.assertContains(response, "Public support reply.")
         self.assertNotContains(response, "Internal support note.")
@@ -1713,6 +1893,13 @@ class TicketCommentVisibilityTests(TestCase):
                 new_value="Resolution note added",
             ).exists()
         )
+        self.assertTrue(
+            AuditLog.objects.filter(
+                actor=self.support_user,
+                action=AuditLog.ACTION_RESOLUTION_NOTE_ADDED,
+                target_id=self.ticket.id,
+            ).exists()
+        )
 
     def test_admin_can_create_resolution_note(self):
         self.client.force_login(self.admin_user)
@@ -1773,7 +1960,9 @@ class TicketCommentVisibilityTests(TestCase):
         self.assertContains(response, "Resolved by resetting the account lockout.")
 
     def test_cancellation_reason_is_visible_to_submitter(self):
-        self.ticket.cancellation_reason = "Request cancelled because access is no longer needed."
+        self.ticket.cancellation_reason = (
+            "Request cancelled because access is no longer needed."
+        )
         self.ticket.save()
 
         self.client.force_login(self.submitter_user)
@@ -1862,4 +2051,3 @@ class TicketSubmitterViewTests(TestCase):
         self.assertContains(response, own_ticket.title)
         self.assertNotContains(response, other_ticket.ticket_number)
         self.assertNotContains(response, other_ticket.title)
-        

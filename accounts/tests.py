@@ -2,13 +2,18 @@
 # Student Number: x22109668
 # Module: Final Year Project
 
-from django.test import TestCase
+from unittest.mock import patch
+
+from django.core.cache import cache
+from django.test import TestCase, override_settings
 from accounts.models import User
+from admin_portal.models import AuditLog
 from django.contrib.auth.models import Group
 
 
 class AuthViewTests(TestCase):
     def setUp(self):
+        cache.clear()
         self.email = "testemail@gmail.com"
         self.password = "password123"
         self.wrong_password = "wrongpassword"
@@ -38,12 +43,108 @@ class AuthViewTests(TestCase):
         )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "accounts/login.html")
+        self.assertTrue(
+            AuditLog.objects.filter(
+                action=AuditLog.ACTION_LOGIN_FAILED,
+                target_repr=self.email,
+            ).exists()
+        )
 
     def test_login_view_with_valid_credentials(self):
         response = self.client.post(
             "/accounts/login/", {"email": self.email, "password": self.password}
         )
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, "/accounts/profile/")
+
+    def test_login_with_missing_password_fails_without_server_error(self):
+        # Malformed login requests must fail safely and still produce an audit event.
+        response = self.client.post("/accounts/login/", {"email": self.email})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            AuditLog.objects.filter(
+                action=AuditLog.ACTION_LOGIN_FAILED,
+                target_repr=self.email,
+            ).exists()
+        )
+
+    @override_settings(
+        LOGIN_RATE_LIMIT_ATTEMPTS=3,
+        LOGIN_RATE_LIMIT_WINDOW_SECONDS=60,
+        LOGIN_RATE_LIMIT_BLOCK_SECONDS=60,
+    )
+    @patch("accounts.views.authenticate", return_value=None)
+    def test_repeated_failed_logins_are_rate_limited(self, mocked_authenticate):
+        # Authentication must stop once the configured failure threshold is reached.
+        credentials = {"email": self.email, "password": self.wrong_password}
+
+        for _ in range(4):
+            response = self.client.post("/accounts/login/", credentials)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(mocked_authenticate.call_count, 3)
+        self.assertTrue(
+            AuditLog.objects.filter(
+                action=AuditLog.ACTION_LOGIN_RATE_LIMITED,
+                target_repr=self.email,
+            ).exists()
+        )
+
+    @override_settings(
+        LOGIN_RATE_LIMIT_ATTEMPTS=3,
+        LOGIN_RATE_LIMIT_WINDOW_SECONDS=60,
+        LOGIN_RATE_LIMIT_BLOCK_SECONDS=60,
+    )
+    def test_successful_login_clears_previous_failures(self):
+        # A genuine successful login must reset earlier failures for that client.
+        invalid_credentials = {
+            "email": self.email,
+            "password": self.wrong_password,
+        }
+        for _ in range(2):
+            self.client.post("/accounts/login/", invalid_credentials)
+
+        response = self.client.post(
+            "/accounts/login/",
+            {"email": self.email, "password": self.password},
+        )
+        self.assertRedirects(response, "/accounts/profile/")
+        self.client.post("/accounts/logout/")
+
+        for _ in range(2):
+            self.client.post("/accounts/login/", invalid_credentials)
+        response = self.client.post(
+            "/accounts/login/",
+            {"email": self.email, "password": self.password},
+        )
+
+        self.assertRedirects(response, "/accounts/profile/")
+
+    @override_settings(
+        LOGIN_RATE_LIMIT_ATTEMPTS=3,
+        LOGIN_RATE_LIMIT_WINDOW_SECONDS=60,
+        LOGIN_RATE_LIMIT_BLOCK_SECONDS=60,
+    )
+    def test_login_throttle_is_separate_for_each_client_address(self):
+        # One blocked client address must not lock the account for every client.
+        invalid_credentials = {
+            "email": self.email,
+            "password": self.wrong_password,
+        }
+        for _ in range(3):
+            self.client.post(
+                "/accounts/login/",
+                invalid_credentials,
+                REMOTE_ADDR="192.0.2.10",
+            )
+
+        response = self.client.post(
+            "/accounts/login/",
+            {"email": self.email, "password": self.password},
+            REMOTE_ADDR="192.0.2.11",
+        )
+
         self.assertRedirects(response, "/accounts/profile/")
 
     def test_login_view_redirects_support_staff_to_dashboard(self):
