@@ -54,6 +54,10 @@ def optional_probability_env_float(name: str) -> float | None:
     return value
 
 
+def boolean_env(name: str, default: bool = False) -> bool:
+    return os.getenv(name, str(default)).strip().lower() in {"1", "true", "yes", "on"}
+
+
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "")
 DEBUG = False
 ALLOWED_HOSTS: list[str] = []
@@ -94,6 +98,7 @@ AI_SECURITY_MODEL_PATH = Path(
 # tuned to", see ml/predictor.py. Setting this explicitly overrides that
 # without needing to retrain the model.
 AI_SECURITY_THRESHOLD = optional_probability_env_float("AI_SECURITY_THRESHOLD")
+TRUST_PROXY_HEADERS = boolean_env("TRUST_PROXY_HEADERS")
 
 # How the login throttle in accounts/security.py behaves: how many failed
 # attempts are allowed, over what time window, and how long a block lasts

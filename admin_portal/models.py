@@ -28,6 +28,19 @@ class AuditLog(models.Model):
     ACTION_TICKET_COMMENT_ADDED = "TICKET_COMMENT_ADDED"
     ACTION_RESOLUTION_NOTE_ADDED = "RESOLUTION_NOTE_ADDED"
     ACTION_AI_CATEGORY_OVERRIDDEN = "AI_CATEGORY_OVERRIDDEN"
+    ACTION_SECURITY_TICKET_FLAGGED = "SECURITY_TICKET_FLAGGED"
+
+    SEVERITY_LOW = "low"
+    SEVERITY_MEDIUM = "medium"
+    SEVERITY_HIGH = "high"
+    SEVERITY_CRITICAL = "critical"
+
+    SEVERITY_CHOICES = [
+        (SEVERITY_LOW, "Low"),
+        (SEVERITY_MEDIUM, "Medium"),
+        (SEVERITY_HIGH, "High"),
+        (SEVERITY_CRITICAL, "Critical"),
+    ]
 
     ACTION_CHOICES = [
         (ACTION_LOGIN_FAILED, "Login failed"),
@@ -47,6 +60,7 @@ class AuditLog(models.Model):
         (ACTION_TICKET_COMMENT_ADDED, "Ticket comment added"),
         (ACTION_RESOLUTION_NOTE_ADDED, "Resolution note added"),
         (ACTION_AI_CATEGORY_OVERRIDDEN, "AI category overridden"),
+        (ACTION_SECURITY_TICKET_FLAGGED, "Security ticket flagged"),
     ]
 
     # Null and blank because some events, like a failed login for an
@@ -64,10 +78,21 @@ class AuditLog(models.Model):
     target_id = models.PositiveIntegerField(null=True, blank=True)
     target_repr = models.CharField(max_length=255)
     message = models.TextField()
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    severity = models.CharField(
+        max_length=10,
+        choices=SEVERITY_CHOICES,
+        default=SEVERITY_LOW,
+    )
+    flagged = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["flagged", "-created_at"]),
+            models.Index(fields=["severity", "-created_at"]),
+        ]
 
     def __str__(self):
         return f"{self.get_action_display()} - {self.target_repr}"

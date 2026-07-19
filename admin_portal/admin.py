@@ -12,9 +12,18 @@ from admin_portal.models import AuditLog
 # audit records should never be editable once created.
 @admin.register(AuditLog)
 class AuditLogAdmin(admin.ModelAdmin):
-    list_display = ("created_at", "action", "actor", "target_type", "target_repr")
-    list_filter = ("action", "target_type", "created_at")
-    search_fields = ("actor__email", "target_repr", "message")
+    list_display = (
+        "created_at",
+        "action",
+        "severity",
+        "flagged",
+        "actor",
+        "ip_address",
+        "target_type",
+        "target_repr",
+    )
+    list_filter = ("flagged", "severity", "action", "target_type", "created_at")
+    search_fields = ("actor__email", "ip_address", "target_repr", "message")
     readonly_fields = (
         "actor",
         "action",
@@ -22,5 +31,8 @@ class AuditLogAdmin(admin.ModelAdmin):
         "target_id",
         "target_repr",
         "message",
+        "ip_address",
+        "severity",
+        "flagged",
         "created_at",
     )
