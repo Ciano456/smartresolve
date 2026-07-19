@@ -7,6 +7,8 @@ from django.contrib import admin
 from .models import NotificationEvent
 
 
+# Read only browsing of every notification attempt, handy for checking
+# whether an email actually went out and why it might have failed.
 @admin.register(NotificationEvent)
 class NotificationEventAdmin(admin.ModelAdmin):
     list_display = (

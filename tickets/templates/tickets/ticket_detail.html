@@ -38,6 +38,34 @@
                                     <div class="rounded-xl bg-slate-50 p-4"><dt class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">System</dt><dd class="mt-2 font-bold">{{ ticket.ticket_system.name }}</dd></div>
                                 </dl>
 
+                                <section class="mt-7 rounded-2xl border {% if category_prediction.is_security_flagged %}border-rose-300 bg-rose-50{% else %}border-blue-200 bg-blue-50{% endif %} p-5">
+                                    <div class="flex flex-wrap items-start justify-between gap-3">
+                                        <div>
+                                            <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">AI-assisted category</p>
+                                            <p class="mt-2 text-lg font-bold text-slate-900">{% if category_prediction %}{{ category_prediction.effective_category_display }}{% else %}Uncategorised{% endif %}</p>
+                                            {% if category_prediction.predicted_category %}
+                                            <p class="mt-1 text-sm text-slate-600">Suggested {{ category_prediction.get_predicted_category_display }} at {{ category_prediction.confidence|floatformat:2 }} confidence.</p>
+                                            {% else %}
+                                            <p class="mt-1 text-sm text-slate-600">No AI category is available. Select a category manually.</p>
+                                            {% endif %}
+                                        </div>
+                                        {% if category_prediction.is_security_flagged %}
+                                        <span class="rounded-full bg-rose-600 px-3 py-2 text-xs font-bold text-white">Security review required</span>
+                                        {% endif %}
+                                    </div>
+                                    <form method="post" action="{% url 'ticket_category_override' ticket.id %}" class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
+                                        {% csrf_token %}
+                                        <div class="w-full sm:max-w-sm">
+                                            <label for="{{ category_override_form.staff_override_category.id_for_label }}" class="block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Staff override</label>
+                                            {{ category_override_form.staff_override_category }}
+                                            {% if category_override_form.staff_override_category.errors %}
+                                            <div class="mt-2 text-sm font-semibold text-rose-600">{{ category_override_form.staff_override_category.errors }}</div>
+                                            {% endif %}
+                                        </div>
+                                        <button type="submit" class="inline-flex justify-center rounded-xl bg-slate-900 px-5 py-3 font-bold text-white transition hover:bg-slate-700">Save category</button>
+                                    </form>
+                                </section>
+
                                 {% if ticket.resolution_summary or ticket.cancellation_reason %}
                                 <section class="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-5">
                                     {% if ticket.resolution_summary %}

@@ -11,6 +11,10 @@ from accounts.decorators import admin_or_support_staff_required
 from dashboard.services import build_dashboard_context, build_dashboard_export_response
 
 
+# Both views are kept deliberately thin. All the real work of pulling
+# stats and building chart data lives in dashboard/services.py, these
+# just wire that up to a template or an HTTP response and enforce that
+# only admins and support staff can see it.
 @method_decorator(admin_or_support_staff_required, name="dispatch")
 class DashboardView(TemplateView):
     template_name = "dashboard/dashboard.html"

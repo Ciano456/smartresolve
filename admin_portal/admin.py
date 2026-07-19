@@ -7,6 +7,9 @@ from django.contrib import admin
 from admin_portal.models import AuditLog
 
 
+# Lets audit log entries be browsed in the plain Django admin site as
+# well as the app's own audit log page. Everything is read only here,
+# audit records should never be editable once created.
 @admin.register(AuditLog)
 class AuditLogAdmin(admin.ModelAdmin):
     list_display = ("created_at", "action", "actor", "target_type", "target_repr")

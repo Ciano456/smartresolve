@@ -84,6 +84,10 @@
                                     <label for="created_to" class="block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Created To</label>
                                     <input id="created_to" name="created_to" type="date" value="{{ active_filters.created_to }}" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-800 shadow-sm focus:border-[#0756f8] focus:outline-none focus:ring-2 focus:ring-[#0756f8]/20">
                                 </div>
+                                <label class="flex items-center gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-bold text-slate-700">
+                                    <input name="security_flagged" type="checkbox" value="1" {% if active_filters.security_flagged == "1" %}checked{% endif %} class="h-4 w-4 rounded border-slate-300 text-[#0756f8] focus:ring-[#0756f8]">
+                                    Security flagged only
+                                </label>
                             </div>
                             <div class="mt-5 flex flex-wrap gap-3">
                                 <button type="submit" class="inline-flex rounded-lg bg-[#0756f8] px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-[#0046d6]">Apply Filters</button>
@@ -110,7 +114,12 @@
                                     {% for ticket in tickets %}
                                     <tr>
                                         <td class="font-bold">{{ ticket.ticket_number }}</td>
-                                        <td>{{ ticket.title }}</td>
+                                        <td>
+                                            {{ ticket.title }}
+                                            {% if ticket.ai_prediction.is_security_flagged %}
+                                            <span class="ml-2 inline-flex rounded-full bg-rose-100 px-2 py-1 text-xs font-bold text-rose-800">Security review</span>
+                                            {% endif %}
+                                        </td>
                                         <td class="text-slate-600">{{ ticket.submitter }}</td>
                                         <td><span class="rounded-full bg-blue-50 px-3 py-2 text-xs font-bold text-[#0756f8]">{{ ticket.ticket_status.name }}</span></td>
                                         <td>{{ ticket.ticket_priority.name }}</td>

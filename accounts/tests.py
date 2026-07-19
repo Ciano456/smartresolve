@@ -11,6 +11,8 @@ from admin_portal.models import AuditLog
 from django.contrib.auth.models import Group
 
 
+# Covers login, logout, the role based redirect after login, and the
+# login rate limiting from accounts/security.py.
 class AuthViewTests(TestCase):
     def setUp(self):
         cache.clear()

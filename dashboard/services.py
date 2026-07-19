@@ -25,6 +25,11 @@ from django.utils import timezone
 
 from tickets.models import Ticket
 
+# Spreadsheet programs like Excel treat a cell starting with one of these
+# characters as a formula, not plain text. If a ticket title started with
+# "=" for example, opening the exported CSV in Excel could run it as a
+# formula. This is the well known CSV injection issue, and
+# _sanitize_csv_value below is what actually defends against it.
 CSV_DANGEROUS_PREFIXES = ("=", "+", "-", "@")
 CSV_EXPORT_FIELDNAMES = [
     "ticket_number",
@@ -73,6 +78,10 @@ def _format_duration(duration: timedelta | None) -> str | None:
 
 
 def _month_sequence(months: int = 6) -> list[date]:
+    # Builds the last six months as a fixed list, including any month
+    # with zero closed tickets. Without this, a month with no activity
+    # would just be missing from the chart instead of showing as a flat
+    # zero, which would be a bit misleading.
     current = timezone.localdate().replace(day=1)
     sequence: list[date] = []
 
@@ -93,6 +102,9 @@ def _build_breakdown(
     queryset: QuerySet[Ticket],
     field_name: str,
 ) -> dict[str, list[Any]]:
+    # Shared by the status, priority, type and system charts. field_name
+    # is whichever lookup relation is being grouped by, so this one
+    # function replaces four almost identical ones.
     rows = (
         queryset.values(
             f"{field_name}__name",
@@ -154,6 +166,10 @@ def _build_resolution_trend(queryset: QuerySet[Ticket]) -> dict[str, list[Any]]:
 
 
 def _sanitize_csv_value(value: str) -> str:
+    # Prefixing with a single quote tells spreadsheet software to treat
+    # the value as plain text instead of trying to evaluate it as a
+    # formula. This runs on every field pulled from user input before it
+    # goes into the export.
     stripped_value = value.lstrip()
     if stripped_value and stripped_value[0] in CSV_DANGEROUS_PREFIXES:
         return f"'{value}"
@@ -222,6 +238,10 @@ def build_dashboard_export_response() -> HttpResponse:
 
 
 def build_dashboard_context() -> dict[str, Any]:
+    # Everything the dashboard template needs in one place: the top line
+    # numbers, the five most recently updated tickets, and the data for
+    # every chart. Keeping it all in one function means the view stays
+    # thin and just renders whatever this returns.
     tickets = Ticket.objects.select_related(
         "ticket_status",
         "ticket_priority",

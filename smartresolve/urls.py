@@ -24,6 +24,8 @@ from django.urls import include, path
 
 from smartresolve.views import HealthCheckView
 
+# The dashboard's own urls.py is included from inside accounts/urls.py,
+# not listed separately here.
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("health/", HealthCheckView.as_view(), name="health_check"),

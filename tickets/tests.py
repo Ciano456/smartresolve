@@ -3,6 +3,8 @@
 # Module: Final Year Project
 
 from datetime import timedelta
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from django.test import TestCase, override_settings
@@ -21,12 +23,263 @@ from django.contrib.auth.models import Group
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.db.models.deletion import ProtectedError
 from django.urls import reverse
+
+# The biggest test file in the project. Covers ticket CRUD, the full
+# submitter and staff workflows, role based access control, the resolve
+# and cancel flows, file upload validation, attachment download
+# permissions, and the AI prediction integration on ticket creation.
 from django.utils import timezone
 
 from .forms import TicketAttachmentForm
 from . import notifications as ticket_notifications
 from admin_portal.models import AuditLog
 from notifications.models import NotificationEvent
+from ml.models import TicketCategoryPrediction
+from ml.classifier import TextClassifier
+from ml.predictor import PredictionResult, clear_classifier_cache
+from ml.services import create_prediction_for_ticket
+
+
+class TicketAIIntegrationTests(TestCase):
+    def setUp(self):
+        # Shared actors and lookups exercise real role and ticket behaviour.
+        User = get_user_model()
+        self.submitter_group = Group.objects.create(name="Submitter")
+        self.support_group = Group.objects.create(name="Support Staff")
+        self.submitter = User.objects.create_user(
+            email="ai-user@test.com", password="password123"
+        )
+        self.support = User.objects.create_user(
+            email="ai-support@test.com", password="password123"
+        )
+        self.submitter.groups.add(self.submitter_group)
+        self.support.groups.add(self.support_group)
+        self.ticket_type = TicketType.objects.get(code="INCIDENT")
+        self.ticket_system = TicketSystem.objects.get(code="SOFTWARE")
+        self.priority = TicketPriority.objects.get(code="MEDIUM")
+        self.status = TicketStatus.objects.get(code="OPEN")
+        self.ticket = Ticket.objects.create(
+            title="Suspicious application",
+            description="A phishing prompt appeared in the application.",
+            submitter=self.submitter,
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.priority,
+            ticket_status=self.status,
+        )
+        self.prediction = TicketCategoryPrediction.objects.create(
+            ticket=self.ticket,
+            predicted_category="software",
+            confidence=0.78,
+            category_model_name="LogisticRegression",
+            category_model_version="a" * 64,
+            is_security_flagged=True,
+            security_confidence=0.91,
+            security_threshold=0.3,
+            matched_keywords="phishing",
+        )
+
+    @patch("tickets.views.create_prediction_for_ticket")
+    def test_ticket_creation_calls_ai_service(self, prediction_service):
+        # Valid submitter creation should request an assistive prediction once.
+        self.client.force_login(self.submitter)
+        response = self.client.post(
+            reverse("ticket_create"),
+            {
+                "title": "Monitor broken",
+                "description": "No display appears.",
+                "ticket_type": self.ticket_type.id,
+                "ticket_system": self.ticket_system.id,
+                "ticket_priority": self.priority.id,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        prediction_service.assert_called_once()
+
+    @patch("tickets.views.ticket_notifications.notify_ticket_created")
+    def test_ticket_creation_persists_real_model_prediction(self, notification):
+        # A real temporary artifact proves the complete create-and-persist path.
+        texts = [
+            "broken laptop screen",
+            "laptop keyboard fault",
+            "application software crash",
+            "software update error",
+            "wifi network unavailable",
+            "vpn network timeout",
+            "folder access denied",
+            "account permission request",
+        ]
+        labels = [
+            "hardware",
+            "hardware",
+            "software",
+            "software",
+            "network",
+            "network",
+            "access",
+            "access",
+        ]
+        security_labels = [False, False, False, False, False, False, True, True]
+        category_pipeline = TextClassifier.build_logistic_pipeline()
+        category_pipeline.fit(texts, labels)
+        security_pipeline = TextClassifier.build_logistic_pipeline()
+        security_pipeline.fit(texts, security_labels)
+
+        with TemporaryDirectory() as directory:
+            category_path = Path(directory) / "category.joblib"
+            security_path = Path(directory) / "security.joblib"
+            TextClassifier(category_pipeline).save(category_path)
+            TextClassifier(security_pipeline).save(
+                security_path, metadata={"threshold": 0.4}
+            )
+            with override_settings(
+                AI_CATEGORY_MODEL_PATH=category_path,
+                AI_SECURITY_MODEL_PATH=security_path,
+                AI_SECURITY_THRESHOLD=None,
+            ):
+                clear_classifier_cache()
+                self.client.force_login(self.submitter)
+                response = self.client.post(
+                    reverse("ticket_create"),
+                    {
+                        "title": "VPN connection unavailable",
+                        "description": "The company network times out.",
+                        "ticket_type": self.ticket_type.id,
+                        "ticket_system": self.ticket_system.id,
+                        "ticket_priority": self.priority.id,
+                    },
+                )
+                created_ticket = Ticket.objects.exclude(pk=self.ticket.pk).get()
+                self.assertEqual(response.status_code, 302)
+                self.assertTrue(
+                    TicketCategoryPrediction.objects.filter(
+                        ticket=created_ticket,
+                        predicted_category="network",
+                        security_threshold=0.4,
+                    ).exists()
+                )
+        clear_classifier_cache()
+
+    def test_support_staff_can_override_category_and_action_is_audited(self):
+        # Human review must replace the effective category and retain accountability.
+        self.client.force_login(self.support)
+        response = self.client.post(
+            reverse("ticket_category_override", args=[self.ticket.id]),
+            {"staff_override_category": "hardware"},
+        )
+        self.assertRedirects(response, reverse("ticket_detail", args=[self.ticket.id]))
+        self.prediction.refresh_from_db()
+        self.assertEqual(self.prediction.effective_category, "hardware")
+        self.assertEqual(self.prediction.overridden_by, self.support)
+        self.assertTrue(
+            AuditLog.objects.filter(
+                action=AuditLog.ACTION_AI_CATEGORY_OVERRIDDEN, target_id=self.ticket.id
+            ).exists()
+        )
+
+    def test_submitter_cannot_override_category(self):
+        # Submitters must not be able to alter staff-facing AI review evidence.
+        self.client.force_login(self.submitter)
+        response = self.client.post(
+            reverse("ticket_category_override", args=[self.ticket.id]),
+            {"staff_override_category": "hardware"},
+        )
+        self.assertRedirects(response, reverse("profile"))
+        self.prediction.refresh_from_db()
+        self.assertEqual(self.prediction.effective_category, "software")
+
+    def test_staff_can_manually_categorise_when_ai_prediction_is_missing(self):
+        # FR8 fallback must let staff categorise a ticket without model output.
+        self.prediction.delete()
+        self.client.force_login(self.support)
+
+        detail_response = self.client.get(
+            reverse("ticket_detail", args=[self.ticket.id])
+        )
+        update_response = self.client.post(
+            reverse("ticket_category_override", args=[self.ticket.id]),
+            {"staff_override_category": "access"},
+        )
+
+        self.assertContains(detail_response, "No AI category is available")
+        self.assertRedirects(
+            update_response, reverse("ticket_detail", args=[self.ticket.id])
+        )
+        prediction = TicketCategoryPrediction.objects.get(ticket=self.ticket)
+        self.assertEqual(prediction.effective_category, "access")
+        self.assertEqual(prediction.overridden_by, self.support)
+
+    def test_security_keyword_triage_persists_without_category_models(self):
+        # A category outage must not suppress independent phishing triage.
+        self.prediction.delete()
+        with TemporaryDirectory() as directory:
+            missing = Path(directory) / "missing.joblib"
+            with override_settings(
+                AI_CATEGORY_MODEL_PATH=missing,
+                AI_SECURITY_MODEL_PATH=missing,
+                AI_SECURITY_THRESHOLD=None,
+            ):
+                clear_classifier_cache()
+                prediction = create_prediction_for_ticket(self.ticket)
+
+        clear_classifier_cache()
+        self.assertIsNotNone(prediction)
+        self.assertEqual(prediction.predicted_category, "")
+        self.assertTrue(prediction.is_security_flagged)
+        self.assertIn("phishing", prediction.matched_keywords)
+
+    def test_security_filter_returns_only_flagged_tickets(self):
+        # The queue filter should expose only tickets requiring security review.
+        other_ticket = Ticket.objects.create(
+            title="Routine reset",
+            description="Forgotten password.",
+            submitter=self.submitter,
+            ticket_type=self.ticket_type,
+            ticket_system=self.ticket_system,
+            ticket_priority=self.priority,
+            ticket_status=self.status,
+        )
+        TicketCategoryPrediction.objects.create(
+            ticket=other_ticket,
+            predicted_category="access",
+            confidence=0.8,
+            category_model_name="LogisticRegression",
+            category_model_version="b" * 64,
+            is_security_flagged=False,
+            security_threshold=0.3,
+        )
+        self.client.force_login(self.support)
+        response = self.client.get(reverse("ticket_list"), {"security_flagged": "1"})
+        self.assertContains(response, self.ticket.title)
+        self.assertNotContains(response, other_ticket.title)
+
+    @patch("ml.services.TicketCategoryPrediction.objects.create")
+    @patch("ml.services.predict_for_ticket")
+    def test_prediction_persistence_failure_preserves_ticket(
+        self, predictor, prediction_create
+    ):
+        # Optional AI persistence failures must leave the core ticket intact.
+        from django.db import DatabaseError
+
+        predictor.return_value = PredictionResult(
+            available=True,
+            category="software",
+            confidence=0.8,
+            category_model_name="LogisticRegression",
+            category_model_version="c" * 64,
+        )
+        prediction_create.side_effect = DatabaseError("prediction unavailable")
+
+        result = create_prediction_for_ticket(self.ticket)
+
+        self.assertIsNone(result)
+        self.assertTrue(Ticket.objects.filter(pk=self.ticket.pk).exists())
+
+    def test_selected_prediction_does_not_add_a_query(self):
+        # Staff list query optimisation must avoid an N+1 prediction lookup.
+        ticket = Ticket.objects.select_related("ai_prediction").get(pk=self.ticket.pk)
+        with self.assertNumQueries(0):
+            self.assertTrue(ticket.ai_prediction.is_security_flagged)
 
 
 class TicketModelTest(TestCase):

@@ -11,6 +11,9 @@ from django.db.models import QuerySet
 from django.http import FileResponse, HttpRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.dateparse import parse_date
+from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views import View
 
 from accounts.decorators import admin_or_support_staff_required, submitter_required
 from admin_portal.audit import record_audit_log
@@ -18,6 +21,7 @@ from admin_portal.models import AuditLog
 from . import notifications as ticket_notifications
 
 from .forms import (
+    StaffCategoryOverrideForm,
     StaffTicketCancelForm,
     StaffTicketAssignmentForm,
     StaffTicketCommentForm,
@@ -28,6 +32,8 @@ from .forms import (
     TicketCommentForm,
     TicketForm,
 )
+from ml.services import create_prediction_for_ticket
+from ml.models import TicketCategoryPrediction
 from .models import (
     Ticket,
     TicketAttachment,
@@ -60,6 +66,9 @@ def _record_ticket_audit_log(
 
 
 def _can_download_attachment(user, attachment: TicketAttachment) -> bool:
+    # Staff and admins can download anything. A submitter can only
+    # download attachments on their own tickets, not anyone else's, even
+    # if they somehow guess the file's URL.
     if user.is_admin_role or user.is_support_staff_role:
         return True
     return user.is_submitter_role and attachment.ticket.submitter_id == user.id
@@ -70,6 +79,10 @@ def _ticket_history_entries(ticket: Ticket) -> QuerySet[TicketHistory]:
 
 
 def _valid_filter_id(raw_value: str | None, queryset: QuerySet) -> int | None:
+    # Used when reading filter values (status, priority, and so on) out
+    # of the query string. Anything that isn't a real digit, or doesn't
+    # match an actual row, is treated as no filter at all rather than
+    # crashing on a bad or tampered with URL.
     if not raw_value or not raw_value.isdigit():
         return None
     value = int(raw_value)
@@ -91,8 +104,18 @@ def _staff_ticket_detail_context(
     resolution_note_form: StaffTicketResolutionNoteForm | None = None,
     resolve_form: StaffTicketResolveForm | None = None,
     cancel_form: StaffTicketCancelForm | None = None,
+    category_override_form: StaffCategoryOverrideForm | None = None,
     status_error: str = "",
 ) -> dict:
+    # A ticket only has an ai_prediction if the AI model was available
+    # when it was created. Reading a missing OneToOneField raises
+    # DoesNotExist rather than just returning None, so this is caught
+    # here and turned into a plain None, which the template already
+    # knows how to handle (it just doesn't show a suggestion).
+    try:
+        category_prediction = ticket.ai_prediction
+    except TicketCategoryPrediction.DoesNotExist:
+        category_prediction = None
     return {
         "ticket": ticket,
         "status_options": TicketStatus.objects.filter(
@@ -112,6 +135,9 @@ def _staff_ticket_detail_context(
         "resolution_note_form": resolution_note_form or StaffTicketResolutionNoteForm(),
         "resolve_form": resolve_form or StaffTicketResolveForm(instance=ticket),
         "cancel_form": cancel_form or StaffTicketCancelForm(instance=ticket),
+        "category_prediction": category_prediction,
+        "category_override_form": category_override_form
+        or StaffCategoryOverrideForm(instance=category_prediction),
     }
 
 
@@ -131,6 +157,11 @@ def my_tickets(request):
 @login_required
 @submitter_required
 def my_ticket_detail(request, id):
+    # submitter=request.user in the lookup is what stops one submitter
+    # from viewing another submitter's ticket just by guessing an id in
+    # the URL. If the ticket exists but belongs to someone else, this
+    # returns a normal 404 rather than a permission error, so it doesn't
+    # even confirm that a ticket with that id exists.
     ticket_detail = get_object_or_404(Ticket, id=id, submitter=request.user)
     comment_detail = (
         TicketComment.objects.filter(
@@ -170,6 +201,12 @@ def ticket_create(request):
             open_status = TicketStatus.objects.get(code="OPEN")
             ticket.ticket_status = open_status
             ticket.save()
+            # This is where FR8 actually runs: right after a ticket is
+            # saved, the AI model gets a look at it and (if a model is
+            # available) a TicketCategoryPrediction gets attached. If
+            # nothing is available this just quietly does nothing, so
+            # ticket creation always succeeds either way.
+            create_prediction_for_ticket(ticket)
             ticket_history = TicketHistory(
                 ticket=ticket,
                 changed_by=request.user,
@@ -243,6 +280,11 @@ def attachment_create(request, ticket_id):
             attachment.save()
             return redirect("my_ticket_detail", id=ticket_id)
         else:
+            # If the form is invalid because the file itself failed
+            # validation (wrong type, bad size, content doesn't match its
+            # extension), that gets recorded in the audit log. A rejected
+            # upload could be an honest mistake, but it could also be
+            # someone probing the system, so it's worth having a record.
             uploaded_file = request.FILES.get("file")
             if uploaded_file is not None:
                 record_audit_log(
@@ -296,7 +338,13 @@ def ticket_list(request):
         "assigned_to": request.GET.get("assigned_to", ""),
         "created_from": request.GET.get("created_from", ""),
         "created_to": request.GET.get("created_to", ""),
+        "security_flagged": request.GET.get("security_flagged", ""),
     }
+    # ai_prediction is included in select_related so that showing the AI
+    # category and security flag on each row in the list doesn't trigger
+    # a separate database query per ticket. Without this, a list of 25
+    # tickets would mean 25 extra queries just to check each one's AI
+    # prediction.
     tickets = Ticket.objects.select_related(
         "submitter",
         "assigned_to",
@@ -304,6 +352,7 @@ def ticket_list(request):
         "ticket_system",
         "ticket_priority",
         "ticket_status",
+        "ai_prediction",
     )
 
     status_id = _valid_filter_id(active_filters["status"], status_options)
@@ -338,6 +387,12 @@ def ticket_list(request):
     if created_to:
         tickets = tickets.filter(created_at__date__lte=created_to)
 
+    # Lets staff filter the list down to only tickets the AI flagged as
+    # possibly security related, so those can be reviewed as a group
+    # instead of hunting through the full list.
+    if active_filters["security_flagged"] == "1":
+        tickets = tickets.filter(ai_prediction__is_security_flagged=True)
+
     tickets = tickets.order_by("-created_at")
     page_obj = _paginate_queryset(request, tickets)
     filter_query = request.GET.copy()
@@ -371,6 +426,7 @@ def ticket_detail(request, id):
             "ticket_system",
             "ticket_priority",
             "ticket_status",
+            "ai_prediction",
         ).prefetch_related(
             "comments__author",
             "attachments__uploaded_by",
@@ -395,6 +451,12 @@ def ticket_detail(request, id):
                 ),
                 status=400,
             )
+        # Closing statuses can't be set through this generic dropdown.
+        # Resolving or cancelling a ticket has to happen through the
+        # dedicated forms further down this file, which require a
+        # resolution summary or cancellation reason to be filled in
+        # first, so there's always an explanation on record for why a
+        # ticket was closed.
         if new_status.is_closed:
             return render(
                 request,
@@ -441,6 +503,61 @@ def ticket_detail(request, id):
         "tickets/ticket_detail.html",
         _staff_ticket_detail_context(ticket_detail),
     )
+
+
+# The manual override step in FR8's use case: lets staff correct the
+# category the AI suggested. This is a class based view rather than a
+# plain function mostly because it's a single POST only action with no
+# GET page of its own, it always redirects back to the ticket detail page.
+@method_decorator(login_required, name="dispatch")
+@method_decorator(admin_or_support_staff_required, name="dispatch")
+class TicketCategoryOverrideView(View):
+    def post(self, request: HttpRequest, ticket_id: int):
+        ticket = get_object_or_404(
+            Ticket.objects.select_related("ai_prediction"), id=ticket_id
+        )
+        # A ticket created before this feature existed, or one where the
+        # AI model wasn't available at the time, might not have a
+        # prediction row yet. In that case a blank one is created here so
+        # staff can still set a category by hand.
+        prediction = TicketCategoryPrediction.objects.filter(ticket=ticket).first()
+        prediction = prediction or TicketCategoryPrediction(
+            ticket=ticket,
+        )
+        form = StaffCategoryOverrideForm(request.POST, instance=prediction)
+        if not form.is_valid():
+            return render(
+                request,
+                "tickets/ticket_detail.html",
+                _staff_ticket_detail_context(ticket, category_override_form=form),
+                status=400,
+            )
+        previous = prediction.effective_category_display
+        prediction = form.save(commit=False)
+        prediction.overridden_by = request.user
+        prediction.overridden_at = timezone.now()
+        if prediction.pk:
+            prediction.save(
+                update_fields=[
+                    "staff_override_category",
+                    "overridden_by",
+                    "overridden_at",
+                ]
+            )
+        else:
+            prediction.save()
+        record_audit_log(
+            actor=request.user,
+            action=AuditLog.ACTION_AI_CATEGORY_OVERRIDDEN,
+            target_type="Ticket",
+            target_id=ticket.id,
+            target_repr=ticket.ticket_number,
+            message=(
+                f"AI category changed from {previous} to "
+                f"{prediction.effective_category_display}."
+            ),
+        )
+        return redirect("ticket_detail", id=ticket.id)
 
 
 @login_required
@@ -545,6 +662,9 @@ def ticket_resolve(request, ticket_id):
     if request.method != "POST":
         return redirect("ticket_detail", id=ticket_id)
 
+    # A ticket that's already closed shouldn't be resolved again, this
+    # stops someone submitting the resolve form twice from a stale page,
+    # for example after using the back button.
     form = StaffTicketResolveForm(request.POST, instance=ticket)
     if ticket.ticket_status.is_closed:
         form.add_error(
@@ -556,6 +676,10 @@ def ticket_resolve(request, ticket_id):
         old_status = ticket.ticket_status
         updated_ticket = form.save(commit=False)
         updated_ticket.ticket_status = closed_status
+        # A ticket is either resolved or cancelled, never both, so
+        # clearing the cancellation reason here means a ticket can't end
+        # up showing both a resolution summary and a cancellation reason
+        # at the same time.
         updated_ticket.cancellation_reason = ""
         updated_ticket.save(
             update_fields=[
@@ -615,6 +739,8 @@ def ticket_cancel(request, ticket_id):
         old_status = ticket.ticket_status
         updated_ticket = form.save(commit=False)
         updated_ticket.ticket_status = cancelled_status
+        # Mirrors ticket_resolve above: clears the other closing field so
+        # a cancelled ticket never also carries a resolution summary.
         updated_ticket.resolution_summary = ""
         updated_ticket.save(
             update_fields=[
@@ -749,6 +875,9 @@ def attachment_list(request, ticket_id):
     return render(request, "tickets/attachment_list.html", {"attachments": attachments})
 
 
+# Deliberately open to any logged in user rather than staff only,
+# because submitters need to download their own attachments too. The
+# actual permission check happens inside _can_download_attachment.
 @login_required
 def attachment_download(request, attachment_id):
     attachment = get_object_or_404(

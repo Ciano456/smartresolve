@@ -1,0 +1,1484 @@
+{
+  "methodology": "grouped five-fold development cross-validation plus separately authored final holdout",
+  "dataset": {
+    "development_rows": 720,
+    "development_template_groups": 60,
+    "iterative_evaluation_rows": 60,
+    "final_holdout_rows": 60,
+    "fold_count": 5,
+    "sha256": {
+      "development": "a2964a472f08a120ad14f6209ed0cf91896bdc482ef6fa1cdc52206be4db6f5a",
+      "iterative_evaluation": "40fdfa4121c212668dca9a3b02b0bea38b0ebf869496e1d0d6ecbf3fa364e2fe",
+      "final_holdout": "81f6ff1e5a8b5ef75a438363dd29d85b71177d40f6d82d573a70936d7224d85b"
+    }
+  },
+  "selected_category_model": "logistic_regression",
+  "category_cross_validation": {
+    "logistic_regression": {
+      "folds": [
+        {
+          "fold": 1,
+          "validation_groups": [
+            "access-0",
+            "access-13",
+            "access-5",
+            "hardware-0",
+            "hardware-13",
+            "hardware-5",
+            "network-0",
+            "network-13",
+            "network-5",
+            "software-0",
+            "software-13",
+            "software-5"
+          ],
+          "accuracy": 0.8402777777777778,
+          "classification_report": {
+            "access": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1-score": 1.0,
+              "support": 36.0
+            },
+            "hardware": {
+              "precision": 0.6756756756756757,
+              "recall": 0.6944444444444444,
+              "f1-score": 0.684931506849315,
+              "support": 36.0
+            },
+            "network": {
+              "precision": 0.75,
+              "recall": 0.6666666666666666,
+              "f1-score": 0.7058823529411765,
+              "support": 36.0
+            },
+            "software": {
+              "precision": 0.9230769230769231,
+              "recall": 1.0,
+              "f1-score": 0.96,
+              "support": 36.0
+            },
+            "accuracy": 0.8402777777777778,
+            "macro avg": {
+              "precision": 0.8371881496881497,
+              "recall": 0.8402777777777778,
+              "f1-score": 0.8377034649476229,
+              "support": 144.0
+            },
+            "weighted avg": {
+              "precision": 0.8371881496881497,
+              "recall": 0.8402777777777778,
+              "f1-score": 0.8377034649476229,
+              "support": 144.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              36,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              25,
+              8,
+              3
+            ],
+            [
+              0,
+              12,
+              24,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              36
+            ]
+          ],
+          "labels": [
+            "access",
+            "hardware",
+            "network",
+            "software"
+          ]
+        },
+        {
+          "fold": 2,
+          "validation_groups": [
+            "access-1",
+            "access-14",
+            "access-6",
+            "hardware-1",
+            "hardware-14",
+            "hardware-6",
+            "network-1",
+            "network-14",
+            "network-6",
+            "software-1",
+            "software-14",
+            "software-6"
+          ],
+          "accuracy": 0.75,
+          "classification_report": {
+            "access": {
+              "precision": 0.9230769230769231,
+              "recall": 0.6666666666666666,
+              "f1-score": 0.7741935483870968,
+              "support": 36.0
+            },
+            "hardware": {
+              "precision": 1.0,
+              "recall": 0.3611111111111111,
+              "f1-score": 0.5306122448979592,
+              "support": 36.0
+            },
+            "network": {
+              "precision": 0.7346938775510204,
+              "recall": 1.0,
+              "f1-score": 0.8470588235294118,
+              "support": 36.0
+            },
+            "software": {
+              "precision": 0.625,
+              "recall": 0.9722222222222222,
+              "f1-score": 0.7608695652173914,
+              "support": 36.0
+            },
+            "accuracy": 0.75,
+            "macro avg": {
+              "precision": 0.8206927001569859,
+              "recall": 0.75,
+              "f1-score": 0.7281835455079648,
+              "support": 144.0
+            },
+            "weighted avg": {
+              "precision": 0.8206927001569858,
+              "recall": 0.75,
+              "f1-score": 0.7281835455079648,
+              "support": 144.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              24,
+              0,
+              0,
+              12
+            ],
+            [
+              1,
+              13,
+              13,
+              9
+            ],
+            [
+              0,
+              0,
+              36,
+              0
+            ],
+            [
+              1,
+              0,
+              0,
+              35
+            ]
+          ],
+          "labels": [
+            "access",
+            "hardware",
+            "network",
+            "software"
+          ]
+        },
+        {
+          "fold": 3,
+          "validation_groups": [
+            "access-10",
+            "access-2",
+            "access-7",
+            "hardware-10",
+            "hardware-2",
+            "hardware-7",
+            "network-10",
+            "network-2",
+            "network-7",
+            "software-10",
+            "software-2",
+            "software-7"
+          ],
+          "accuracy": 0.7916666666666666,
+          "classification_report": {
+            "access": {
+              "precision": 1.0,
+              "recall": 0.8611111111111112,
+              "f1-score": 0.9253731343283582,
+              "support": 36.0
+            },
+            "hardware": {
+              "precision": 0.9230769230769231,
+              "recall": 0.3333333333333333,
+              "f1-score": 0.4897959183673469,
+              "support": 36.0
+            },
+            "network": {
+              "precision": 0.5932203389830508,
+              "recall": 0.9722222222222222,
+              "f1-score": 0.7368421052631579,
+              "support": 36.0
+            },
+            "software": {
+              "precision": 0.8780487804878049,
+              "recall": 1.0,
+              "f1-score": 0.935064935064935,
+              "support": 36.0
+            },
+            "accuracy": 0.7916666666666666,
+            "macro avg": {
+              "precision": 0.8485865106369447,
+              "recall": 0.7916666666666666,
+              "f1-score": 0.7717690232559495,
+              "support": 144.0
+            },
+            "weighted avg": {
+              "precision": 0.8485865106369447,
+              "recall": 0.7916666666666666,
+              "f1-score": 0.7717690232559495,
+              "support": 144.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              31,
+              0,
+              0,
+              5
+            ],
+            [
+              0,
+              12,
+              24,
+              0
+            ],
+            [
+              0,
+              1,
+              35,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              36
+            ]
+          ],
+          "labels": [
+            "access",
+            "hardware",
+            "network",
+            "software"
+          ]
+        },
+        {
+          "fold": 4,
+          "validation_groups": [
+            "access-11",
+            "access-3",
+            "access-8",
+            "hardware-11",
+            "hardware-3",
+            "hardware-8",
+            "network-11",
+            "network-3",
+            "network-8",
+            "software-11",
+            "software-3",
+            "software-8"
+          ],
+          "accuracy": 0.7916666666666666,
+          "classification_report": {
+            "access": {
+              "precision": 0.8666666666666667,
+              "recall": 0.7222222222222222,
+              "f1-score": 0.7878787878787878,
+              "support": 36.0
+            },
+            "hardware": {
+              "precision": 0.6923076923076923,
+              "recall": 1.0,
+              "f1-score": 0.8181818181818182,
+              "support": 36.0
+            },
+            "network": {
+              "precision": 0.7560975609756098,
+              "recall": 0.8611111111111112,
+              "f1-score": 0.8051948051948052,
+              "support": 36.0
+            },
+            "software": {
+              "precision": 1.0,
+              "recall": 0.5833333333333334,
+              "f1-score": 0.7368421052631579,
+              "support": 36.0
+            },
+            "accuracy": 0.7916666666666666,
+            "macro avg": {
+              "precision": 0.8287679799874922,
+              "recall": 0.7916666666666667,
+              "f1-score": 0.7870243791296423,
+              "support": 144.0
+            },
+            "weighted avg": {
+              "precision": 0.8287679799874922,
+              "recall": 0.7916666666666666,
+              "f1-score": 0.7870243791296424,
+              "support": 144.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              26,
+              0,
+              10,
+              0
+            ],
+            [
+              0,
+              36,
+              0,
+              0
+            ],
+            [
+              0,
+              5,
+              31,
+              0
+            ],
+            [
+              4,
+              11,
+              0,
+              21
+            ]
+          ],
+          "labels": [
+            "access",
+            "hardware",
+            "network",
+            "software"
+          ]
+        },
+        {
+          "fold": 5,
+          "validation_groups": [
+            "access-12",
+            "access-4",
+            "access-9",
+            "hardware-12",
+            "hardware-4",
+            "hardware-9",
+            "network-12",
+            "network-4",
+            "network-9",
+            "software-12",
+            "software-4",
+            "software-9"
+          ],
+          "accuracy": 0.9513888888888888,
+          "classification_report": {
+            "access": {
+              "precision": 0.9473684210526315,
+              "recall": 1.0,
+              "f1-score": 0.972972972972973,
+              "support": 36.0
+            },
+            "hardware": {
+              "precision": 0.96875,
+              "recall": 0.8611111111111112,
+              "f1-score": 0.9117647058823529,
+              "support": 36.0
+            },
+            "network": {
+              "precision": 0.9459459459459459,
+              "recall": 0.9722222222222222,
+              "f1-score": 0.958904109589041,
+              "support": 36.0
+            },
+            "software": {
+              "precision": 0.9459459459459459,
+              "recall": 0.9722222222222222,
+              "f1-score": 0.958904109589041,
+              "support": 36.0
+            },
+            "accuracy": 0.9513888888888888,
+            "macro avg": {
+              "precision": 0.9520025782361309,
+              "recall": 0.951388888888889,
+              "f1-score": 0.950636474508352,
+              "support": 144.0
+            },
+            "weighted avg": {
+              "precision": 0.952002578236131,
+              "recall": 0.9513888888888888,
+              "f1-score": 0.950636474508352,
+              "support": 144.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              36,
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              31,
+              2,
+              2
+            ],
+            [
+              1,
+              0,
+              35,
+              0
+            ],
+            [
+              0,
+              1,
+              0,
+              35
+            ]
+          ],
+          "labels": [
+            "access",
+            "hardware",
+            "network",
+            "software"
+          ]
+        }
+      ],
+      "accuracy_mean": 0.825,
+      "accuracy_std": 0.06936106105102095,
+      "macro_f1_mean": 0.8150633774699063,
+      "macro_f1_std": 0.07629066776226112,
+      "aggregate": {
+        "accuracy": 0.825,
+        "classification_report": {
+          "access": {
+            "precision": 0.9503105590062112,
+            "recall": 0.85,
+            "f1-score": 0.8973607038123167,
+            "support": 180.0
+          },
+          "hardware": {
+            "precision": 0.7959183673469388,
+            "recall": 0.65,
+            "f1-score": 0.7155963302752294,
+            "support": 180.0
+          },
+          "network": {
+            "precision": 0.7385321100917431,
+            "recall": 0.8944444444444445,
+            "f1-score": 0.8090452261306532,
+            "support": 180.0
+          },
+          "software": {
+            "precision": 0.8402061855670103,
+            "recall": 0.9055555555555556,
+            "f1-score": 0.8716577540106952,
+            "support": 180.0
+          },
+          "accuracy": 0.825,
+          "macro avg": {
+            "precision": 0.8312418055029759,
+            "recall": 0.825,
+            "f1-score": 0.8234150035572236,
+            "support": 720.0
+          },
+          "weighted avg": {
+            "precision": 0.8312418055029759,
+            "recall": 0.825,
+            "f1-score": 0.8234150035572237,
+            "support": 720.0
+          }
+        },
+        "confusion_matrix": [
+          [
+            153,
+            0,
+            10,
+            17
+          ],
+          [
+            2,
+            117,
+            47,
+            14
+          ],
+          [
+            1,
+            18,
+            161,
+            0
+          ],
+          [
+            5,
+            12,
+            0,
+            163
+          ]
+        ],
+        "labels": [
+          "access",
+          "hardware",
+          "network",
+          "software"
+        ]
+      }
+    },
+    "naive_bayes": {
+      "folds": [
+        {
+          "fold": 1,
+          "validation_groups": [
+            "access-0",
+            "access-13",
+            "access-5",
+            "hardware-0",
+            "hardware-13",
+            "hardware-5",
+            "network-0",
+            "network-13",
+            "network-5",
+            "software-0",
+            "software-13",
+            "software-5"
+          ],
+          "accuracy": 0.8194444444444444,
+          "classification_report": {
+            "access": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1-score": 1.0,
+              "support": 36.0
+            },
+            "hardware": {
+              "precision": 0.6666666666666666,
+              "recall": 0.6666666666666666,
+              "f1-score": 0.6666666666666666,
+              "support": 36.0
+            },
+            "network": {
+              "precision": 0.631578947368421,
+              "recall": 0.6666666666666666,
+              "f1-score": 0.6486486486486487,
+              "support": 36.0
+            },
+            "software": {
+              "precision": 1.0,
+              "recall": 0.9444444444444444,
+              "f1-score": 0.9714285714285714,
+              "support": 36.0
+            },
+            "accuracy": 0.8194444444444444,
+            "macro avg": {
+              "precision": 0.8245614035087718,
+              "recall": 0.8194444444444444,
+              "f1-score": 0.8216859716859717,
+              "support": 144.0
+            },
+            "weighted avg": {
+              "precision": 0.8245614035087718,
+              "recall": 0.8194444444444444,
+              "f1-score": 0.8216859716859717,
+              "support": 144.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              36,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              24,
+              12,
+              0
+            ],
+            [
+              0,
+              12,
+              24,
+              0
+            ],
+            [
+              0,
+              0,
+              2,
+              34
+            ]
+          ],
+          "labels": [
+            "access",
+            "hardware",
+            "network",
+            "software"
+          ]
+        },
+        {
+          "fold": 2,
+          "validation_groups": [
+            "access-1",
+            "access-14",
+            "access-6",
+            "hardware-1",
+            "hardware-14",
+            "hardware-6",
+            "network-1",
+            "network-14",
+            "network-6",
+            "software-1",
+            "software-14",
+            "software-6"
+          ],
+          "accuracy": 0.75,
+          "classification_report": {
+            "access": {
+              "precision": 1.0,
+              "recall": 0.6666666666666666,
+              "f1-score": 0.8,
+              "support": 36.0
+            },
+            "hardware": {
+              "precision": 1.0,
+              "recall": 0.3333333333333333,
+              "f1-score": 0.5,
+              "support": 36.0
+            },
+            "network": {
+              "precision": 0.7058823529411765,
+              "recall": 1.0,
+              "f1-score": 0.8275862068965517,
+              "support": 36.0
+            },
+            "software": {
+              "precision": 0.631578947368421,
+              "recall": 1.0,
+              "f1-score": 0.7741935483870968,
+              "support": 36.0
+            },
+            "accuracy": 0.75,
+            "macro avg": {
+              "precision": 0.8343653250773995,
+              "recall": 0.75,
+              "f1-score": 0.7254449388209121,
+              "support": 144.0
+            },
+            "weighted avg": {
+              "precision": 0.8343653250773992,
+              "recall": 0.75,
+              "f1-score": 0.7254449388209121,
+              "support": 144.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              24,
+              0,
+              0,
+              12
+            ],
+            [
+              0,
+              12,
+              15,
+              9
+            ],
+            [
+              0,
+              0,
+              36,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              36
+            ]
+          ],
+          "labels": [
+            "access",
+            "hardware",
+            "network",
+            "software"
+          ]
+        },
+        {
+          "fold": 3,
+          "validation_groups": [
+            "access-10",
+            "access-2",
+            "access-7",
+            "hardware-10",
+            "hardware-2",
+            "hardware-7",
+            "network-10",
+            "network-2",
+            "network-7",
+            "software-10",
+            "software-2",
+            "software-7"
+          ],
+          "accuracy": 0.8125,
+          "classification_report": {
+            "access": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1-score": 1.0,
+              "support": 36.0
+            },
+            "hardware": {
+              "precision": 0.8,
+              "recall": 0.3333333333333333,
+              "f1-score": 0.47058823529411764,
+              "support": 36.0
+            },
+            "network": {
+              "precision": 0.5789473684210527,
+              "recall": 0.9166666666666666,
+              "f1-score": 0.7096774193548387,
+              "support": 36.0
+            },
+            "software": {
+              "precision": 1.0,
+              "recall": 1.0,
+              "f1-score": 1.0,
+              "support": 36.0
+            },
+            "accuracy": 0.8125,
+            "macro avg": {
+              "precision": 0.8447368421052632,
+              "recall": 0.8125,
+              "f1-score": 0.7950664136622392,
+              "support": 144.0
+            },
+            "weighted avg": {
+              "precision": 0.8447368421052632,
+              "recall": 0.8125,
+              "f1-score": 0.7950664136622391,
+              "support": 144.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              36,
+              0,
+              0,
+              0
+            ],
+            [
+              0,
+              12,
+              24,
+              0
+            ],
+            [
+              0,
+              3,
+              33,
+              0
+            ],
+            [
+              0,
+              0,
+              0,
+              36
+            ]
+          ],
+          "labels": [
+            "access",
+            "hardware",
+            "network",
+            "software"
+          ]
+        },
+        {
+          "fold": 4,
+          "validation_groups": [
+            "access-11",
+            "access-3",
+            "access-8",
+            "hardware-11",
+            "hardware-3",
+            "hardware-8",
+            "network-11",
+            "network-3",
+            "network-8",
+            "software-11",
+            "software-3",
+            "software-8"
+          ],
+          "accuracy": 0.7430555555555556,
+          "classification_report": {
+            "access": {
+              "precision": 0.5,
+              "recall": 0.7222222222222222,
+              "f1-score": 0.5909090909090909,
+              "support": 36.0
+            },
+            "hardware": {
+              "precision": 1.0,
+              "recall": 0.9444444444444444,
+              "f1-score": 0.9714285714285714,
+              "support": 36.0
+            },
+            "network": {
+              "precision": 0.7659574468085106,
+              "recall": 1.0,
+              "f1-score": 0.8674698795180723,
+              "support": 36.0
+            },
+            "software": {
+              "precision": 1.0,
+              "recall": 0.3055555555555556,
+              "f1-score": 0.46808510638297873,
+              "support": 36.0
+            },
+            "accuracy": 0.7430555555555556,
+            "macro avg": {
+              "precision": 0.8164893617021276,
+              "recall": 0.7430555555555556,
+              "f1-score": 0.7244731620596784,
+              "support": 144.0
+            },
+            "weighted avg": {
+              "precision": 0.8164893617021277,
+              "recall": 0.7430555555555556,
+              "f1-score": 0.7244731620596784,
+              "support": 144.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              26,
+              0,
+              10,
+              0
+            ],
+            [
+              2,
+              34,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              36,
+              0
+            ],
+            [
+              24,
+              0,
+              1,
+              11
+            ]
+          ],
+          "labels": [
+            "access",
+            "hardware",
+            "network",
+            "software"
+          ]
+        },
+        {
+          "fold": 5,
+          "validation_groups": [
+            "access-12",
+            "access-4",
+            "access-9",
+            "hardware-12",
+            "hardware-4",
+            "hardware-9",
+            "network-12",
+            "network-4",
+            "network-9",
+            "software-12",
+            "software-4",
+            "software-9"
+          ],
+          "accuracy": 0.9375,
+          "classification_report": {
+            "access": {
+              "precision": 0.9,
+              "recall": 1.0,
+              "f1-score": 0.9473684210526315,
+              "support": 36.0
+            },
+            "hardware": {
+              "precision": 0.967741935483871,
+              "recall": 0.8333333333333334,
+              "f1-score": 0.8955223880597015,
+              "support": 36.0
+            },
+            "network": {
+              "precision": 0.9459459459459459,
+              "recall": 0.9722222222222222,
+              "f1-score": 0.958904109589041,
+              "support": 36.0
+            },
+            "software": {
+              "precision": 0.9444444444444444,
+              "recall": 0.9444444444444444,
+              "f1-score": 0.9444444444444444,
+              "support": 36.0
+            },
+            "accuracy": 0.9375,
+            "macro avg": {
+              "precision": 0.9395330814685654,
+              "recall": 0.9375,
+              "f1-score": 0.9365598407864546,
+              "support": 144.0
+            },
+            "weighted avg": {
+              "precision": 0.9395330814685655,
+              "recall": 0.9375,
+              "f1-score": 0.9365598407864546,
+              "support": 144.0
+            }
+          },
+          "confusion_matrix": [
+            [
+              36,
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              30,
+              2,
+              2
+            ],
+            [
+              1,
+              0,
+              35,
+              0
+            ],
+            [
+              1,
+              1,
+              0,
+              34
+            ]
+          ],
+          "labels": [
+            "access",
+            "hardware",
+            "network",
+            "software"
+          ]
+        }
+      ],
+      "accuracy_mean": 0.8125,
+      "accuracy_std": 0.0698598685553294,
+      "macro_f1_mean": 0.8006460654030512,
+      "macro_f1_std": 0.07797933720145969,
+      "aggregate": {
+        "accuracy": 0.8125,
+        "classification_report": {
+          "access": {
+            "precision": 0.8404255319148937,
+            "recall": 0.8777777777777778,
+            "f1-score": 0.8586956521739131,
+            "support": 180.0
+          },
+          "hardware": {
+            "precision": 0.875,
+            "recall": 0.6222222222222222,
+            "f1-score": 0.7272727272727273,
+            "support": 180.0
+          },
+          "network": {
+            "precision": 0.7130434782608696,
+            "recall": 0.9111111111111111,
+            "f1-score": 0.8,
+            "support": 180.0
+          },
+          "software": {
+            "precision": 0.867816091954023,
+            "recall": 0.8388888888888889,
+            "f1-score": 0.8531073446327684,
+            "support": 180.0
+          },
+          "accuracy": 0.8125,
+          "macro avg": {
+            "precision": 0.8240712755324465,
+            "recall": 0.8125,
+            "f1-score": 0.8097689310198521,
+            "support": 720.0
+          },
+          "weighted avg": {
+            "precision": 0.8240712755324466,
+            "recall": 0.8125,
+            "f1-score": 0.8097689310198521,
+            "support": 720.0
+          }
+        },
+        "confusion_matrix": [
+          [
+            158,
+            0,
+            10,
+            12
+          ],
+          [
+            4,
+            112,
+            53,
+            11
+          ],
+          [
+            1,
+            15,
+            164,
+            0
+          ],
+          [
+            25,
+            1,
+            3,
+            151
+          ]
+        ],
+        "labels": [
+          "access",
+          "hardware",
+          "network",
+          "software"
+        ]
+      }
+    }
+  },
+  "category_iterative_evaluation": {
+    "accuracy": 0.95,
+    "classification_report": {
+      "access": {
+        "precision": 0.9375,
+        "recall": 1.0,
+        "f1-score": 0.967741935483871,
+        "support": 15.0
+      },
+      "hardware": {
+        "precision": 0.9285714285714286,
+        "recall": 0.8666666666666667,
+        "f1-score": 0.896551724137931,
+        "support": 15.0
+      },
+      "network": {
+        "precision": 0.9375,
+        "recall": 1.0,
+        "f1-score": 0.967741935483871,
+        "support": 15.0
+      },
+      "software": {
+        "precision": 1.0,
+        "recall": 0.9333333333333333,
+        "f1-score": 0.9655172413793104,
+        "support": 15.0
+      },
+      "accuracy": 0.95,
+      "macro avg": {
+        "precision": 0.9508928571428572,
+        "recall": 0.95,
+        "f1-score": 0.9493882091212459,
+        "support": 60.0
+      },
+      "weighted avg": {
+        "precision": 0.9508928571428572,
+        "recall": 0.95,
+        "f1-score": 0.9493882091212459,
+        "support": 60.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        15,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        13,
+        1,
+        0
+      ],
+      [
+        0,
+        0,
+        15,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        14
+      ]
+    ],
+    "labels": [
+      "access",
+      "hardware",
+      "network",
+      "software"
+    ]
+  },
+  "category_holdout": {
+    "accuracy": 0.9166666666666666,
+    "classification_report": {
+      "access": {
+        "precision": 1.0,
+        "recall": 0.9333333333333333,
+        "f1-score": 0.9655172413793104,
+        "support": 15.0
+      },
+      "hardware": {
+        "precision": 0.8666666666666667,
+        "recall": 0.8666666666666667,
+        "f1-score": 0.8666666666666667,
+        "support": 15.0
+      },
+      "network": {
+        "precision": 0.9285714285714286,
+        "recall": 0.8666666666666667,
+        "f1-score": 0.896551724137931,
+        "support": 15.0
+      },
+      "software": {
+        "precision": 0.8823529411764706,
+        "recall": 1.0,
+        "f1-score": 0.9375,
+        "support": 15.0
+      },
+      "accuracy": 0.9166666666666666,
+      "macro avg": {
+        "precision": 0.9193977591036414,
+        "recall": 0.9166666666666667,
+        "f1-score": 0.9165589080459771,
+        "support": 60.0
+      },
+      "weighted avg": {
+        "precision": 0.9193977591036415,
+        "recall": 0.9166666666666666,
+        "f1-score": 0.9165589080459771,
+        "support": 60.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        14,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        13,
+        1,
+        1
+      ],
+      [
+        0,
+        1,
+        13,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        15
+      ]
+    ],
+    "labels": [
+      "access",
+      "hardware",
+      "network",
+      "software"
+    ]
+  },
+  "category_holdout_errors": [
+    {
+      "title": "Laptop storage failure",
+      "true": "hardware",
+      "predicted": "network"
+    },
+    {
+      "title": "Scanner lid sensor broken",
+      "true": "hardware",
+      "predicted": "software"
+    },
+    {
+      "title": "Suspicious outbound connections",
+      "true": "network",
+      "predicted": "hardware"
+    },
+    {
+      "title": "DNS lookup intermittently fails",
+      "true": "network",
+      "predicted": "software"
+    },
+    {
+      "title": "Credentials exposed in phishing form",
+      "true": "access",
+      "predicted": "hardware"
+    }
+  ],
+  "security_cross_validation": {
+    "selected_threshold_metrics": {
+      "accuracy": 1.0,
+      "classification_report": {
+        "False": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 616.0
+        },
+        "True": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 104.0
+        },
+        "accuracy": 1.0,
+        "macro avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 720.0
+        },
+        "weighted avg": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 720.0
+        }
+      },
+      "confusion_matrix": [
+        [
+          616,
+          0
+        ],
+        [
+          0,
+          104
+        ]
+      ],
+      "labels": [
+        false,
+        true
+      ]
+    },
+    "roc_auc": 1.0,
+    "threshold_candidates": [
+      {
+        "threshold": 0.2,
+        "precision": 0.28415300546448086,
+        "recall": 1.0,
+        "f1": 0.4425531914893617
+      },
+      {
+        "threshold": 0.25,
+        "precision": 0.46017699115044247,
+        "recall": 1.0,
+        "f1": 0.6303030303030303
+      },
+      {
+        "threshold": 0.3,
+        "precision": 0.6887417218543046,
+        "recall": 1.0,
+        "f1": 0.8156862745098039
+      },
+      {
+        "threshold": 0.35,
+        "precision": 0.8455284552845529,
+        "recall": 1.0,
+        "f1": 0.9162995594713657
+      },
+      {
+        "threshold": 0.4,
+        "precision": 0.9043478260869565,
+        "recall": 1.0,
+        "f1": 0.9497716894977168
+      },
+      {
+        "threshold": 0.45,
+        "precision": 0.9454545454545454,
+        "recall": 1.0,
+        "f1": 0.9719626168224299
+      },
+      {
+        "threshold": 0.5,
+        "precision": 0.9904761904761905,
+        "recall": 1.0,
+        "f1": 0.9952153110047847
+      },
+      {
+        "threshold": 0.55,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      {
+        "threshold": 0.6,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      {
+        "threshold": 0.65,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0
+      },
+      {
+        "threshold": 0.7,
+        "precision": 1.0,
+        "recall": 0.9903846153846154,
+        "f1": 0.9951690821256038
+      },
+      {
+        "threshold": 0.75,
+        "precision": 1.0,
+        "recall": 0.9423076923076923,
+        "f1": 0.9702970297029703
+      },
+      {
+        "threshold": 0.8,
+        "precision": 1.0,
+        "recall": 0.7115384615384616,
+        "f1": 0.8314606741573034
+      }
+    ]
+  },
+  "security_threshold": {
+    "threshold": 0.55,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+  },
+  "security_iterative_evaluation": {
+    "accuracy": 0.9833333333333333,
+    "classification_report": {
+      "False": {
+        "precision": 0.9795918367346939,
+        "recall": 1.0,
+        "f1-score": 0.9896907216494846,
+        "support": 48.0
+      },
+      "True": {
+        "precision": 1.0,
+        "recall": 0.9166666666666666,
+        "f1-score": 0.9565217391304348,
+        "support": 12.0
+      },
+      "accuracy": 0.9833333333333333,
+      "macro avg": {
+        "precision": 0.9897959183673469,
+        "recall": 0.9583333333333333,
+        "f1-score": 0.9731062303899597,
+        "support": 60.0
+      },
+      "weighted avg": {
+        "precision": 0.983673469387755,
+        "recall": 0.9833333333333333,
+        "f1-score": 0.9830569251456747,
+        "support": 60.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        48,
+        0
+      ],
+      [
+        1,
+        11
+      ]
+    ],
+    "labels": [
+      false,
+      true
+    ],
+    "roc_auc": 1.0
+  },
+  "security_holdout": {
+    "accuracy": 0.9,
+    "classification_report": {
+      "False": {
+        "precision": 0.92,
+        "recall": 0.9583333333333334,
+        "f1-score": 0.9387755102040817,
+        "support": 48.0
+      },
+      "True": {
+        "precision": 0.8,
+        "recall": 0.6666666666666666,
+        "f1-score": 0.7272727272727273,
+        "support": 12.0
+      },
+      "accuracy": 0.9,
+      "macro avg": {
+        "precision": 0.8600000000000001,
+        "recall": 0.8125,
+        "f1-score": 0.8330241187384044,
+        "support": 60.0
+      },
+      "weighted avg": {
+        "precision": 0.8960000000000001,
+        "recall": 0.9,
+        "f1-score": 0.8964749536178107,
+        "support": 60.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        46,
+        2
+      ],
+      [
+        4,
+        8
+      ]
+    ],
+    "labels": [
+      false,
+      true
+    ],
+    "roc_auc": 0.9809027777777777
+  },
+  "artifacts": {
+    "category": {
+      "filename": "category_model.joblib",
+      "sha256": "2bfa141ffe9774e964c4e3dd97806c8733e9d153da61545713f065dbee117034"
+    },
+    "security": {
+      "filename": "security_model.joblib",
+      "sha256": "f4f49914dd87ab34808ab5735e7d056831b17669b0a9324b03368f29fd3b5801"
+    }
+  },
+  "dependencies": {
+    "scikit-learn": "1.7.2",
+    "joblib": "1.5.2"
+  }
+}

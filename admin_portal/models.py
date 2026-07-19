@@ -7,6 +7,10 @@ from django.conf import settings
 
 
 class AuditLog(models.Model):
+    # One row per action worth keeping a record of. This backs the audit
+    # trail described in the security requirements: failed logins, access
+    # denials, admin actions on users and tickets, and AI category
+    # overrides all end up here through record_audit_log() in audit.py.
     ACTION_LOGIN_FAILED = "LOGIN_FAILED"
     ACTION_LOGIN_RATE_LIMITED = "LOGIN_RATE_LIMITED"
     ACTION_ACCESS_DENIED = "ACCESS_DENIED"
@@ -23,6 +27,7 @@ class AuditLog(models.Model):
     ACTION_TICKET_CANCELLED = "TICKET_CANCELLED"
     ACTION_TICKET_COMMENT_ADDED = "TICKET_COMMENT_ADDED"
     ACTION_RESOLUTION_NOTE_ADDED = "RESOLUTION_NOTE_ADDED"
+    ACTION_AI_CATEGORY_OVERRIDDEN = "AI_CATEGORY_OVERRIDDEN"
 
     ACTION_CHOICES = [
         (ACTION_LOGIN_FAILED, "Login failed"),
@@ -41,8 +46,12 @@ class AuditLog(models.Model):
         (ACTION_TICKET_CANCELLED, "Ticket cancelled"),
         (ACTION_TICKET_COMMENT_ADDED, "Ticket comment added"),
         (ACTION_RESOLUTION_NOTE_ADDED, "Resolution note added"),
+        (ACTION_AI_CATEGORY_OVERRIDDEN, "AI category overridden"),
     ]
 
+    # Null and blank because some events, like a failed login for an
+    # email that doesn't even belong to a real account, don't have a
+    # logged in user to attach as the actor.
     actor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.SET_NULL,

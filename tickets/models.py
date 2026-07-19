@@ -7,6 +7,11 @@ from django.db import models
 from django.utils import timezone
 
 
+# TicketType, TicketSystem, TicketPriority and TicketStatus are lookup
+# tables rather than fixed choices on the Ticket model. This means admins
+# can add, rename or deactivate values from the admin portal without a
+# code change or a migration, which matters for something like ticket
+# type where an organisation might want to add a new category later.
 class TicketType(models.Model):
     name = models.CharField(max_length=100, unique=True)
     code = models.CharField(max_length=20, unique=True)
@@ -49,6 +54,9 @@ class TicketStatus(models.Model):
         return self.name
 
 class Ticket(models.Model):
+    # Left blank here on purpose. The real value gets filled in by
+    # generate_ticket_number() below, after the row has a database id to
+    # build the number from.
     ticket_number = models.CharField(max_length=20, unique=True, blank=True)
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -78,7 +86,11 @@ class Ticket(models.Model):
         return f"{self.ticket_number} - {self.title}"
 
     def save(self, *args, **kwargs) -> None:
-        # Automatically set closed_at when status is changed to a closed status
+        # closed_at gets set or cleared automatically based on whatever
+        # status the ticket is on, rather than relying on every view that
+        # changes status to remember to set it themselves. If a ticket
+        # gets reopened, closed_at is cleared again so it doesn't still
+        # look closed.
         if self.ticket_status and self.ticket_status.is_closed and not self.closed_at:
             self.closed_at = timezone.now()
         elif self.ticket_status and not self.ticket_status.is_closed and self.closed_at:
@@ -88,6 +100,10 @@ class Ticket(models.Model):
 
         super().save(*args, **kwargs)
 
+        # The ticket number needs the database id, which doesn't exist
+        # until after the first save, so this is a genuine two step save
+        # for brand new tickets: save once to get an id, generate the
+        # number, then save again just for that one field.
         if is_new and not self.ticket_number:
             self.generate_ticket_number()
             super().save(update_fields=["ticket_number"])
@@ -109,6 +125,9 @@ class TicketComment(models.Model):
     body = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    # Internal comments are only visible to staff and admins, for notes
+    # about a ticket that shouldn't go back to the submitter. The
+    # submitter facing views filter these out.
     is_internal = models.BooleanField(default=False)
 
     def __str__(self) -> str:
@@ -125,6 +144,9 @@ class TicketAttachment(models.Model):
         blank=True,
     )
     file = models.FileField(upload_to="ticket_attachments/")
+    # Django renames uploaded files on disk to avoid clashes, so this
+    # keeps the name the user actually uploaded, for showing in the UI
+    # and for the download filename.
     original_filename = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -133,6 +155,9 @@ class TicketAttachment(models.Model):
         return f"Attachment for {self.ticket} by {self.uploaded_by}"
 
 
+# A row per change made to a ticket (status, assignment, priority, and so
+# on). This is what powers the ticket detail page's history timeline, and
+# also feeds into the combined activity view in admin_portal.
 class TicketHistory(models.Model):
     ticket = models.ForeignKey(Ticket, on_delete=models.CASCADE, related_name="history")
     changed_by = models.ForeignKey(

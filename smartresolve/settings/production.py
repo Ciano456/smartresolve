@@ -15,6 +15,10 @@ from .base import env_list, positive_env_int
 
 
 def required_env(name: str) -> str:
+    # Unlike the development settings, production has no safe fallback
+    # for things like the secret key or database URL, so a missing
+    # setting stops the app from starting at all rather than quietly
+    # running with something insecure.
     value = os.getenv(name, "").strip()
     if not value:
         raise ImproperlyConfigured(f"{name} must be set in production.")
@@ -28,8 +32,13 @@ if len(SECRET_KEY) < 50 or SECRET_KEY.startswith("django-insecure-"):
     )
 
 DEBUG = False
+# Whitenoise serves the static files (CSS, images) directly, so there's
+# no need for a separate static file server in production.
 MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")  # noqa: F405
 
+# Railway sets this automatically for the app's public URL, so it's added
+# to the allowed hosts and trusted origins without needing to hardcode
+# the domain anywhere.
 railway_domain = os.getenv("RAILWAY_PUBLIC_DOMAIN", "").strip()
 ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS")
 if railway_domain:
@@ -82,6 +91,9 @@ STORAGES = {
     },
 }
 
+# A block of standard Django security headers and settings for running
+# behind HTTPS, forcing secure cookies, and stopping the site being
+# loaded in an iframe on another site (clickjacking protection).
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True

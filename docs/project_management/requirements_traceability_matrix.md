@@ -5,30 +5,29 @@ screenshots, performance measurements, UAT, and deployment evidence remain open.
 
 | Req ID | Requirement | Use Case | Implementation Reference | Automated Evidence | Manual Evidence | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| FR-01 | Authentication | UC-01 | `accounts/views.py`, `accounts/security.py` | `accounts/tests.py` | Login screenshot pending | [x] |
-| FR-02 | Roles | UC-02 | `accounts/models.py`, `accounts/decorators.py` | Role and restricted-view tests | Role UI screenshot pending | [x] |
-| FR-03 | Submit ticket | UC-03 | `tickets/views.py`, `tickets/forms.py` | Ticket creation tests | Workflow screenshot pending | [x] |
-| FR-04 | View tickets and updates | UC-04 | `tickets/views.py`, ticket templates | Visibility, comment, history, and attachment tests | Workflow screenshot pending | [x] |
-| FR-05 | Staff ticket management | UC-05/06 | `tickets/views.py`, `tickets/forms.py` | Assignment, status, priority, note, filter, resolve, and cancel tests | Staff workflow screenshot pending | [x] |
-| FR-06 | Admin configuration | UC-02 | `admin_portal/views.py`, `admin_portal/forms.py` | Admin view and form tests | Admin screenshots pending | [x] |
-| FR-07 | Email notifications | UC-07 | `notifications/`, `tickets/notifications.py` | Graph client, service, event, and trigger tests | Sanitised event/log screenshot pending | [x] |
-| FR-08 | Dashboard reporting | UC-08 | `dashboard/services.py`, dashboard template | KPI, access, chart-data, and aggregate tests | Dashboard screenshot pending | [x] |
-| FR-09 | Export reports | UC-09 | `dashboard/services.py`, `dashboard/views.py` | Permission, content, and CSV-injection tests | Sample CSV pending | [x] CSV |
-| FR-10 | AI classification | UC-10 | `ml/` placeholder only | None | Accuracy report pending | [ ] |
-| FR-11 | AI evaluation pipeline | UC-10 | Not implemented | None | Metrics output pending | [ ] |
-| FR-12 | Response suggestions | UC-05 | Not implemented | None | Suggested-response screenshot pending | [ ] |
+| FR-01 | User authentication | FR-01 | `accounts/views.py`, `accounts/security.py` | Authentication, password-flow, throttle, and audit tests | Login screenshot pending | [x] |
+| FR-02 | Ticket submission | FR-02 | `tickets/views.py`, `tickets/forms.py` | Ticket creation and validation tests | Submission screenshot pending | [x] |
+| FR-03 | Ticket tracking and viewing | FR-03 | `tickets/views.py`, ticket templates | Visibility, comment, history, and attachment tests | User workflow screenshot pending | [x] |
+| FR-04 | Ticket management by support staff | FR-04 | `tickets/views.py`, `tickets/forms.py` | Assignment, status, priority, note, filter, resolve, and cancel tests | Staff workflow screenshot pending | [x] |
+| FR-05 | Role-based access control | FR-05 | `accounts/models.py`, `accounts/decorators.py`, object-filtered views | Role, restricted-view, and cross-user access tests | Role UI screenshot pending | [x] |
+| FR-06 | Email notifications | FR-06 | `notifications/`, `tickets/notifications.py` | Graph client, service, event, and trigger tests | Sanitised event/log screenshot pending | [x] |
+| FR-07 | Dashboard and reporting | FR-07 | `dashboard/services.py`, `dashboard/views.py`, dashboard templates | KPI, access, chart-data, aggregate, export-permission, and CSV-injection tests | Dashboard screenshot and sample CSV pending | [x] |
+| FR-08 | AI-assisted ticket categorisation | FR-08 | `ml/`, ticket creation/detail/list integration | ML, fallback, permission, override, audit, and filter tests | Staff workflow screenshot pending | [x] |
+| FR-09 | Audit logging | FR-09 | `admin_portal.models.AuditLog`, `admin_portal/audit.py`, `TicketHistory` | Login, denial, upload, admin, and ticket audit tests | Audit-log screenshot pending | [x] |
+| FR-10 | Security metrics dashboard | FR-10 | Security dashboard views, services, and templates | Access, metric, aggregation, and security-event tests | Security dashboard screenshot pending | [x] |
+| FR-11 | Security event flagging | FR-11 | `accounts/security.py`, audit/event services, upload and ticket rules | Failed-login, denial, upload, role-change, and ticket-event tests | Flagged-event evidence pending | [x] Includes AI-assisted ticket-text triage |
 | NFR-01 | Secure authentication | UC-01 | Django auth, `accounts.models.User` | Auth and password-flow tests | Security notes in `SECURITY.md` | [x] |
 | NFR-02 | Security protections | UC-ALL | Middleware, forms, `accounts/security.py` | CSRF defaults, upload validation, throttle, and malformed-input tests | Audit screenshot pending | [x] |
 | NFR-03 | Access enforcement | UC-ALL | Role decorators and object-filtered views | Anonymous, wrong-role, cross-user, and attachment tests | Permission evidence pending | [x] |
-| NFR-04 | Performance | UC-08 | Optimised querysets and pagination | Functional pagination/aggregate tests | Targets and load measurements pending | [~] |
-| NFR-05 | AI accuracy | UC-10 | Not implemented | None | Metrics output pending | [ ] |
+| NFR-04 | Performance | FR-07 | Optimised querysets and pagination | Functional pagination/aggregate tests | Targets and load measurements pending | [~] |
+| NFR-05 | AI accuracy | FR-08 | `train_classifiers`, grouped dataset, frozen independent holdout | 82.5% mean grouped cross-validation accuracy and 91.7% frozen holdout accuracy; full metrics and hashes in `ml/artifacts/metrics.json` | Evaluation write-up complete | [x] |
 | NFR-06 | Audit logging | UC-ALL | `admin_portal.models.AuditLog`, `admin_portal/audit.py`, `TicketHistory` | Login, denial, upload, admin, and ticket audit tests | Audit-log screenshot pending | [x] |
 | NFR-07 | GDPR/data minimisation | UC-ALL | Object permissions, hashed throttle identifiers, protected files | Access and security tests | Formal GDPR review pending | [~] |
 | NFR-08 | Deployment security and recoverability | UC-ALL | Production settings, `railway.json`, `build.sh`, deployment runbooks | Settings/health tests and deployment check | Live Railway, backup, restore, and smoke evidence pending | [~] |
 
 ## Latest Automated Test Evidence
 
-- Local pre-deployment suite on 17 July 2026: `196 passed`.
+- Local suite on 19 July 2026: `215 passed` across isolated test groups.
 - Migration consistency: no changes detected.
 - Django system check: no issues.
 - GitHub CI evidence will be linked from the issue #24 pull request.

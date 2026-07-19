@@ -39,10 +39,15 @@ Uploads outside this mount are ephemeral and must not be treated as persistent.
 The deployment sequence is:
 
 1. Railpack installs Python and Node dependencies.
-2. `build.sh` compiles Tailwind and runs `collectstatic`.
+2. `build.sh` compiles Tailwind, trains both deterministic FR8 classifiers, and
+   runs `collectstatic`.
 3. The pre-deploy command runs `python manage.py migrate --noinput`.
 4. Gunicorn starts and binds to Railway's `PORT`.
 5. Railway requests `/health/` and only routes traffic after it returns `200`.
+
+The generated `.joblib` artifacts remain inside the deployed image and are not
+committed to Git. If build-time training fails, deployment stops. If an artifact is
+later unavailable at runtime, ticket submission continues with manual categorisation.
 
 ## 5. Create The First Administrator
 
