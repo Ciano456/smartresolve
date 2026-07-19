@@ -15,12 +15,20 @@ from .models import Ticket
 
 logger = logging.getLogger(__name__)
 
+# One shared set of email templates for every kind of ticket
+# notification. The subject and body text are passed in as context rather
+# than having a separate template per event type, so adding a new
+# notification just means calling send_notification with different text,
+# not creating new template files.
 SUBJECT_TEMPLATE = "notifications/emails/subject.txt"
 TEXT_TEMPLATE = "notifications/emails/body.txt"
 HTML_TEMPLATE = "notifications/emails/generic_notification.html"
 
 
 def _recipient_name(email: str, label: str | None = None) -> str:
+    # Falls back to guessing a name from the email address if no proper
+    # label was given, for example turning "john.smith@example.com" into
+    # "John Smith", so the email doesn't just say "Hi ,".
     if label:
         return label
     local_part = email.split("@", maxsplit=1)[0]
@@ -32,6 +40,9 @@ def _user_display_label(user) -> str:
     return full_name or user.email
 
 
+# Strips out blanks and repeats from a list of possible recipients, so if
+# for example the assigned staff member and the IT support inbox happen
+# to be the same address, only one email goes out, not two.
 def _unique_emails(emails: Iterable[str | None]) -> list[str]:
     unique: list[str] = []
     seen: set[str] = set()
@@ -98,6 +109,12 @@ def _send_ticket_notification(
     )
 
 
+# Everything from here down is the actual list of ticket events that
+# trigger an email, called directly from tickets/views.py whenever the
+# matching action happens (creation, assignment, a status change, a
+# public comment, resolving, cancelling). Each one just works out who
+# should be emailed and what the message should say, then hands off to
+# _send_ticket_notification.
 def notify_ticket_created(ticket, *, created_by_id: int | None = None) -> None:
     support_inbox = _support_inbox()
     recipients = _unique_emails(
@@ -148,6 +165,9 @@ def notify_ticket_status_changed(
     previous_status_name: str,
     created_by_id: int | None = None,
 ) -> None:
+    # Closing statuses are handled separately by notify_ticket_resolved
+    # and notify_ticket_cancelled, which send a more specific message, so
+    # this one only fires for ordinary in progress status changes.
     if ticket.ticket_status.is_closed:
         return
 
@@ -171,6 +191,9 @@ def notify_public_comment(
     comment,
     created_by_id: int | None = None,
 ) -> None:
+    # Nobody gets emailed about their own comment, so both the submitter
+    # and the assigned staff member are only included here if they didn't
+    # write the comment themselves.
     recipients = _unique_emails(
         [
             ticket.submitter.email if comment.author_id != ticket.submitter_id else None,

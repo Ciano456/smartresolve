@@ -5,9 +5,17 @@
 from django.urls import path
 from . import views
 
+# "mine/" routes are the submitter facing pages (their own tickets only).
+# Everything else here is staff and admin facing, guarded by
+# admin_or_support_staff_required in the views themselves.
 urlpatterns = [
     path("", views.ticket_list, name="ticket_list"),
     path("ticket/<int:id>/", views.ticket_detail, name="ticket_detail"),
+    path(
+        "ticket/<int:ticket_id>/category-override/",
+        views.TicketCategoryOverrideView.as_view(),
+        name="ticket_category_override",
+    ),
     path("ticket/create/", views.ticket_create, name="ticket_create"),
     path("ticket/<int:ticket_id>/comments/", views.comment_list, name="comment_list"),
     path(

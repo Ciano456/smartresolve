@@ -13,6 +13,10 @@ from django.utils import timezone
 
 from accounts.models import User
 from dashboard.services import CSV_EXPORT_FIELDNAMES
+
+# Covers the dashboard stats, chart data, access control (only admins and
+# support staff can view it), and the CSV export, including that the
+# CSV injection sanitising in services.py actually works.
 from tickets.models import (
     Ticket,
     TicketPriority,

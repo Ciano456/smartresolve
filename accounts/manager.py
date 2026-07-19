@@ -5,11 +5,16 @@
 from django.contrib.auth.models import BaseUserManager
 
 class UserManager(BaseUserManager):
+    # Django expects a user manager whenever the username field is
+    # changed away from the default, so this is what lets User.objects.create_user()
+    # and createsuperuser work with an email address instead of a username.
     def create_user(self, email, password=None, **extra_fields):
         if not email:
             raise ValueError("The Email field must be set")
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
+        # set_password hashes the password before it gets anywhere near
+        # the database. The plain text version never gets saved.
         user.set_password(password)
         user.save(using=self._db)
         return user

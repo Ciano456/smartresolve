@@ -24,8 +24,17 @@ class GraphSendResult:
     message_id: str = ""
 
 
+# A small hand written client for the Microsoft Graph API, used to send
+# email notifications through Microsoft 365 rather than running a normal
+# SMTP server. There's no official Python SDK dependency added for this,
+# it's built directly on urllib since the app only needs two endpoints:
+# getting an access token and sending a mail.
 class GraphClient:
     REQUEST_TIMEOUT_SECONDS = 10
+    # Shared across every instance of this class on purpose, so the
+    # access token is only fetched once and reused until it's close to
+    # expiring, rather than requesting a fresh token on every single
+    # email sent.
     _cached_token: str = ""
     _cached_expires_at: datetime | None = None
 
@@ -39,6 +48,10 @@ class GraphClient:
         self.send_mail_url = settings.GRAPH_SEND_MAIL_URL
 
     def _validate_config(self) -> None:
+        # Checked before every send, rather than only at startup, so a
+        # missing setting produces a clear error message pointing at
+        # exactly what's missing instead of a confusing failure further
+        # down the line.
         missing = [
             name
             for name, value in (
@@ -55,6 +68,8 @@ class GraphClient:
             )
 
     def _token_is_valid(self) -> bool:
+        # Whether the cached token can still be reused instead of asking
+        # Microsoft for a new one.
         return bool(
             self._cached_token
             and self._cached_expires_at
@@ -114,6 +129,9 @@ class GraphClient:
             raise GraphDeliveryError("Microsoft Graph token response did not include an access token.")
 
         self._cached_token = access_token
+        # Knocking 60 seconds off the real expiry time means the token
+        # gets refreshed a little early rather than risking it expiring
+        # mid request.
         self._cached_expires_at = datetime.now(timezone.utc) + timedelta(
             seconds=max(expires_in - 60, 0)
         )

@@ -17,6 +17,9 @@ from django.urls import reverse
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+# Covers the health check endpoint and a few project level checks, for
+# example that manage.py commands like collectstatic actually run
+# cleanly.
 class HealthCheckViewTests(TestCase):
     def test_health_check_returns_success_when_database_is_available(self) -> None:
         # Railway must only route traffic after Django can query its database.

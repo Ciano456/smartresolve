@@ -41,6 +41,14 @@ or recorded as failed according to the existing notification service behaviour.
 | `LOGIN_RATE_LIMIT_ATTEMPTS` | `5` | Failures before a temporary login block. |
 | `LOGIN_RATE_LIMIT_WINDOW_SECONDS` | `900` | Failure counting window. |
 | `LOGIN_RATE_LIMIT_BLOCK_SECONDS` | `900` | Temporary block duration. |
+| `AI_CATEGORY_MODEL_PATH` | `ml/artifacts/category_model.joblib` | Optional category artifact override. |
+| `AI_SECURITY_MODEL_PATH` | `ml/artifacts/security_model.joblib` | Optional security artifact override. |
+| `AI_SECURITY_THRESHOLD` | Trained artifact value | Optional security review threshold override; must be between 0 and 1. |
+
+The model paths and threshold are operational configuration rather than secrets.
+Leave the paths and threshold unset to use the build-generated artifacts and their
+validation-selected threshold. Staff correct individual predictions in the
+application; global model configuration remains environment-only.
 
 ## Railway References
 

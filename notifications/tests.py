@@ -16,6 +16,10 @@ from .models import NotificationEvent
 from .services import NotificationService
 
 
+# Stands in for the real GraphClient so these tests don't make an actual
+# network call to Microsoft. It records what it was asked to send and can
+# be told to raise an error, so both the success and failure paths in
+# NotificationService can be tested.
 class DummyGraphClient:
     def __init__(
         self,

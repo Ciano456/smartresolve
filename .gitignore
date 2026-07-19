@@ -37,3 +37,7 @@ coverage/
 
 # Misc
 *.log
+Technical Report - Requirement Spec.docx
+
+# Regenerable machine-learning model binaries
+ml/artifacts/*.joblib

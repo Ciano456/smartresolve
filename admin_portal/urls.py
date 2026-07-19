@@ -19,6 +19,9 @@ from admin_portal.views import (
 )
 from django.urls import path
 
+# All admin only routes: dashboard, audit log, ticket overview, lookup
+# table management, and user management. The actual role check happens
+# in the views themselves through the admin_required decorator, not here.
 urlpatterns = [
     path("", admin_dashboard, name="admin_dashboard"),
     path("audit-logs/", audit_log_list, name="audit_log_list"),

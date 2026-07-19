@@ -9,6 +9,9 @@ from django.contrib.auth.models import Group
 from accounts.models import User
 from tickets.models import TicketPriority, TicketStatus, TicketSystem, TicketType
 
+# These forms are for admins managing users and the lookup tables
+# (ticket types, systems, priorities, statuses) from the admin portal,
+# separate from the plain Django admin site.
 ROLE_CHOICES = [
     ("Admin", "Admin"),
     ("Support Staff", "Support Staff"),
@@ -17,6 +20,9 @@ ROLE_CHOICES = [
 
 
 def validate_role_group(role_name: str) -> str:
+    # Groups have to already exist for a role to be assignable, so this
+    # gives a clear error instead of letting a typo silently create a
+    # user with no role at all.
     if not Group.objects.filter(name=role_name).exists():
         raise forms.ValidationError(
             f"The {role_name} role is not configured. Create the group before assigning it."
@@ -88,6 +94,10 @@ class AdminPortalUserEditForm(forms.ModelForm):
         return user
 
 
+# The four lookup tables (ticket type, system, priority, status) all get
+# managed with near identical forms, so this base class holds the shared
+# styling and the rule that a lookup's code can't be changed once it
+# exists, since other parts of the app may depend on that code.
 class BaseLookupForm(forms.ModelForm):
     text_input_class = (
         "w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base "

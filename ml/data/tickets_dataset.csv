@@ -1,0 +1,721 @@
+title,description,category,is_security_related,template_group
+Browser closes unexpectedly,The web browser exits whenever a second tab is opened. It started while working remotely and one person is affected.,software,False,software-6
+Projector shows no picture,The meeting-room projector powers on but does not display an image. It started during a meeting and the whole team is affected.,hardware,False,hardware-8
+Payroll export fails,The payroll application accepts the user login but fails while exporting data. It started during a meeting and one person is affected.,software,False,software-13
+Expired account,The system says my user account has expired and will not allow a sign-in. It started late yesterday and one person is affected.,access,False,access-10
+Application licence error,The licensed design program rejects its valid licence after an update. It started while working remotely and one person is affected.,software,False,software-12
+Monitor has no display,The monitor says no signal although the desktop is running for the reception. It started during a meeting and the whole team is affected.,hardware,False,hardware-1
+Login screen freezes,The payroll software accepts my password but freezes while loading. It started after lunch and one person is affected.,software,False,software-4
+Password reset,I forgot my password and need a normal account reset. It started when the office opened and one person is affected.,access,False,access-1
+Projector shows no picture,The meeting-room projector powers on but does not display an image. It started during normal daily work and one person is affected.,hardware,False,hardware-8
+Laptop battery is swollen,The laptop case is lifting near the battery and the device should be inspected. It started early this morning and one person is affected.,hardware,False,hardware-6
+New account request,Please create a standard system account for an approved new team member. It started early this morning and one person is affected.,access,False,access-13
+Cloud files synchronising slowly - Spoofed sender reported,File synchronisation stalls only while connected to the Naas site network. It started during a meeting and the whole team is affected. The message appears to impersonate a manager and requests confidential data.,network,True,network-11
+Network printer unreachable - Suspicious email reported,The printer is powered on but no workstation can contact its network address. It started late yesterday and one person is affected. A suspicious email asks me to open an attachment and enter my password.,network,True,network-9
+Printer fault,The printer jams on every page and shows a hardware error at Naas site. It started after lunch and the whole team is affected.,hardware,False,hardware-2
+Cloud files synchronising slowly,File synchronisation stalls only while connected to the Carlow office network. It started early this morning and one person is affected.,network,False,network-11
+Laptop battery is swollen,The laptop case is lifting near the battery and the device should be inspected. It started during a meeting and one person is affected.,hardware,False,hardware-6
+Shared mailbox access,Please authorise the operations team to open the shared mailbox. It started early this morning and the whole team is affected.,access,False,access-8
+Video calls keep dropping,Calls disconnect for several people whenever they use the office network. It started during normal daily work and one person is affected.,network,False,network-6
+Laptop battery is swollen,The laptop case is lifting near the battery and the device should be inspected. It started after lunch and the whole team is affected.,hardware,False,hardware-6
+Internal website times out,The intranet cannot be reached from any computer at Carlow branch. It started after the latest restart and one person is affected.,network,False,network-7
+Projector shows no picture,The meeting-room projector powers on but does not display an image. It started during a meeting and one person is affected.,hardware,False,hardware-8
+Headset microphone broken,The headset plays sound but its microphone does not capture any audio. It started early this morning and one person is affected.,hardware,False,hardware-12
+Cloud files synchronising slowly,File synchronisation stalls only while connected to the Carlow branch network. It started after the latest restart and the whole team is affected.,network,False,network-11
+Browser closes unexpectedly,The web browser exits whenever a second tab is opened. It started after the latest restart and the whole team is affected.,software,False,software-6
+Printer fault,The printer jams on every page and shows a hardware error at Naas site. It started after lunch and one person is affected.,hardware,False,hardware-2
+Network printer unreachable,The printer is powered on but no workstation can contact its network address. It started while working remotely and one person is affected.,network,False,network-9
+Office connection lost,Both wired and wireless internet access stopped for the reception. It started during normal daily work and one person is affected.,network,False,network-10
+Install approved software,Please install the approved reporting application for the HR team. It started after lunch and one person is affected.,software,False,software-3
+Video calls keep dropping - Virus warning,Calls disconnect for several people whenever they use the office network. It started after lunch and one person is affected. The security scanner detected a possible virus during this incident.,network,True,network-6
+Access denied,Please grant my account permission to the HR team shared folder. It started early this morning and the whole team is affected.,access,False,access-0
+Application licence error - Unknown administrator activity,The licensed design program rejects its valid licence after an update. It started during a meeting and one person is affected. An unrecognised administrator changed settings without approval.,software,True,software-12
+Slow connection,Internet performance is extremely slow for everyone at the Naas site. It started early this morning and one person is affected.,network,False,network-3
+Docking station failure,USB devices disconnect whenever the laptop is placed on the dock. It started while working remotely and one person is affected.,hardware,False,hardware-3
+Application licence error,The licensed design program rejects its valid licence after an update. It started during a meeting and the whole team is affected.,software,False,software-12
+Shared mailbox access - Unauthorised access concern,Please authorise the reception to open the shared mailbox. It started while working remotely and one person is affected. I noticed unauthorised access to my account this morning.,access,True,access-8
+VPN cannot connect,The VPN times out before reaching the company network from home. It started after the latest restart and the whole team is affected.,network,False,network-1
+Update caused an error,The application will not open since yesterday's software update. It started early this morning and the whole team is affected.,software,False,software-1
+New starter permissions,A new employee needs approved access to the HR portal. It started during normal daily work and one person is affected.,access,False,access-2
+Remove leaver access,Please revoke the former employee's account permissions today. It started while working remotely and one person is affected.,access,False,access-3
+Expired account,The system says my user account has expired and will not allow a sign-in. It started early this morning and one person is affected.,access,False,access-10
+Cannot log into finance software,The application opens but says my account lacks permission. It started during a meeting and one person is affected.,access,False,access-4
+Second screen flickering - Possible malware,The physical display flickers with different cables and applications. It started early this morning and the whole team is affected. A malware warning appeared after an unexpected download.,hardware,True,hardware-13
+Account locked,My approved account is locked after several failed sign-in attempts. It started early this morning and one person is affected.,access,False,access-5
+Remove leaver access,Please revoke the former employee's account permissions today. It started early this morning and the whole team is affected.,access,False,access-3
+Access denied,Please grant my account permission to the HR team shared folder. It started during a meeting and one person is affected.,access,False,access-0
+Webcam not detected,The external webcam is not recognised after reconnecting it at Naas office. It started after the latest restart and one person is affected.,hardware,False,hardware-7
+Remove folder permission - Spoofed sender reported,Please remove a contractor's access to the confidential project folder. It started during a meeting and the whole team is affected. The message appears to impersonate a manager and requests confidential data.,access,True,access-11
+Account locked,My approved account is locked after several failed sign-in attempts. It started late yesterday and one person is affected.,access,False,access-5
+Install approved software,Please install the approved reporting application for the HR team. It started after the latest restart and one person is affected.,software,False,software-3
+Wi-Fi disconnecting - Virus warning,Wireless access drops every few minutes throughout the Naas site. It started during normal daily work and one person is affected. The security scanner detected a possible virus during this incident.,network,True,network-0
+Remove leaver access,Please revoke the former employee's account permissions today. It started early this morning and one person is affected.,access,False,access-3
+Video calls keep dropping,Calls disconnect for several people whenever they use the office network. It started during a meeting and the whole team is affected.,network,False,network-6
+Docking station failure,USB devices disconnect whenever the laptop is placed on the dock. It started during normal daily work and one person is affected.,hardware,False,hardware-3
+Cannot log into finance software,The application opens but says my account lacks permission. It started after lunch and one person is affected.,access,False,access-4
+Login screen freezes,The payroll software accepts my password but freezes while loading. It started after the latest restart and the whole team is affected.,software,False,software-4
+Slow connection,Internet performance is extremely slow for everyone at the Naas site. It started during a meeting and the whole team is affected.,network,False,network-3
+Approved plugin fails to load,The approved browser extension is installed but shows an initialization error. It started while working remotely and one person is affected.,software,False,software-10
+New starter permissions,A new employee needs approved access to the HR portal. It started during a meeting and the whole team is affected.,access,False,access-2
+Monitor has no display - Possible data breach,The monitor says no signal although the desktop is running for the Finance team. It started while working remotely and one person is affected. Confidential company information may have been exposed to an unknown person.,hardware,True,hardware-1
+Docking station failure,USB devices disconnect whenever the laptop is placed on the dock. It started after lunch and one person is affected.,hardware,False,hardware-3
+Laptop battery is swollen,The laptop case is lifting near the battery and the device should be inspected. It started after the latest restart and the whole team is affected.,hardware,False,hardware-6
+Database permission denied,The database connection succeeds but my user is not authorised to view the records. It started during a meeting and the whole team is affected.,access,False,access-9
+Laptop fan is noisy,The laptop fan is grinding loudly and the computer becomes unusually hot. It started early this morning and the whole team is affected.,hardware,False,hardware-10
+Cannot log into finance software,The application opens but says my account lacks permission. It started early this morning and one person is affected.,access,False,access-4
+Wired connection unavailable,The network cable is connected but the workstation cannot reach any internal site. It started after the latest restart and one person is affected.,network,False,network-5
+Access denied,Please grant my account permission to the HR team shared folder. It started after the latest restart and the whole team is affected.,access,False,access-0
+PDF files will not open,The document reader reports an error for every PDF downloaded by the HR team. It started after the latest restart and the whole team is affected.,software,False,software-5
+Cloud files synchronising slowly,File synchronisation stalls only while connected to the Carlow branch network. It started early this morning and the whole team is affected.,network,False,network-11
+Keyboard keys not responding,Several keyboard keys have stopped working on a desktop used by the Finance team. It started early this morning and one person is affected.,hardware,False,hardware-5
+Printer fault,The printer jams on every page and shows a hardware error at Carlow branch. It started during normal daily work and one person is affected.,hardware,False,hardware-2
+Cannot reach drive over VPN,My account works locally but the shared drive is unreachable over VPN. It started late yesterday and one person is affected.,network,False,network-4
+Laptop will not start - Suspicious email reported,The laptop power light stays off after changing the charger at Naas office. It started early this morning and one person is affected. A suspicious email asks me to open an attachment and enter my password.,hardware,True,hardware-0
+Printer fault,The printer jams on every page and shows a hardware error at Carlow branch. It started during a meeting and one person is affected.,hardware,False,hardware-2
+Keyboard keys not responding,Several keyboard keys have stopped working on a desktop used by the operations team. It started after the latest restart and one person is affected.,hardware,False,hardware-5
+Laptop will not start,The laptop power light stays off after changing the charger at Naas office. It started during a meeting and the whole team is affected.,hardware,False,hardware-0
+Remote desktop disconnecting,The remote session drops whenever the VPN connection becomes unstable. It started during a meeting and one person is affected.,network,False,network-8
+Expired account,The system says my user account has expired and will not allow a sign-in. It started after lunch and the whole team is affected.,access,False,access-10
+Cannot log into finance software,The application opens but says my account lacks permission. It started while working remotely and one person is affected.,access,False,access-4
+VPN cannot connect - Possible data breach,The VPN times out before reaching the company network from home. It started while working remotely and one person is affected. Confidential company information may have been exposed to an unknown person.,network,True,network-1
+Email client search broken,The desktop mail application opens normally but returns no search results. It started when the office opened and one person is affected.,software,False,software-8
+Shared drive unreachable,The operations team cannot reach the shared drive over the network. It started after lunch and the whole team is affected.,network,False,network-2
+Projector shows no picture,The meeting-room projector powers on but does not display an image. It started after the latest restart and one person is affected.,hardware,False,hardware-8
+Weak wireless signal,The Wi-Fi signal disappears in part of Naas office for every nearby device. It started after the latest restart and one person is affected.,network,False,network-13
+Install approved software,Please install the approved reporting application for the operations team. It started during a meeting and the whole team is affected.,software,False,software-3
+Cannot use approved feature,The software loads correctly but says my role is not permitted to use approvals. It started during normal daily work and one person is affected.,access,False,access-12
+Multi-factor code rejected,The portal accepts my password but rejects every authentication code. It started after the latest restart and the whole team is affected.,access,False,access-6
+Browser closes unexpectedly,The web browser exits whenever a second tab is opened. It started late yesterday and one person is affected.,software,False,software-6
+Cannot log into finance software,The application opens but says my account lacks permission. It started after lunch and the whole team is affected.,access,False,access-4
+Cannot use approved feature,The software loads correctly but says my role is not permitted to use approvals. It started when the office opened and one person is affected.,access,False,access-12
+Antivirus scan will not finish,The approved antivirus program stops responding midway through a routine scan. It started while working remotely and one person is affected.,software,False,software-14
+Antivirus scan will not finish,The approved antivirus program stops responding midway through a routine scan. It started after lunch and one person is affected.,software,False,software-14
+Slow connection,Internet performance is extremely slow for everyone at the Naas site. It started during normal daily work and one person is affected.,network,False,network-3
+Second screen flickering,The physical display flickers with different cables and applications. It started during normal daily work and one person is affected.,hardware,False,hardware-13
+Remove leaver access,Please revoke the former employee's account permissions today. It started after lunch and the whole team is affected.,access,False,access-3
+Application licence error,The licensed design program rejects its valid licence after an update. It started when the office opened and one person is affected.,software,False,software-12
+Calendar application frozen,The calendar stops responding after a meeting invitation is accepted. It started during normal daily work and one person is affected.,software,False,software-9
+Wi-Fi disconnecting - Suspicious email reported,Wireless access drops every few minutes throughout the Naas site. It started early this morning and one person is affected. A suspicious email asks me to open an attachment and enter my password.,network,True,network-0
+Incorrect totals in report,The reporting program calculates the wrong total after importing a spreadsheet. It started while working remotely and one person is affected.,software,False,software-7
+Wi-Fi disconnecting,Wireless access drops every few minutes throughout the Naas site. It started after lunch and the whole team is affected.,network,False,network-0
+Role permissions missing,I can sign in to the reporting application but cannot access the manager functions. It started when the office opened and one person is affected.,access,False,access-7
+Remote desktop disconnecting,The remote session drops whenever the VPN connection becomes unstable. It started after lunch and one person is affected.,network,False,network-8
+Cannot log into finance software,The application opens but says my account lacks permission. It started early this morning and the whole team is affected.,access,False,access-4
+Router light is off,There is no internet because the physical router has no power at Carlow office. It started when the office opened and one person is affected.,hardware,False,hardware-4
+New account request,Please create a standard system account for an approved new team member. It started when the office opened and one person is affected.,access,False,access-13
+Webcam not detected - Possible data breach,The external webcam is not recognised after reconnecting it at Naas office. It started early this morning and one person is affected. Confidential company information may have been exposed to an unknown person.,hardware,True,hardware-7
+Desktop making warning beeps - Unauthorised access concern,The workstation beeps during startup and does not reach the login screen. It started early this morning and one person is affected. I noticed unauthorised access to my account this morning.,hardware,True,hardware-14
+Document formatting changed,The word processor moves headings and tables when the file is saved. It started after the latest restart and the whole team is affected.,software,False,software-11
+Payroll export fails - Ransomware concern,The payroll application accepts the user login but fails while exporting data. It started after lunch and one person is affected. A message claims company files were encrypted and demands payment.,software,True,software-13
+New starter permissions,A new employee needs approved access to the HR portal. It started when the office opened and one person is affected.,access,False,access-2
+Laptop will not start,The laptop power light stays off after changing the charger at Carlow branch. It started while working remotely and one person is affected.,hardware,False,hardware-0
+Webcam not detected - Ransomware concern,The external webcam is not recognised after reconnecting it at Naas office. It started during normal daily work and one person is affected. A message claims company files were encrypted and demands payment.,hardware,True,hardware-7
+Headset microphone broken,The headset plays sound but its microphone does not capture any audio. It started after the latest restart and one person is affected.,hardware,False,hardware-12
+Account locked - Stolen work device,My approved account is locked after several failed sign-in attempts. It started after lunch and the whole team is affected. A company device containing work information has been reported stolen.,access,True,access-5
+Laptop fan is noisy,The laptop fan is grinding loudly and the computer becomes unusually hot. It started early this morning and one person is affected.,hardware,False,hardware-10
+Laptop fan is noisy,The laptop fan is grinding loudly and the computer becomes unusually hot. It started while working remotely and one person is affected.,hardware,False,hardware-10
+Laptop battery is swollen,The laptop case is lifting near the battery and the device should be inspected. It started during normal daily work and one person is affected.,hardware,False,hardware-6
+Internal website times out,The intranet cannot be reached from any computer at Naas office. It started when the office opened and one person is affected.,network,False,network-7
+Remote desktop disconnecting,The remote session drops whenever the VPN connection becomes unstable. It started after the latest restart and one person is affected.,network,False,network-8
+Approved plugin fails to load,The approved browser extension is installed but shows an initialization error. It started during a meeting and the whole team is affected.,software,False,software-10
+Install approved software,Please install the approved reporting application for the Finance team. It started after lunch and the whole team is affected.,software,False,software-3
+Shared mailbox access,Please authorise the Finance team to open the shared mailbox. It started early this morning and one person is affected.,access,False,access-8
+Email client search broken,The desktop mail application opens normally but returns no search results. It started after lunch and one person is affected.,software,False,software-8
+Access denied,Please grant my account permission to the Finance team shared folder. It started after lunch and the whole team is affected.,access,False,access-0
+Video calls keep dropping,Calls disconnect for several people whenever they use the office network. It started after the latest restart and one person is affected.,network,False,network-6
+Remove leaver access,Please revoke the former employee's account permissions today. It started during a meeting and one person is affected.,access,False,access-3
+Keyboard keys not responding,Several keyboard keys have stopped working on a desktop used by the reception. It started during a meeting and the whole team is affected.,hardware,False,hardware-5
+Laptop battery is swollen,The laptop case is lifting near the battery and the device should be inspected. It started while working remotely and one person is affected.,hardware,False,hardware-6
+Access denied,Please grant my account permission to the reception shared folder. It started late yesterday and one person is affected.,access,False,access-0
+Remove folder permission,Please remove a contractor's access to the confidential project folder. It started when the office opened and one person is affected.,access,False,access-11
+Cannot resolve internal address,The internal server name is not resolving although public websites still load. It started after the latest restart and the whole team is affected.,network,False,network-12
+PDF files will not open,The document reader reports an error for every PDF downloaded by the reception. It started after lunch and one person is affected.,software,False,software-5
+Mouse disconnects,The wired mouse repeatedly disconnects when moved to another USB port. It started during a meeting and one person is affected.,hardware,False,hardware-9
+Cloud files synchronising slowly,File synchronisation stalls only while connected to the Naas site network. It started during a meeting and one person is affected.,network,False,network-11
+Permission changed unexpectedly,I can log in but no longer have access to files I was authorised to use. It started during a meeting and the whole team is affected.,access,False,access-14
+Cannot use approved feature,The software loads correctly but says my role is not permitted to use approvals. It started early this morning and the whole team is affected.,access,False,access-12
+Update caused an error,The application will not open since yesterday's software update. It started during a meeting and the whole team is affected.,software,False,software-1
+Router light is off,There is no internet because the physical router has no power at Carlow office. It started while working remotely and one person is affected.,hardware,False,hardware-4
+Desktop making warning beeps,The workstation beeps during startup and does not reach the login screen. It started after the latest restart and the whole team is affected.,hardware,False,hardware-14
+Cannot reach drive over VPN,My account works locally but the shared drive is unreachable over VPN. It started early this morning and one person is affected.,network,False,network-4
+Router light is off,There is no internet because the physical router has no power at Naas office. It started late yesterday and one person is affected.,hardware,False,hardware-4
+VPN connected without resources,The VPN reports connected but internal drives and pages remain unreachable. It started after the latest restart and the whole team is affected.,network,False,network-14
+Shared drive unreachable - Spoofed sender reported,The operations team cannot reach the shared drive over the network. It started late yesterday and one person is affected. The message appears to impersonate a manager and requests confidential data.,network,True,network-2
+Calendar application frozen,The calendar stops responding after a meeting invitation is accepted. It started when the office opened and one person is affected.,software,False,software-9
+Password reset - Possible data breach,I forgot my password and need a normal account reset. It started while working remotely and one person is affected. Confidential company information may have been exposed to an unknown person.,access,True,access-1
+Document formatting changed - Stolen work device,The word processor moves headings and tables when the file is saved. It started after the latest restart and one person is affected. A company device containing work information has been reported stolen.,software,True,software-11
+Laptop will not start,The laptop power light stays off after changing the charger at Carlow office. It started during a meeting and one person is affected.,hardware,False,hardware-0
+Browser closes unexpectedly,The web browser exits whenever a second tab is opened. It started after the latest restart and one person is affected.,software,False,software-6
+Multi-factor code rejected,The portal accepts my password but rejects every authentication code. It started early this morning and one person is affected.,access,False,access-6
+Printer fault,The printer jams on every page and shows a hardware error at Carlow branch. It started while working remotely and one person is affected.,hardware,False,hardware-2
+Mouse disconnects,The wired mouse repeatedly disconnects when moved to another USB port. It started during a meeting and the whole team is affected.,hardware,False,hardware-9
+Application licence error,The licensed design program rejects its valid licence after an update. It started after lunch and one person is affected.,software,False,software-12
+Spreadsheet is frozen,Excel becomes unresponsive when opening the monthly workbook. It started after the latest restart and one person is affected.,software,False,software-2
+Desktop making warning beeps,The workstation beeps during startup and does not reach the login screen. It started after lunch and the whole team is affected.,hardware,False,hardware-14
+Approved plugin fails to load,The approved browser extension is installed but shows an initialization error. It started after lunch and the whole team is affected.,software,False,software-10
+Shared mailbox access,Please authorise the operations team to open the shared mailbox. It started during a meeting and one person is affected.,access,False,access-8
+Cannot resolve internal address,The internal server name is not resolving although public websites still load. It started when the office opened and one person is affected.,network,False,network-12
+Mouse disconnects,The wired mouse repeatedly disconnects when moved to another USB port. It started during normal daily work and one person is affected.,hardware,False,hardware-9
+VPN cannot connect,The VPN times out before reaching the company network from home. It started after the latest restart and one person is affected.,network,False,network-1
+New starter permissions,A new employee needs approved access to the HR portal. It started after lunch and the whole team is affected.,access,False,access-2
+VPN cannot connect,The VPN times out before reaching the company network from home. It started after lunch and the whole team is affected.,network,False,network-1
+Shared drive unreachable,The operations team cannot reach the shared drive over the network. It started when the office opened and one person is affected.,network,False,network-2
+Docking station failure - Possible credential theft,"USB devices disconnect whenever the laptop is placed on the dock. It started when the office opened and one person is affected. An unexpected page requested my username, password, and authentication code.",hardware,True,hardware-3
+Shared drive unreachable,The reception cannot reach the shared drive over the network. It started while working remotely and one person is affected.,network,False,network-2
+Cannot resolve internal address,The internal server name is not resolving although public websites still load. It started after lunch and one person is affected.,network,False,network-12
+Document formatting changed,The word processor moves headings and tables when the file is saved. It started when the office opened and one person is affected.,software,False,software-11
+Spreadsheet is frozen,Excel becomes unresponsive when opening the monthly workbook. It started early this morning and one person is affected.,software,False,software-2
+Account locked,My approved account is locked after several failed sign-in attempts. It started during a meeting and the whole team is affected.,access,False,access-5
+Headset microphone broken,The headset plays sound but its microphone does not capture any audio. It started while working remotely and one person is affected.,hardware,False,hardware-12
+Cannot log into finance software - Possible malware,The application opens but says my account lacks permission. It started after the latest restart and one person is affected. A malware warning appeared after an unexpected download.,access,True,access-4
+Wired connection unavailable - Stolen work device,The network cable is connected but the workstation cannot reach any internal site. It started after lunch and the whole team is affected. A company device containing work information has been reported stolen.,network,True,network-5
+Browser closes unexpectedly - Unknown administrator activity,The web browser exits whenever a second tab is opened. It started early this morning and the whole team is affected. An unrecognised administrator changed settings without approval.,software,True,software-6
+Application keeps crashing,The finance application closes whenever the operations team saves a report. It started while working remotely and one person is affected.,software,False,software-0
+Remove folder permission,Please remove a contractor's access to the confidential project folder. It started early this morning and one person is affected.,access,False,access-11
+Cannot use approved feature - Possible credential theft,"The software loads correctly but says my role is not permitted to use approvals. It started after lunch and the whole team is affected. An unexpected page requested my username, password, and authentication code.",access,True,access-12
+Cannot use approved feature,The software loads correctly but says my role is not permitted to use approvals. It started early this morning and one person is affected.,access,False,access-12
+Wi-Fi disconnecting,Wireless access drops every few minutes throughout the Carlow office. It started late yesterday and one person is affected.,network,False,network-0
+Email client search broken,The desktop mail application opens normally but returns no search results. It started during a meeting and the whole team is affected.,software,False,software-8
+Multi-factor code rejected,The portal accepts my password but rejects every authentication code. It started after the latest restart and one person is affected.,access,False,access-6
+Slow connection,Internet performance is extremely slow for everyone at the Naas site. It started during a meeting and one person is affected.,network,False,network-3
+Password reset,I forgot my password and need a normal account reset. It started during a meeting and the whole team is affected.,access,False,access-1
+Damaged charging port,The charger only works when held at an angle in the laptop socket. It started late yesterday and one person is affected.,hardware,False,hardware-11
+Docking station failure,USB devices disconnect whenever the laptop is placed on the dock. It started early this morning and one person is affected.,hardware,False,hardware-3
+Spreadsheet is frozen - Spoofed sender reported,Excel becomes unresponsive when opening the monthly workbook. It started late yesterday and one person is affected. The message appears to impersonate a manager and requests confidential data.,software,True,software-2
+Install approved software,Please install the approved reporting application for the Finance team. It started early this morning and one person is affected.,software,False,software-3
+Wi-Fi disconnecting,Wireless access drops every few minutes throughout the Carlow branch. It started after the latest restart and one person is affected.,network,False,network-0
+Incorrect totals in report,The reporting program calculates the wrong total after importing a spreadsheet. It started after the latest restart and one person is affected.,software,False,software-7
+Headset microphone broken,The headset plays sound but its microphone does not capture any audio. It started during normal daily work and one person is affected.,hardware,False,hardware-12
+Network printer unreachable,The printer is powered on but no workstation can contact its network address. It started during a meeting and one person is affected.,network,False,network-9
+Damaged charging port,The charger only works when held at an angle in the laptop socket. It started during a meeting and one person is affected.,hardware,False,hardware-11
+Database permission denied,The database connection succeeds but my user is not authorised to view the records. It started after lunch and the whole team is affected.,access,False,access-9
+Second screen flickering - Ransomware concern,The physical display flickers with different cables and applications. It started after lunch and one person is affected. A message claims company files were encrypted and demands payment.,hardware,True,hardware-13
+VPN connected without resources,The VPN reports connected but internal drives and pages remain unreachable. It started during a meeting and one person is affected.,network,False,network-14
+Mouse disconnects,The wired mouse repeatedly disconnects when moved to another USB port. It started when the office opened and one person is affected.,hardware,False,hardware-9
+Remote desktop disconnecting,The remote session drops whenever the VPN connection becomes unstable. It started early this morning and one person is affected.,network,False,network-8
+Access denied - Virus warning,Please grant my account permission to the HR team shared folder. It started during normal daily work and one person is affected. The security scanner detected a possible virus during this incident.,access,True,access-0
+Router light is off,There is no internet because the physical router has no power at Naas office. It started during a meeting and one person is affected.,hardware,False,hardware-4
+Spreadsheet is frozen,Excel becomes unresponsive when opening the monthly workbook. It started during a meeting and one person is affected.,software,False,software-2
+Desktop making warning beeps,The workstation beeps during startup and does not reach the login screen. It started early this morning and the whole team is affected.,hardware,False,hardware-14
+Application licence error,The licensed design program rejects its valid licence after an update. It started late yesterday and one person is affected.,software,False,software-12
+Desktop making warning beeps,The workstation beeps during startup and does not reach the login screen. It started during a meeting and the whole team is affected.,hardware,False,hardware-14
+Payroll export fails,The payroll application accepts the user login but fails while exporting data. It started after the latest restart and the whole team is affected.,software,False,software-13
+Slow connection,Internet performance is extremely slow for everyone at the Naas office. It started early this morning and the whole team is affected.,network,False,network-3
+Laptop fan is noisy,The laptop fan is grinding loudly and the computer becomes unusually hot. It started late yesterday and one person is affected.,hardware,False,hardware-10
+Headset microphone broken,The headset plays sound but its microphone does not capture any audio. It started after lunch and one person is affected.,hardware,False,hardware-12
+Router light is off - Suspicious sign-in page,There is no internet because the physical router has no power at Naas site. It started during a meeting and the whole team is affected. A fake-looking login page appeared and asked me to confirm my credentials.,hardware,True,hardware-4
+Laptop fan is noisy,The laptop fan is grinding loudly and the computer becomes unusually hot. It started after lunch and the whole team is affected.,hardware,False,hardware-10
+Internal website times out,The intranet cannot be reached from any computer at Naas office. It started after lunch and one person is affected.,network,False,network-7
+Printer fault,The printer jams on every page and shows a hardware error at Carlow office. It started early this morning and one person is affected.,hardware,False,hardware-2
+Browser closes unexpectedly,The web browser exits whenever a second tab is opened. It started during a meeting and one person is affected.,software,False,software-6
+Internal website times out,The intranet cannot be reached from any computer at Naas office. It started during a meeting and the whole team is affected.,network,False,network-7
+Cannot resolve internal address - Unknown administrator activity,The internal server name is not resolving although public websites still load. It started during a meeting and one person is affected. An unrecognised administrator changed settings without approval.,network,True,network-12
+Printer fault,The printer jams on every page and shows a hardware error at Naas office. It started after the latest restart and one person is affected.,hardware,False,hardware-2
+Antivirus scan will not finish - Lost company device,The approved antivirus program stops responding midway through a routine scan. It started during normal daily work and one person is affected. A work device containing company data cannot be located.,software,True,software-14
+VPN connected without resources - Unauthorised access concern,The VPN reports connected but internal drives and pages remain unreachable. It started early this morning and one person is affected. I noticed unauthorised access to my account this morning.,network,True,network-14
+Database permission denied,The database connection succeeds but my user is not authorised to view the records. It started early this morning and the whole team is affected.,access,False,access-9
+Email client search broken,The desktop mail application opens normally but returns no search results. It started during a meeting and one person is affected.,software,False,software-8
+Document formatting changed,The word processor moves headings and tables when the file is saved. It started during a meeting and one person is affected.,software,False,software-11
+Laptop will not start,The laptop power light stays off after changing the charger at Carlow office. It started after the latest restart and one person is affected.,hardware,False,hardware-0
+Document formatting changed,The word processor moves headings and tables when the file is saved. It started after lunch and the whole team is affected.,software,False,software-11
+Expired account - Suspicious sign-in page,The system says my user account has expired and will not allow a sign-in. It started when the office opened and one person is affected. A fake-looking login page appeared and asked me to confirm my credentials.,access,True,access-10
+Remove folder permission,Please remove a contractor's access to the confidential project folder. It started after the latest restart and the whole team is affected.,access,False,access-11
+Antivirus scan will not finish,The approved antivirus program stops responding midway through a routine scan. It started after lunch and the whole team is affected.,software,False,software-14
+Incorrect totals in report,The reporting program calculates the wrong total after importing a spreadsheet. It started during a meeting and one person is affected.,software,False,software-7
+Permission changed unexpectedly,I can log in but no longer have access to files I was authorised to use. It started after lunch and one person is affected.,access,False,access-14
+Account locked,My approved account is locked after several failed sign-in attempts. It started after the latest restart and one person is affected.,access,False,access-5
+Video calls keep dropping - Unknown administrator activity,Calls disconnect for several people whenever they use the office network. It started early this morning and the whole team is affected. An unrecognised administrator changed settings without approval.,network,True,network-6
+Desktop making warning beeps,The workstation beeps during startup and does not reach the login screen. It started after the latest restart and one person is affected.,hardware,False,hardware-14
+Slow connection,Internet performance is extremely slow for everyone at the Carlow office. It started late yesterday and one person is affected.,network,False,network-3
+Remote desktop disconnecting,The remote session drops whenever the VPN connection becomes unstable. It started early this morning and the whole team is affected.,network,False,network-8
+Webcam not detected,The external webcam is not recognised after reconnecting it at Naas office. It started after lunch and one person is affected.,hardware,False,hardware-7
+VPN connected without resources - Lost company device,The VPN reports connected but internal drives and pages remain unreachable. It started during normal daily work and one person is affected. A work device containing company data cannot be located.,network,True,network-14
+Laptop will not start,The laptop power light stays off after changing the charger at Carlow branch. It started after lunch and one person is affected.,hardware,False,hardware-0
+Database permission denied,The database connection succeeds but my user is not authorised to view the records. It started early this morning and one person is affected.,access,False,access-9
+Database permission denied,The database connection succeeds but my user is not authorised to view the records. It started after the latest restart and one person is affected.,access,False,access-9
+Webcam not detected,The external webcam is not recognised after reconnecting it at Carlow office. It started late yesterday and one person is affected.,hardware,False,hardware-7
+Internal website times out,The intranet cannot be reached from any computer at Carlow office. It started during a meeting and one person is affected.,network,False,network-7
+Payroll export fails,The payroll application accepts the user login but fails while exporting data. It started early this morning and one person is affected.,software,False,software-13
+Network printer unreachable,The printer is powered on but no workstation can contact its network address. It started after the latest restart and one person is affected.,network,False,network-9
+PDF files will not open - Stolen work device,The document reader reports an error for every PDF downloaded by the operations team. It started after lunch and the whole team is affected. A company device containing work information has been reported stolen.,software,True,software-5
+Calendar application frozen - Suspicious email reported,The calendar stops responding after a meeting invitation is accepted. It started late yesterday and one person is affected. A suspicious email asks me to open an attachment and enter my password.,software,True,software-9
+Monitor has no display,The monitor says no signal although the desktop is running for the reception. It started early this morning and the whole team is affected.,hardware,False,hardware-1
+Antivirus scan will not finish,The approved antivirus program stops responding midway through a routine scan. It started during a meeting and one person is affected.,software,False,software-14
+Password reset,I forgot my password and need a normal account reset. It started after lunch and the whole team is affected.,access,False,access-1
+Remote desktop disconnecting,The remote session drops whenever the VPN connection becomes unstable. It started during normal daily work and one person is affected.,network,False,network-8
+Slow connection,Internet performance is extremely slow for everyone at the Naas office. It started after lunch and one person is affected.,network,False,network-3
+Shared mailbox access,Please authorise the Finance team to open the shared mailbox. It started after the latest restart and the whole team is affected.,access,False,access-8
+PDF files will not open,The document reader reports an error for every PDF downloaded by the reception. It started while working remotely and one person is affected.,software,False,software-5
+Weak wireless signal,The Wi-Fi signal disappears in part of Carlow branch for every nearby device. It started during a meeting and the whole team is affected.,network,False,network-13
+Antivirus scan will not finish,The approved antivirus program stops responding midway through a routine scan. It started early this morning and the whole team is affected.,software,False,software-14
+Browser closes unexpectedly,The web browser exits whenever a second tab is opened. It started when the office opened and one person is affected.,software,False,software-6
+Monitor has no display,The monitor says no signal although the desktop is running for the HR team. It started early this morning and one person is affected.,hardware,False,hardware-1
+Password reset,I forgot my password and need a normal account reset. It started during normal daily work and one person is affected.,access,False,access-1
+Remote desktop disconnecting,The remote session drops whenever the VPN connection becomes unstable. It started during a meeting and the whole team is affected.,network,False,network-8
+Cannot resolve internal address - Possible credential theft,"The internal server name is not resolving although public websites still load. It started after lunch and the whole team is affected. An unexpected page requested my username, password, and authentication code.",network,True,network-12
+Incorrect totals in report,The reporting program calculates the wrong total after importing a spreadsheet. It started late yesterday and one person is affected.,software,False,software-7
+Cannot log into finance software - Suspicious sign-in page,The application opens but says my account lacks permission. It started during a meeting and the whole team is affected. A fake-looking login page appeared and asked me to confirm my credentials.,access,True,access-4
+Account locked,My approved account is locked after several failed sign-in attempts. It started early this morning and the whole team is affected.,access,False,access-5
+Remove folder permission,Please remove a contractor's access to the confidential project folder. It started after lunch and one person is affected.,access,False,access-11
+Laptop battery is swollen,The laptop case is lifting near the battery and the device should be inspected. It started after the latest restart and one person is affected.,hardware,False,hardware-6
+Payroll export fails,The payroll application accepts the user login but fails while exporting data. It started during a meeting and the whole team is affected.,software,False,software-13
+Desktop making warning beeps - Lost company device,The workstation beeps during startup and does not reach the login screen. It started during normal daily work and one person is affected. A work device containing company data cannot be located.,hardware,True,hardware-14
+Internal website times out,The intranet cannot be reached from any computer at Naas office. It started after the latest restart and the whole team is affected.,network,False,network-7
+Cloud files synchronising slowly,File synchronisation stalls only while connected to the Carlow branch network. It started late yesterday and one person is affected.,network,False,network-11
+Remote desktop disconnecting,The remote session drops whenever the VPN connection becomes unstable. It started after lunch and the whole team is affected.,network,False,network-8
+Printer fault,The printer jams on every page and shows a hardware error at Naas site. It started early this morning and the whole team is affected.,hardware,False,hardware-2
+Shared mailbox access,Please authorise the operations team to open the shared mailbox. It started after lunch and the whole team is affected.,access,False,access-8
+Incorrect totals in report,The reporting program calculates the wrong total after importing a spreadsheet. It started during a meeting and the whole team is affected.,software,False,software-7
+Router light is off,There is no internet because the physical router has no power at Naas site. It started after lunch and the whole team is affected.,hardware,False,hardware-4
+Multi-factor code rejected,The portal accepts my password but rejects every authentication code. It started when the office opened and one person is affected.,access,False,access-6
+Second screen flickering,The physical display flickers with different cables and applications. It started while working remotely and one person is affected.,hardware,False,hardware-13
+Router light is off,There is no internet because the physical router has no power at Carlow branch. It started during normal daily work and one person is affected.,hardware,False,hardware-4
+Login screen freezes,The payroll software accepts my password but freezes while loading. It started during normal daily work and one person is affected.,software,False,software-4
+Account locked,My approved account is locked after several failed sign-in attempts. It started after lunch and one person is affected.,access,False,access-5
+Update caused an error,The application will not open since yesterday's software update. It started after the latest restart and one person is affected.,software,False,software-1
+Headset microphone broken,The headset plays sound but its microphone does not capture any audio. It started after the latest restart and the whole team is affected.,hardware,False,hardware-12
+Laptop fan is noisy,The laptop fan is grinding loudly and the computer becomes unusually hot. It started during a meeting and one person is affected.,hardware,False,hardware-10
+Expired account,The system says my user account has expired and will not allow a sign-in. It started after the latest restart and one person is affected.,access,False,access-10
+Laptop battery is swollen - Virus warning,The laptop case is lifting near the battery and the device should be inspected. It started after lunch and one person is affected. The security scanner detected a possible virus during this incident.,hardware,True,hardware-6
+Wi-Fi disconnecting,Wireless access drops every few minutes throughout the Naas office. It started early this morning and the whole team is affected.,network,False,network-0
+Wired connection unavailable,The network cable is connected but the workstation cannot reach any internal site. It started during a meeting and the whole team is affected.,network,False,network-5
+Slow connection,Internet performance is extremely slow for everyone at the Naas site. It started after lunch and the whole team is affected.,network,False,network-3
+Incorrect totals in report,The reporting program calculates the wrong total after importing a spreadsheet. It started after lunch and one person is affected.,software,False,software-7
+Browser closes unexpectedly,The web browser exits whenever a second tab is opened. It started during a meeting and the whole team is affected.,software,False,software-6
+Email client search broken - Unauthorised access concern,The desktop mail application opens normally but returns no search results. It started while working remotely and one person is affected. I noticed unauthorised access to my account this morning.,software,True,software-8
+Internal website times out,The intranet cannot be reached from any computer at Carlow branch. It started early this morning and the whole team is affected.,network,False,network-7
+Spreadsheet is frozen,Excel becomes unresponsive when opening the monthly workbook. It started during a meeting and the whole team is affected.,software,False,software-2
+Password reset,I forgot my password and need a normal account reset. It started early this morning and the whole team is affected.,access,False,access-1
+Update caused an error,The application will not open since yesterday's software update. It started during normal daily work and one person is affected.,software,False,software-1
+Role permissions missing,I can sign in to the reporting application but cannot access the manager functions. It started after the latest restart and one person is affected.,access,False,access-7
+Document formatting changed - Spoofed sender reported,The word processor moves headings and tables when the file is saved. It started during a meeting and the whole team is affected. The message appears to impersonate a manager and requests confidential data.,software,True,software-11
+Headset microphone broken,The headset plays sound but its microphone does not capture any audio. It started during a meeting and the whole team is affected.,hardware,False,hardware-12
+Video calls keep dropping,Calls disconnect for several people whenever they use the office network. It started early this morning and one person is affected.,network,False,network-6
+Weak wireless signal,The Wi-Fi signal disappears in part of Naas site for every nearby device. It started early this morning and one person is affected.,network,False,network-13
+Cannot resolve internal address,The internal server name is not resolving although public websites still load. It started after the latest restart and one person is affected.,network,False,network-12
+Update caused an error,The application will not open since yesterday's software update. It started after the latest restart and the whole team is affected.,software,False,software-1
+Laptop fan is noisy,The laptop fan is grinding loudly and the computer becomes unusually hot. It started during normal daily work and one person is affected.,hardware,False,hardware-10
+Printer fault,The printer jams on every page and shows a hardware error at Carlow office. It started during a meeting and the whole team is affected.,hardware,False,hardware-2
+Office connection lost,Both wired and wireless internet access stopped for the Finance team. It started during a meeting and one person is affected.,network,False,network-10
+Password reset,I forgot my password and need a normal account reset. It started after the latest restart and one person is affected.,access,False,access-1
+Remove leaver access - Suspicious email reported,Please revoke the former employee's account permissions today. It started after the latest restart and the whole team is affected. A suspicious email asks me to open an attachment and enter my password.,access,True,access-3
+Projector shows no picture - Unauthorised access concern,The meeting-room projector powers on but does not display an image. It started while working remotely and one person is affected. I noticed unauthorised access to my account this morning.,hardware,True,hardware-8
+Wi-Fi disconnecting,Wireless access drops every few minutes throughout the Naas office. It started during a meeting and the whole team is affected.,network,False,network-0
+Slow connection,Internet performance is extremely slow for everyone at the Carlow office. It started after the latest restart and one person is affected.,network,False,network-3
+Update caused an error,The application will not open since yesterday's software update. It started early this morning and one person is affected.,software,False,software-1
+Shared mailbox access,Please authorise the operations team to open the shared mailbox. It started during a meeting and the whole team is affected.,access,False,access-8
+Remote desktop disconnecting,The remote session drops whenever the VPN connection becomes unstable. It started after the latest restart and the whole team is affected.,network,False,network-8
+Database permission denied,The database connection succeeds but my user is not authorised to view the records. It started when the office opened and one person is affected.,access,False,access-9
+Approved plugin fails to load,The approved browser extension is installed but shows an initialization error. It started after the latest restart and one person is affected.,software,False,software-10
+Multi-factor code rejected,The portal accepts my password but rejects every authentication code. It started during a meeting and one person is affected.,access,False,access-6
+Access denied,Please grant my account permission to the Finance team shared folder. It started when the office opened and one person is affected.,access,False,access-0
+Application licence error,The licensed design program rejects its valid licence after an update. It started early this morning and one person is affected.,software,False,software-12
+Antivirus scan will not finish,The approved antivirus program stops responding midway through a routine scan. It started late yesterday and one person is affected.,software,False,software-14
+Login screen freezes,The payroll software accepts my password but freezes while loading. It started when the office opened and one person is affected.,software,False,software-4
+Monitor has no display,The monitor says no signal although the desktop is running for the HR team. It started after the latest restart and the whole team is affected.,hardware,False,hardware-1
+VPN cannot connect,The VPN times out before reaching the company network from home. It started when the office opened and one person is affected.,network,False,network-1
+Monitor has no display,The monitor says no signal although the desktop is running for the Finance team. It started during normal daily work and one person is affected.,hardware,False,hardware-1
+Network printer unreachable,The printer is powered on but no workstation can contact its network address. It started after lunch and one person is affected.,network,False,network-9
+Weak wireless signal - Ransomware concern,The Wi-Fi signal disappears in part of Naas office for every nearby device. It started after lunch and one person is affected. A message claims company files were encrypted and demands payment.,network,True,network-13
+VPN connected without resources,The VPN reports connected but internal drives and pages remain unreachable. It started during a meeting and the whole team is affected.,network,False,network-14
+New account request,Please create a standard system account for an approved new team member. It started while working remotely and one person is affected.,access,False,access-13
+Database permission denied,The database connection succeeds but my user is not authorised to view the records. It started while working remotely and one person is affected.,access,False,access-9
+Expired account,The system says my user account has expired and will not allow a sign-in. It started while working remotely and one person is affected.,access,False,access-10
+Application keeps crashing,The finance application closes whenever the HR team saves a report. It started during a meeting and one person is affected.,software,False,software-0
+Permission changed unexpectedly,I can log in but no longer have access to files I was authorised to use. It started after lunch and the whole team is affected.,access,False,access-14
+Update caused an error,The application will not open since yesterday's software update. It started during a meeting and one person is affected.,software,False,software-1
+Printer fault - Spoofed sender reported,The printer jams on every page and shows a hardware error at Carlow office. It started late yesterday and one person is affected. The message appears to impersonate a manager and requests confidential data.,hardware,True,hardware-2
+Cloud files synchronising slowly,File synchronisation stalls only while connected to the Carlow branch network. It started during normal daily work and one person is affected.,network,False,network-11
+Shared drive unreachable,The reception cannot reach the shared drive over the network. It started during normal daily work and one person is affected.,network,False,network-2
+Application keeps crashing,The finance application closes whenever the reception saves a report. It started after the latest restart and one person is affected.,software,False,software-0
+Mouse disconnects,The wired mouse repeatedly disconnects when moved to another USB port. It started early this morning and one person is affected.,hardware,False,hardware-9
+VPN cannot connect,The VPN times out before reaching the company network from home. It started during normal daily work and one person is affected.,network,False,network-1
+Application licence error,The licensed design program rejects its valid licence after an update. It started after the latest restart and the whole team is affected.,software,False,software-12
+Email client search broken,The desktop mail application opens normally but returns no search results. It started during normal daily work and one person is affected.,software,False,software-8
+Monitor has no display,The monitor says no signal although the desktop is running for the reception. It started after lunch and one person is affected.,hardware,False,hardware-1
+Remove leaver access,Please revoke the former employee's account permissions today. It started after the latest restart and one person is affected.,access,False,access-3
+Expired account,The system says my user account has expired and will not allow a sign-in. It started after lunch and one person is affected.,access,False,access-10
+Antivirus scan will not finish - Unauthorised access concern,The approved antivirus program stops responding midway through a routine scan. It started early this morning and one person is affected. I noticed unauthorised access to my account this morning.,software,True,software-14
+Role permissions missing,I can sign in to the reporting application but cannot access the manager functions. It started after the latest restart and the whole team is affected.,access,False,access-7
+Email client search broken,The desktop mail application opens normally but returns no search results. It started after the latest restart and the whole team is affected.,software,False,software-8
+Permission changed unexpectedly,I can log in but no longer have access to files I was authorised to use. It started when the office opened and one person is affected.,access,False,access-14
+Headset microphone broken,The headset plays sound but its microphone does not capture any audio. It started late yesterday and one person is affected.,hardware,False,hardware-12
+PDF files will not open,The document reader reports an error for every PDF downloaded by the HR team. It started when the office opened and one person is affected.,software,False,software-5
+Permission changed unexpectedly,I can log in but no longer have access to files I was authorised to use. It started after the latest restart and one person is affected.,access,False,access-14
+Slow connection - Possible credential theft,"Internet performance is extremely slow for everyone at the Naas office. It started when the office opened and one person is affected. An unexpected page requested my username, password, and authentication code.",network,True,network-3
+Remove leaver access,Please revoke the former employee's account permissions today. It started during normal daily work and one person is affected.,access,False,access-3
+Cannot reach drive over VPN,My account works locally but the shared drive is unreachable over VPN. It started during normal daily work and one person is affected.,network,False,network-4
+Cannot resolve internal address,The internal server name is not resolving although public websites still load. It started during a meeting and the whole team is affected.,network,False,network-12
+New account request - Possible malware,Please create a standard system account for an approved new team member. It started early this morning and the whole team is affected. A malware warning appeared after an unexpected download.,access,True,access-13
+Database permission denied,The database connection succeeds but my user is not authorised to view the records. It started during a meeting and one person is affected.,access,False,access-9
+Office connection lost,Both wired and wireless internet access stopped for the Finance team. It started after lunch and one person is affected.,network,False,network-10
+Network printer unreachable,The printer is powered on but no workstation can contact its network address. It started during normal daily work and one person is affected.,network,False,network-9
+Second screen flickering,The physical display flickers with different cables and applications. It started early this morning and one person is affected.,hardware,False,hardware-13
+Incorrect totals in report,The reporting program calculates the wrong total after importing a spreadsheet. It started after lunch and the whole team is affected.,software,False,software-7
+Multi-factor code rejected - Virus warning,The portal accepts my password but rejects every authentication code. It started after lunch and one person is affected. The security scanner detected a possible virus during this incident.,access,True,access-6
+Remote desktop disconnecting - Unauthorised access concern,The remote session drops whenever the VPN connection becomes unstable. It started while working remotely and one person is affected. I noticed unauthorised access to my account this morning.,network,True,network-8
+VPN connected without resources,The VPN reports connected but internal drives and pages remain unreachable. It started late yesterday and one person is affected.,network,False,network-14
+Install approved software,Please install the approved reporting application for the operations team. It started during a meeting and one person is affected.,software,False,software-3
+Remove folder permission - Stolen work device,Please remove a contractor's access to the confidential project folder. It started after the latest restart and one person is affected. A company device containing work information has been reported stolen.,access,True,access-11
+Cannot reach drive over VPN,My account works locally but the shared drive is unreachable over VPN. It started after lunch and the whole team is affected.,network,False,network-4
+Router light is off,There is no internet because the physical router has no power at Carlow office. It started after the latest restart and the whole team is affected.,hardware,False,hardware-4
+Email client search broken,The desktop mail application opens normally but returns no search results. It started early this morning and one person is affected.,software,False,software-8
+Projector shows no picture,The meeting-room projector powers on but does not display an image. It started early this morning and one person is affected.,hardware,False,hardware-8
+Install approved software - Possible credential theft,"Please install the approved reporting application for the reception. It started when the office opened and one person is affected. An unexpected page requested my username, password, and authentication code.",software,True,software-3
+Office connection lost - Suspicious sign-in page,Both wired and wireless internet access stopped for the Finance team. It started when the office opened and one person is affected. A fake-looking login page appeared and asked me to confirm my credentials.,network,True,network-10
+Install approved software,Please install the approved reporting application for the reception. It started during normal daily work and one person is affected.,software,False,software-3
+Shared drive unreachable,The Finance team cannot reach the shared drive over the network. It started early this morning and one person is affected.,network,False,network-2
+Network printer unreachable,The printer is powered on but no workstation can contact its network address. It started during a meeting and the whole team is affected.,network,False,network-9
+Spreadsheet is frozen,Excel becomes unresponsive when opening the monthly workbook. It started while working remotely and one person is affected.,software,False,software-2
+Cannot reach drive over VPN,My account works locally but the shared drive is unreachable over VPN. It started during a meeting and one person is affected.,network,False,network-4
+New starter permissions,A new employee needs approved access to the HR portal. It started after the latest restart and the whole team is affected.,access,False,access-2
+Office connection lost - Possible data breach,Both wired and wireless internet access stopped for the reception. It started after the latest restart and the whole team is affected. Confidential company information may have been exposed to an unknown person.,network,True,network-10
+Install approved software,Please install the approved reporting application for the operations team. It started early this morning and the whole team is affected.,software,False,software-3
+Docking station failure,USB devices disconnect whenever the laptop is placed on the dock. It started during a meeting and the whole team is affected.,hardware,False,hardware-3
+Cannot use approved feature,The software loads correctly but says my role is not permitted to use approvals. It started after the latest restart and one person is affected.,access,False,access-12
+Weak wireless signal,The Wi-Fi signal disappears in part of Carlow branch for every nearby device. It started during a meeting and one person is affected.,network,False,network-13
+Role permissions missing,I can sign in to the reporting application but cannot access the manager functions. It started after lunch and one person is affected.,access,False,access-7
+New starter permissions,A new employee needs approved access to the HR portal. It started during a meeting and one person is affected.,access,False,access-2
+Expired account,The system says my user account has expired and will not allow a sign-in. It started during a meeting and the whole team is affected.,access,False,access-10
+Wired connection unavailable,The network cable is connected but the workstation cannot reach any internal site. It started during normal daily work and one person is affected.,network,False,network-5
+Damaged charging port,The charger only works when held at an angle in the laptop socket. It started when the office opened and one person is affected.,hardware,False,hardware-11
+Cannot log into finance software,The application opens but says my account lacks permission. It started when the office opened and one person is affected.,access,False,access-4
+Cloud files synchronising slowly,File synchronisation stalls only while connected to the Naas site network. It started after lunch and the whole team is affected.,network,False,network-11
+Remove folder permission,Please remove a contractor's access to the confidential project folder. It started during normal daily work and one person is affected.,access,False,access-11
+Email client search broken,The desktop mail application opens normally but returns no search results. It started after the latest restart and one person is affected.,software,False,software-8
+Approved plugin fails to load,The approved browser extension is installed but shows an initialization error. It started late yesterday and one person is affected.,software,False,software-10
+Access denied,Please grant my account permission to the Finance team shared folder. It started after the latest restart and one person is affected.,access,False,access-0
+Role permissions missing,I can sign in to the reporting application but cannot access the manager functions. It started early this morning and the whole team is affected.,access,False,access-7
+Cannot use approved feature,The software loads correctly but says my role is not permitted to use approvals. It started during a meeting and the whole team is affected.,access,False,access-12
+Laptop fan is noisy - Suspicious sign-in page,The laptop fan is grinding loudly and the computer becomes unusually hot. It started when the office opened and one person is affected. A fake-looking login page appeared and asked me to confirm my credentials.,hardware,True,hardware-10
+Router light is off,There is no internet because the physical router has no power at Carlow branch. It started after lunch and one person is affected.,hardware,False,hardware-4
+Role permissions missing,I can sign in to the reporting application but cannot access the manager functions. It started while working remotely and one person is affected.,access,False,access-7
+Keyboard keys not responding,Several keyboard keys have stopped working on a desktop used by the reception. It started after lunch and one person is affected.,hardware,False,hardware-5
+New account request,Please create a standard system account for an approved new team member. It started late yesterday and one person is affected.,access,False,access-13
+Cannot reach drive over VPN,My account works locally but the shared drive is unreachable over VPN. It started when the office opened and one person is affected.,network,False,network-4
+PDF files will not open,The document reader reports an error for every PDF downloaded by the HR team. It started late yesterday and one person is affected.,software,False,software-5
+Email client search broken,The desktop mail application opens normally but returns no search results. It started early this morning and the whole team is affected.,software,False,software-8
+Damaged charging port,The charger only works when held at an angle in the laptop socket. It started while working remotely and one person is affected.,hardware,False,hardware-11
+Permission changed unexpectedly,I can log in but no longer have access to files I was authorised to use. It started during a meeting and one person is affected.,access,False,access-14
+Cloud files synchronising slowly,File synchronisation stalls only while connected to the Naas office network. It started after lunch and one person is affected.,network,False,network-11
+Expired account,The system says my user account has expired and will not allow a sign-in. It started during normal daily work and one person is affected.,access,False,access-10
+Database permission denied - Suspicious email reported,The database connection succeeds but my user is not authorised to view the records. It started late yesterday and one person is affected. A suspicious email asks me to open an attachment and enter my password.,access,True,access-9
+Projector shows no picture,The meeting-room projector powers on but does not display an image. It started after the latest restart and the whole team is affected.,hardware,False,hardware-8
+Access denied,Please grant my account permission to the operations team shared folder. It started during a meeting and the whole team is affected.,access,False,access-0
+New starter permissions,A new employee needs approved access to the HR portal. It started while working remotely and one person is affected.,access,False,access-2
+Shared drive unreachable,The HR team cannot reach the shared drive over the network. It started early this morning and the whole team is affected.,network,False,network-2
+Keyboard keys not responding,Several keyboard keys have stopped working on a desktop used by the Finance team. It started when the office opened and one person is affected.,hardware,False,hardware-5
+Laptop will not start,The laptop power light stays off after changing the charger at Carlow office. It started when the office opened and one person is affected.,hardware,False,hardware-0
+Application licence error,The licensed design program rejects its valid licence after an update. It started early this morning and the whole team is affected.,software,False,software-12
+Install approved software - Suspicious email reported,Please install the approved reporting application for the HR team. It started after the latest restart and the whole team is affected. A suspicious email asks me to open an attachment and enter my password.,software,True,software-3
+Login screen freezes,The payroll software accepts my password but freezes while loading. It started after lunch and the whole team is affected.,software,False,software-4
+Projector shows no picture,The meeting-room projector powers on but does not display an image. It started after lunch and the whole team is affected.,hardware,False,hardware-8
+Access denied - Suspicious email reported,Please grant my account permission to the HR team shared folder. It started early this morning and one person is affected. A suspicious email asks me to open an attachment and enter my password.,access,True,access-0
+Remote desktop disconnecting,The remote session drops whenever the VPN connection becomes unstable. It started when the office opened and one person is affected.,network,False,network-8
+Wired connection unavailable,The network cable is connected but the workstation cannot reach any internal site. It started early this morning and the whole team is affected.,network,False,network-5
+Slow connection,Internet performance is extremely slow for everyone at the Naas office. It started while working remotely and one person is affected.,network,False,network-3
+Spreadsheet is frozen,Excel becomes unresponsive when opening the monthly workbook. It started after lunch and one person is affected.,software,False,software-2
+Password reset,I forgot my password and need a normal account reset. It started after the latest restart and the whole team is affected.,access,False,access-1
+Headset microphone broken - Possible credential theft,"The headset plays sound but its microphone does not capture any audio. It started after lunch and the whole team is affected. An unexpected page requested my username, password, and authentication code.",hardware,True,hardware-12
+Payroll export fails,The payroll application accepts the user login but fails while exporting data. It started while working remotely and one person is affected.,software,False,software-13
+PDF files will not open,The document reader reports an error for every PDF downloaded by the Finance team. It started early this morning and one person is affected.,software,False,software-5
+Mouse disconnects,The wired mouse repeatedly disconnects when moved to another USB port. It started while working remotely and one person is affected.,hardware,False,hardware-9
+Cannot resolve internal address,The internal server name is not resolving although public websites still load. It started early this morning and the whole team is affected.,network,False,network-12
+Browser closes unexpectedly,The web browser exits whenever a second tab is opened. It started during normal daily work and one person is affected.,software,False,software-6
+New account request,Please create a standard system account for an approved new team member. It started during a meeting and one person is affected.,access,False,access-13
+Access denied,Please grant my account permission to the Finance team shared folder. It started while working remotely and one person is affected.,access,False,access-0
+Projector shows no picture,The meeting-room projector powers on but does not display an image. It started after lunch and one person is affected.,hardware,False,hardware-8
+Network printer unreachable,The printer is powered on but no workstation can contact its network address. It started when the office opened and one person is affected.,network,False,network-9
+Cannot use approved feature,The software loads correctly but says my role is not permitted to use approvals. It started after the latest restart and the whole team is affected.,access,False,access-12
+VPN cannot connect,The VPN times out before reaching the company network from home. It started during a meeting and one person is affected.,network,False,network-1
+Incorrect totals in report - Possible data breach,The reporting program calculates the wrong total after importing a spreadsheet. It started early this morning and one person is affected. Confidential company information may have been exposed to an unknown person.,software,True,software-7
+Shared mailbox access,Please authorise the HR team to open the shared mailbox. It started during normal daily work and one person is affected.,access,False,access-8
+Laptop will not start,The laptop power light stays off after changing the charger at Naas office. It started after lunch and the whole team is affected.,hardware,False,hardware-0
+Permission changed unexpectedly,I can log in but no longer have access to files I was authorised to use. It started while working remotely and one person is affected.,access,False,access-14
+Approved plugin fails to load,The approved browser extension is installed but shows an initialization error. It started during a meeting and one person is affected.,software,False,software-10
+Laptop fan is noisy,The laptop fan is grinding loudly and the computer becomes unusually hot. It started after the latest restart and one person is affected.,hardware,False,hardware-10
+Weak wireless signal,The Wi-Fi signal disappears in part of Carlow office for every nearby device. It started when the office opened and one person is affected.,network,False,network-13
+Router light is off,There is no internet because the physical router has no power at Carlow branch. It started early this morning and one person is affected.,hardware,False,hardware-4
+Login screen freezes,The payroll software accepts my password but freezes while loading. It started while working remotely and one person is affected.,software,False,software-4
+Cannot log into finance software,The application opens but says my account lacks permission. It started during normal daily work and one person is affected.,access,False,access-4
+Application keeps crashing,The finance application closes whenever the HR team saves a report. It started when the office opened and one person is affected.,software,False,software-0
+Antivirus scan will not finish,The approved antivirus program stops responding midway through a routine scan. It started during a meeting and the whole team is affected.,software,False,software-14
+Login screen freezes - Suspicious sign-in page,The payroll software accepts my password but freezes while loading. It started during a meeting and the whole team is affected. A fake-looking login page appeared and asked me to confirm my credentials.,software,True,software-4
+Cloud files synchronising slowly,File synchronisation stalls only while connected to the Naas site network. It started when the office opened and one person is affected.,network,False,network-11
+PDF files will not open,The document reader reports an error for every PDF downloaded by the reception. It started early this morning and the whole team is affected.,software,False,software-5
+Payroll export fails,The payroll application accepts the user login but fails while exporting data. It started when the office opened and one person is affected.,software,False,software-13
+Mouse disconnects,The wired mouse repeatedly disconnects when moved to another USB port. It started after lunch and the whole team is affected.,hardware,False,hardware-9
+VPN cannot connect,The VPN times out before reaching the company network from home. It started early this morning and the whole team is affected.,network,False,network-1
+Mouse disconnects,The wired mouse repeatedly disconnects when moved to another USB port. It started after lunch and one person is affected.,hardware,False,hardware-9
+Application keeps crashing - Suspicious email reported,The finance application closes whenever the Finance team saves a report. It started early this morning and one person is affected. A suspicious email asks me to open an attachment and enter my password.,software,True,software-0
+Payroll export fails,The payroll application accepts the user login but fails while exporting data. It started during normal daily work and one person is affected.,software,False,software-13
+Keyboard keys not responding,Several keyboard keys have stopped working on a desktop used by the HR team. It started during normal daily work and one person is affected.,hardware,False,hardware-5
+Network printer unreachable,The printer is powered on but no workstation can contact its network address. It started early this morning and the whole team is affected.,network,False,network-9
+Calendar application frozen,The calendar stops responding after a meeting invitation is accepted. It started after the latest restart and one person is affected.,software,False,software-9
+Install approved software,Please install the approved reporting application for the HR team. It started late yesterday and one person is affected.,software,False,software-3
+Password reset,I forgot my password and need a normal account reset. It started early this morning and one person is affected.,access,False,access-1
+Slow connection - Suspicious email reported,Internet performance is extremely slow for everyone at the Naas office. It started after the latest restart and the whole team is affected. A suspicious email asks me to open an attachment and enter my password.,network,True,network-3
+Damaged charging port,The charger only works when held at an angle in the laptop socket. It started early this morning and one person is affected.,hardware,False,hardware-11
+Antivirus scan will not finish,The approved antivirus program stops responding midway through a routine scan. It started when the office opened and one person is affected.,software,False,software-14
+Network printer unreachable,The printer is powered on but no workstation can contact its network address. It started after the latest restart and the whole team is affected.,network,False,network-9
+Shared drive unreachable,The HR team cannot reach the shared drive over the network. It started during a meeting and the whole team is affected.,network,False,network-2
+Weak wireless signal,The Wi-Fi signal disappears in part of Carlow branch for every nearby device. It started while working remotely and one person is affected.,network,False,network-13
+Antivirus scan will not finish,The approved antivirus program stops responding midway through a routine scan. It started after the latest restart and one person is affected.,software,False,software-14
+Weak wireless signal - Possible malware,The Wi-Fi signal disappears in part of Carlow office for every nearby device. It started early this morning and the whole team is affected. A malware warning appeared after an unexpected download.,network,True,network-13
+Shared mailbox access,Please authorise the reception to open the shared mailbox. It started late yesterday and one person is affected.,access,False,access-8
+Internal website times out - Ransomware concern,The intranet cannot be reached from any computer at Naas office. It started during normal daily work and one person is affected. A message claims company files were encrypted and demands payment.,network,True,network-7
+Wi-Fi disconnecting,Wireless access drops every few minutes throughout the Naas office. It started during a meeting and one person is affected.,network,False,network-0
+Webcam not detected,The external webcam is not recognised after reconnecting it at Naas site. It started while working remotely and one person is affected.,hardware,False,hardware-7
+Network printer unreachable,The printer is powered on but no workstation can contact its network address. It started after lunch and the whole team is affected.,network,False,network-9
+Cannot use approved feature - Unknown administrator activity,The software loads correctly but says my role is not permitted to use approvals. It started during a meeting and one person is affected. An unrecognised administrator changed settings without approval.,access,True,access-12
+Approved plugin fails to load,The approved browser extension is installed but shows an initialization error. It started during normal daily work and one person is affected.,software,False,software-10
+Printer fault,The printer jams on every page and shows a hardware error at Carlow office. It started after the latest restart and the whole team is affected.,hardware,False,hardware-2
+Cloud files synchronising slowly - Stolen work device,File synchronisation stalls only while connected to the Naas office network. It started after the latest restart and one person is affected. A company device containing work information has been reported stolen.,network,True,network-11
+Permission changed unexpectedly,I can log in but no longer have access to files I was authorised to use. It started early this morning and the whole team is affected.,access,False,access-14
+Cloud files synchronising slowly,File synchronisation stalls only while connected to the Carlow office network. It started while working remotely and one person is affected.,network,False,network-11
+New starter permissions,A new employee needs approved access to the HR portal. It started after lunch and one person is affected.,access,False,access-2
+Permission changed unexpectedly - Unauthorised access concern,I can log in but no longer have access to files I was authorised to use. It started early this morning and one person is affected. I noticed unauthorised access to my account this morning.,access,True,access-14
+Login screen freezes,The payroll software accepts my password but freezes while loading. It started during a meeting and one person is affected.,software,False,software-4
+Application keeps crashing,The finance application closes whenever the reception saves a report. It started after lunch and the whole team is affected.,software,False,software-0
+Internal website times out,The intranet cannot be reached from any computer at Naas site. It started late yesterday and one person is affected.,network,False,network-7
+Update caused an error,The application will not open since yesterday's software update. It started after lunch and one person is affected.,software,False,software-1
+Second screen flickering,The physical display flickers with different cables and applications. It started after lunch and the whole team is affected.,hardware,False,hardware-13
+Laptop fan is noisy,The laptop fan is grinding loudly and the computer becomes unusually hot. It started after lunch and one person is affected.,hardware,False,hardware-10
+Router light is off - Possible malware,There is no internet because the physical router has no power at Naas office. It started after the latest restart and one person is affected. A malware warning appeared after an unexpected download.,hardware,True,hardware-4
+Headset microphone broken,The headset plays sound but its microphone does not capture any audio. It started when the office opened and one person is affected.,hardware,False,hardware-12
+Laptop battery is swollen - Unknown administrator activity,The laptop case is lifting near the battery and the device should be inspected. It started early this morning and the whole team is affected. An unrecognised administrator changed settings without approval.,hardware,True,hardware-6
+Role permissions missing - Possible data breach,I can sign in to the reporting application but cannot access the manager functions. It started early this morning and one person is affected. Confidential company information may have been exposed to an unknown person.,access,True,access-7
+Monitor has no display,The monitor says no signal although the desktop is running for the HR team. It started after lunch and the whole team is affected.,hardware,False,hardware-1
+Printer fault,The printer jams on every page and shows a hardware error at Naas office. It started when the office opened and one person is affected.,hardware,False,hardware-2
+Payroll export fails,The payroll application accepts the user login but fails while exporting data. It started after the latest restart and one person is affected.,software,False,software-13
+Docking station failure,USB devices disconnect whenever the laptop is placed on the dock. It started early this morning and the whole team is affected.,hardware,False,hardware-3
+Video calls keep dropping,Calls disconnect for several people whenever they use the office network. It started after lunch and the whole team is affected.,network,False,network-6
+Mouse disconnects,The wired mouse repeatedly disconnects when moved to another USB port. It started after the latest restart and one person is affected.,hardware,False,hardware-9
+Spreadsheet is frozen,Excel becomes unresponsive when opening the monthly workbook. It started during normal daily work and one person is affected.,software,False,software-2
+Email client search broken,The desktop mail application opens normally but returns no search results. It started late yesterday and one person is affected.,software,False,software-8
+Calendar application frozen,The calendar stops responding after a meeting invitation is accepted. It started early this morning and one person is affected.,software,False,software-9
+VPN connected without resources,The VPN reports connected but internal drives and pages remain unreachable. It started after lunch and one person is affected.,network,False,network-14
+New account request,Please create a standard system account for an approved new team member. It started after the latest restart and one person is affected.,access,False,access-13
+Shared mailbox access,Please authorise the HR team to open the shared mailbox. It started when the office opened and one person is affected.,access,False,access-8
+Remove leaver access - Possible credential theft,"Please revoke the former employee's account permissions today. It started when the office opened and one person is affected. An unexpected page requested my username, password, and authentication code.",access,True,access-3
+Multi-factor code rejected,The portal accepts my password but rejects every authentication code. It started after lunch and the whole team is affected.,access,False,access-6
+Cannot use approved feature,The software loads correctly but says my role is not permitted to use approvals. It started late yesterday and one person is affected.,access,False,access-12
+Multi-factor code rejected,The portal accepts my password but rejects every authentication code. It started during normal daily work and one person is affected.,access,False,access-6
+Internal website times out - Possible data breach,The intranet cannot be reached from any computer at Carlow branch. It started early this morning and one person is affected. Confidential company information may have been exposed to an unknown person.,network,True,network-7
+Video calls keep dropping,Calls disconnect for several people whenever they use the office network. It started late yesterday and one person is affected.,network,False,network-6
+Laptop fan is noisy,The laptop fan is grinding loudly and the computer becomes unusually hot. It started during a meeting and the whole team is affected.,hardware,False,hardware-10
+Second screen flickering,The physical display flickers with different cables and applications. It started when the office opened and one person is affected.,hardware,False,hardware-13
+Password reset,I forgot my password and need a normal account reset. It started during a meeting and one person is affected.,access,False,access-1
+Mouse disconnects,The wired mouse repeatedly disconnects when moved to another USB port. It started after the latest restart and the whole team is affected.,hardware,False,hardware-9
+Desktop making warning beeps,The workstation beeps during startup and does not reach the login screen. It started while working remotely and one person is affected.,hardware,False,hardware-14
+Application licence error,The licensed design program rejects its valid licence after an update. It started after the latest restart and one person is affected.,software,False,software-12
+Incorrect totals in report,The reporting program calculates the wrong total after importing a spreadsheet. It started when the office opened and one person is affected.,software,False,software-7
+Wired connection unavailable,The network cable is connected but the workstation cannot reach any internal site. It started when the office opened and one person is affected.,network,False,network-5
+Remove leaver access,Please revoke the former employee's account permissions today. It started during a meeting and the whole team is affected.,access,False,access-3
+Shared mailbox access,Please authorise the reception to open the shared mailbox. It started after the latest restart and one person is affected.,access,False,access-8
+Monitor has no display,The monitor says no signal although the desktop is running for the operations team. It started when the office opened and one person is affected.,hardware,False,hardware-1
+Desktop making warning beeps,The workstation beeps during startup and does not reach the login screen. It started when the office opened and one person is affected.,hardware,False,hardware-14
+VPN connected without resources,The VPN reports connected but internal drives and pages remain unreachable. It started while working remotely and one person is affected.,network,False,network-14
+Login screen freezes,The payroll software accepts my password but freezes while loading. It started early this morning and the whole team is affected.,software,False,software-4
+New account request,Please create a standard system account for an approved new team member. It started during normal daily work and one person is affected.,access,False,access-13
+Approved plugin fails to load - Suspicious sign-in page,The approved browser extension is installed but shows an initialization error. It started when the office opened and one person is affected. A fake-looking login page appeared and asked me to confirm my credentials.,software,True,software-10
+VPN connected without resources,The VPN reports connected but internal drives and pages remain unreachable. It started early this morning and the whole team is affected.,network,False,network-14
+Calendar application frozen,The calendar stops responding after a meeting invitation is accepted. It started early this morning and the whole team is affected.,software,False,software-9
+Document formatting changed,The word processor moves headings and tables when the file is saved. It started during normal daily work and one person is affected.,software,False,software-11
+New account request,Please create a standard system account for an approved new team member. It started after lunch and the whole team is affected.,access,False,access-13
+Account locked,My approved account is locked after several failed sign-in attempts. It started during normal daily work and one person is affected.,access,False,access-5
+Video calls keep dropping,Calls disconnect for several people whenever they use the office network. It started when the office opened and one person is affected.,network,False,network-6
+PDF files will not open - Lost company device,The document reader reports an error for every PDF downloaded by the operations team. It started during a meeting and one person is affected. A work device containing company data cannot be located.,software,True,software-5
+Update caused an error - Possible data breach,The application will not open since yesterday's software update. It started while working remotely and one person is affected. Confidential company information may have been exposed to an unknown person.,software,True,software-1
+Monitor has no display,The monitor says no signal although the desktop is running for the Finance team. It started after the latest restart and one person is affected.,hardware,False,hardware-1
+Projector shows no picture,The meeting-room projector powers on but does not display an image. It started late yesterday and one person is affected.,hardware,False,hardware-8
+Desktop making warning beeps,The workstation beeps during startup and does not reach the login screen. It started after lunch and one person is affected.,hardware,False,hardware-14
+Database permission denied,The database connection succeeds but my user is not authorised to view the records. It started after the latest restart and the whole team is affected.,access,False,access-9
+Application keeps crashing,The finance application closes whenever the reception saves a report. It started after the latest restart and the whole team is affected.,software,False,software-0
+Laptop fan is noisy - Possible data breach,The laptop fan is grinding loudly and the computer becomes unusually hot. It started after the latest restart and the whole team is affected. Confidential company information may have been exposed to an unknown person.,hardware,True,hardware-10
+Multi-factor code rejected,The portal accepts my password but rejects every authentication code. It started while working remotely and one person is affected.,access,False,access-6
+Webcam not detected,The external webcam is not recognised after reconnecting it at Naas site. It started after the latest restart and the whole team is affected.,hardware,False,hardware-7
+Cannot log into finance software,The application opens but says my account lacks permission. It started after the latest restart and the whole team is affected.,access,False,access-4
+Keyboard keys not responding,Several keyboard keys have stopped working on a desktop used by the HR team. It started while working remotely and one person is affected.,hardware,False,hardware-5
+Approved plugin fails to load,The approved browser extension is installed but shows an initialization error. It started early this morning and the whole team is affected.,software,False,software-10
+Remove folder permission,Please remove a contractor's access to the confidential project folder. It started during a meeting and one person is affected.,access,False,access-11
+Permission changed unexpectedly - Lost company device,I can log in but no longer have access to files I was authorised to use. It started during normal daily work and one person is affected. A work device containing company data cannot be located.,access,True,access-14
+Browser closes unexpectedly - Virus warning,The web browser exits whenever a second tab is opened. It started after lunch and one person is affected. The security scanner detected a possible virus during this incident.,software,True,software-6
+Update caused an error,The application will not open since yesterday's software update. It started late yesterday and one person is affected.,software,False,software-1
+Role permissions missing,I can sign in to the reporting application but cannot access the manager functions. It started after lunch and the whole team is affected.,access,False,access-7
+PDF files will not open,The document reader reports an error for every PDF downloaded by the HR team. It started during normal daily work and one person is affected.,software,False,software-5
+Remove folder permission,Please remove a contractor's access to the confidential project folder. It started after lunch and the whole team is affected.,access,False,access-11
+Calendar application frozen,The calendar stops responding after a meeting invitation is accepted. It started after the latest restart and the whole team is affected.,software,False,software-9
+PDF files will not open,The document reader reports an error for every PDF downloaded by the Finance team. It started after the latest restart and one person is affected.,software,False,software-5
+Application keeps crashing,The finance application closes whenever the reception saves a report. It started during a meeting and the whole team is affected.,software,False,software-0
+Laptop will not start,The laptop power light stays off after changing the charger at Carlow branch. It started after the latest restart and the whole team is affected.,hardware,False,hardware-0
+Docking station failure - Suspicious email reported,USB devices disconnect whenever the laptop is placed on the dock. It started after the latest restart and the whole team is affected. A suspicious email asks me to open an attachment and enter my password.,hardware,True,hardware-3
+Document formatting changed,The word processor moves headings and tables when the file is saved. It started early this morning and the whole team is affected.,software,False,software-11
+Laptop battery is swollen,The laptop case is lifting near the battery and the device should be inspected. It started during a meeting and the whole team is affected.,hardware,False,hardware-6
+Remove leaver access,Please revoke the former employee's account permissions today. It started late yesterday and one person is affected.,access,False,access-3
+Role permissions missing,I can sign in to the reporting application but cannot access the manager functions. It started during a meeting and the whole team is affected.,access,False,access-7
+Damaged charging port - Stolen work device,The charger only works when held at an angle in the laptop socket. It started after the latest restart and one person is affected. A company device containing work information has been reported stolen.,hardware,True,hardware-11
+Cannot reach drive over VPN - Suspicious sign-in page,My account works locally but the shared drive is unreachable over VPN. It started during a meeting and the whole team is affected. A fake-looking login page appeared and asked me to confirm my credentials.,network,True,network-4
+Remote desktop disconnecting,The remote session drops whenever the VPN connection becomes unstable. It started late yesterday and one person is affected.,network,False,network-8
+Role permissions missing,I can sign in to the reporting application but cannot access the manager functions. It started during a meeting and one person is affected.,access,False,access-7
+Browser closes unexpectedly,The web browser exits whenever a second tab is opened. It started early this morning and one person is affected.,software,False,software-6
+Damaged charging port,The charger only works when held at an angle in the laptop socket. It started early this morning and the whole team is affected.,hardware,False,hardware-11
+Incorrect totals in report,The reporting program calculates the wrong total after importing a spreadsheet. It started after the latest restart and the whole team is affected.,software,False,software-7
+Cannot reach drive over VPN,My account works locally but the shared drive is unreachable over VPN. It started after the latest restart and the whole team is affected.,network,False,network-4
+Cannot resolve internal address,The internal server name is not resolving although public websites still load. It started during normal daily work and one person is affected.,network,False,network-12
+Account locked,My approved account is locked after several failed sign-in attempts. It started while working remotely and one person is affected.,access,False,access-5
+New account request - Ransomware concern,Please create a standard system account for an approved new team member. It started after lunch and one person is affected. A message claims company files were encrypted and demands payment.,access,True,access-13
+Calendar application frozen,The calendar stops responding after a meeting invitation is accepted. It started after lunch and the whole team is affected.,software,False,software-9
+Projector shows no picture,The meeting-room projector powers on but does not display an image. It started early this morning and the whole team is affected.,hardware,False,hardware-8
+Account locked,My approved account is locked after several failed sign-in attempts. It started when the office opened and one person is affected.,access,False,access-5
+VPN connected without resources,The VPN reports connected but internal drives and pages remain unreachable. It started after the latest restart and one person is affected.,network,False,network-14
+Wi-Fi disconnecting,Wireless access drops every few minutes throughout the Carlow branch. It started when the office opened and one person is affected.,network,False,network-0
+Weak wireless signal,The Wi-Fi signal disappears in part of Naas site for every nearby device. It started after the latest restart and the whole team is affected.,network,False,network-13
+Office connection lost,Both wired and wireless internet access stopped for the operations team. It started early this morning and the whole team is affected.,network,False,network-10
+Remove folder permission,Please remove a contractor's access to the confidential project folder. It started late yesterday and one person is affected.,access,False,access-11
+Update caused an error,The application will not open since yesterday's software update. It started after lunch and the whole team is affected.,software,False,software-1
+Webcam not detected,The external webcam is not recognised after reconnecting it at Naas office. It started when the office opened and one person is affected.,hardware,False,hardware-7
+Second screen flickering,The physical display flickers with different cables and applications. It started late yesterday and one person is affected.,hardware,False,hardware-13
+Headset microphone broken,The headset plays sound but its microphone does not capture any audio. It started early this morning and the whole team is affected.,hardware,False,hardware-12
+Database permission denied,The database connection succeeds but my user is not authorised to view the records. It started after lunch and one person is affected.,access,False,access-9
+Weak wireless signal,The Wi-Fi signal disappears in part of Carlow branch for every nearby device. It started during normal daily work and one person is affected.,network,False,network-13
+Shared drive unreachable,The operations team cannot reach the shared drive over the network. It started after lunch and one person is affected.,network,False,network-2
+Cannot use approved feature,The software loads correctly but says my role is not permitted to use approvals. It started after lunch and one person is affected.,access,False,access-12
+Network printer unreachable,The printer is powered on but no workstation can contact its network address. It started early this morning and one person is affected.,network,False,network-9
+Multi-factor code rejected,The portal accepts my password but rejects every authentication code. It started late yesterday and one person is affected.,access,False,access-6
+Office connection lost,Both wired and wireless internet access stopped for the HR team. It started after lunch and the whole team is affected.,network,False,network-10
+Spreadsheet is frozen,Excel becomes unresponsive when opening the monthly workbook. It started when the office opened and one person is affected.,software,False,software-2
+Webcam not detected,The external webcam is not recognised after reconnecting it at Carlow branch. It started after lunch and the whole team is affected.,hardware,False,hardware-7
+Approved plugin fails to load,The approved browser extension is installed but shows an initialization error. It started after lunch and one person is affected.,software,False,software-10
+Router light is off,There is no internet because the physical router has no power at Naas site. It started early this morning and the whole team is affected.,hardware,False,hardware-4
+Login screen freezes - Possible malware,The payroll software accepts my password but freezes while loading. It started after the latest restart and one person is affected. A malware warning appeared after an unexpected download.,software,True,software-4
+Office connection lost,Both wired and wireless internet access stopped for the Finance team. It started during a meeting and the whole team is affected.,network,False,network-10
+Remove folder permission,Please remove a contractor's access to the confidential project folder. It started while working remotely and one person is affected.,access,False,access-11
+Second screen flickering,The physical display flickers with different cables and applications. It started after the latest restart and the whole team is affected.,hardware,False,hardware-13
+Damaged charging port - Spoofed sender reported,The charger only works when held at an angle in the laptop socket. It started during a meeting and the whole team is affected. The message appears to impersonate a manager and requests confidential data.,hardware,True,hardware-11
+Incorrect totals in report,The reporting program calculates the wrong total after importing a spreadsheet. It started early this morning and the whole team is affected.,software,False,software-7
+Application licence error,The licensed design program rejects its valid licence after an update. It started during normal daily work and one person is affected.,software,False,software-12
+Access denied,Please grant my account permission to the HR team shared folder. It started after lunch and one person is affected.,access,False,access-0
+Shared mailbox access,Please authorise the Finance team to open the shared mailbox. It started after lunch and one person is affected.,access,False,access-8
+Laptop battery is swollen,The laptop case is lifting near the battery and the device should be inspected. It started when the office opened and one person is affected.,hardware,False,hardware-6
+Approved plugin fails to load - Possible data breach,The approved browser extension is installed but shows an initialization error. It started after the latest restart and the whole team is affected. Confidential company information may have been exposed to an unknown person.,software,True,software-10
+Application licence error - Possible credential theft,"The licensed design program rejects its valid licence after an update. It started after lunch and the whole team is affected. An unexpected page requested my username, password, and authentication code.",software,True,software-12
+Desktop making warning beeps,The workstation beeps during startup and does not reach the login screen. It started late yesterday and one person is affected.,hardware,False,hardware-14
+Wired connection unavailable,The network cable is connected but the workstation cannot reach any internal site. It started while working remotely and one person is affected.,network,False,network-5
+Damaged charging port,The charger only works when held at an angle in the laptop socket. It started after the latest restart and the whole team is affected.,hardware,False,hardware-11
+Cannot resolve internal address,The internal server name is not resolving although public websites still load. It started while working remotely and one person is affected.,network,False,network-12
+Laptop will not start,The laptop power light stays off after changing the charger at Carlow office. It started late yesterday and one person is affected.,hardware,False,hardware-0
+Docking station failure,USB devices disconnect whenever the laptop is placed on the dock. It started after lunch and the whole team is affected.,hardware,False,hardware-3
+Keyboard keys not responding,Several keyboard keys have stopped working on a desktop used by the reception. It started early this morning and the whole team is affected.,hardware,False,hardware-5
+Expired account - Possible data breach,The system says my user account has expired and will not allow a sign-in. It started after the latest restart and the whole team is affected. Confidential company information may have been exposed to an unknown person.,access,True,access-10
+Internal website times out,The intranet cannot be reached from any computer at Naas site. It started after lunch and the whole team is affected.,network,False,network-7
+New account request,Please create a standard system account for an approved new team member. It started during a meeting and the whole team is affected.,access,False,access-13
+Calendar application frozen,The calendar stops responding after a meeting invitation is accepted. It started during a meeting and one person is affected.,software,False,software-9
+Expired account,The system says my user account has expired and will not allow a sign-in. It started early this morning and the whole team is affected.,access,False,access-10
+Document formatting changed,The word processor moves headings and tables when the file is saved. It started late yesterday and one person is affected.,software,False,software-11
+Payroll export fails,The payroll application accepts the user login but fails while exporting data. It started late yesterday and one person is affected.,software,False,software-13
+Laptop will not start,The laptop power light stays off after changing the charger at Naas office. It started early this morning and the whole team is affected.,hardware,False,hardware-0
+Account locked - Lost company device,My approved account is locked after several failed sign-in attempts. It started during a meeting and one person is affected. A work device containing company data cannot be located.,access,True,access-5
+Video calls keep dropping,Calls disconnect for several people whenever they use the office network. It started during a meeting and one person is affected.,network,False,network-6
+Wired connection unavailable,The network cable is connected but the workstation cannot reach any internal site. It started after the latest restart and the whole team is affected.,network,False,network-5
+VPN cannot connect,The VPN times out before reaching the company network from home. It started during a meeting and the whole team is affected.,network,False,network-1
+Approved plugin fails to load,The approved browser extension is installed but shows an initialization error. It started early this morning and one person is affected.,software,False,software-10
+Damaged charging port,The charger only works when held at an angle in the laptop socket. It started after lunch and one person is affected.,hardware,False,hardware-11
+Damaged charging port,The charger only works when held at an angle in the laptop socket. It started during normal daily work and one person is affected.,hardware,False,hardware-11
+Application keeps crashing,The finance application closes whenever the reception saves a report. It started late yesterday and one person is affected.,software,False,software-0
+Application keeps crashing - Virus warning,The finance application closes whenever the Finance team saves a report. It started during normal daily work and one person is affected. The security scanner detected a possible virus during this incident.,software,True,software-0
+Browser closes unexpectedly,The web browser exits whenever a second tab is opened. It started after lunch and the whole team is affected.,software,False,software-6
+Account locked,My approved account is locked after several failed sign-in attempts. It started after the latest restart and the whole team is affected.,access,False,access-5
+Cannot use approved feature,The software loads correctly but says my role is not permitted to use approvals. It started while working remotely and one person is affected.,access,False,access-12
+New starter permissions,A new employee needs approved access to the HR portal. It started early this morning and one person is affected.,access,False,access-2
+Keyboard keys not responding - Stolen work device,Several keyboard keys have stopped working on a desktop used by the reception. It started after lunch and the whole team is affected. A company device containing work information has been reported stolen.,hardware,True,hardware-5
+New starter permissions,A new employee needs approved access to the HR portal. It started after the latest restart and one person is affected.,access,False,access-2
+Docking station failure,USB devices disconnect whenever the laptop is placed on the dock. It started late yesterday and one person is affected.,hardware,False,hardware-3
+Multi-factor code rejected - Unknown administrator activity,The portal accepts my password but rejects every authentication code. It started early this morning and the whole team is affected. An unrecognised administrator changed settings without approval.,access,True,access-6
+Wired connection unavailable,The network cable is connected but the workstation cannot reach any internal site. It started after lunch and one person is affected.,network,False,network-5
+Cannot reach drive over VPN,My account works locally but the shared drive is unreachable over VPN. It started after lunch and one person is affected.,network,False,network-4
+Office connection lost,Both wired and wireless internet access stopped for the reception. It started while working remotely and one person is affected.,network,False,network-10
+Webcam not detected,The external webcam is not recognised after reconnecting it at Naas office. It started during a meeting and the whole team is affected.,hardware,False,hardware-7
+Cannot log into finance software,The application opens but says my account lacks permission. It started late yesterday and one person is affected.,access,False,access-4
+Docking station failure,USB devices disconnect whenever the laptop is placed on the dock. It started during a meeting and one person is affected.,hardware,False,hardware-3
+Expired account,The system says my user account has expired and will not allow a sign-in. It started during a meeting and one person is affected.,access,False,access-10
+Shared drive unreachable,The reception cannot reach the shared drive over the network. It started during a meeting and one person is affected.,network,False,network-2
+Office connection lost,Both wired and wireless internet access stopped for the Finance team. It started early this morning and one person is affected.,network,False,network-10
+Wi-Fi disconnecting,Wireless access drops every few minutes throughout the Naas office. It started after lunch and one person is affected.,network,False,network-0
+Update caused an error,The application will not open since yesterday's software update. It started when the office opened and one person is affected.,software,False,software-1
+Projector shows no picture,The meeting-room projector powers on but does not display an image. It started when the office opened and one person is affected.,hardware,False,hardware-8
+Mouse disconnects,The wired mouse repeatedly disconnects when moved to another USB port. It started early this morning and the whole team is affected.,hardware,False,hardware-9
+Keyboard keys not responding - Lost company device,Several keyboard keys have stopped working on a desktop used by the reception. It started during a meeting and one person is affected. A work device containing company data cannot be located.,hardware,True,hardware-5
+Weak wireless signal,The Wi-Fi signal disappears in part of Carlow branch for every nearby device. It started late yesterday and one person is affected.,network,False,network-13
+Role permissions missing,I can sign in to the reporting application but cannot access the manager functions. It started late yesterday and one person is affected.,access,False,access-7
+Damaged charging port,The charger only works when held at an angle in the laptop socket. It started after lunch and the whole team is affected.,hardware,False,hardware-11
+Monitor has no display,The monitor says no signal although the desktop is running for the operations team. It started during a meeting and one person is affected.,hardware,False,hardware-1
+Second screen flickering,The physical display flickers with different cables and applications. It started during a meeting and the whole team is affected.,hardware,False,hardware-13
+Wi-Fi disconnecting,Wireless access drops every few minutes throughout the Carlow branch. It started after the latest restart and the whole team is affected.,network,False,network-0
+Cannot resolve internal address,The internal server name is not resolving although public websites still load. It started early this morning and one person is affected.,network,False,network-12
+Office connection lost,Both wired and wireless internet access stopped for the operations team. It started after the latest restart and one person is affected.,network,False,network-10
+Role permissions missing - Ransomware concern,I can sign in to the reporting application but cannot access the manager functions. It started during normal daily work and one person is affected. A message claims company files were encrypted and demands payment.,access,True,access-7
+Monitor has no display,The monitor says no signal although the desktop is running for the Finance team. It started late yesterday and one person is affected.,hardware,False,hardware-1
+Second screen flickering,The physical display flickers with different cables and applications. It started after the latest restart and one person is affected.,hardware,False,hardware-13
+Database permission denied,The database connection succeeds but my user is not authorised to view the records. It started during normal daily work and one person is affected.,access,False,access-9
+Document formatting changed,The word processor moves headings and tables when the file is saved. It started while working remotely and one person is affected.,software,False,software-11
+Office connection lost,Both wired and wireless internet access stopped for the reception. It started late yesterday and one person is affected.,network,False,network-10
+Permission changed unexpectedly,I can log in but no longer have access to files I was authorised to use. It started late yesterday and one person is affected.,access,False,access-14
+VPN cannot connect,The VPN times out before reaching the company network from home. It started early this morning and one person is affected.,network,False,network-1
+Second screen flickering,The physical display flickers with different cables and applications. It started during a meeting and one person is affected.,hardware,False,hardware-13
+Internal website times out,The intranet cannot be reached from any computer at Naas site. It started while working remotely and one person is affected.,network,False,network-7
+Antivirus scan will not finish,The approved antivirus program stops responding midway through a routine scan. It started after the latest restart and the whole team is affected.,software,False,software-14
+Cannot reach drive over VPN,My account works locally but the shared drive is unreachable over VPN. It started while working remotely and one person is affected.,network,False,network-4
+Keyboard keys not responding,Several keyboard keys have stopped working on a desktop used by the HR team. It started after the latest restart and the whole team is affected.,hardware,False,hardware-5
+VPN cannot connect,The VPN times out before reaching the company network from home. It started late yesterday and one person is affected.,network,False,network-1
+New starter permissions - Spoofed sender reported,A new employee needs approved access to the HR portal. It started late yesterday and one person is affected. The message appears to impersonate a manager and requests confidential data.,access,True,access-2
+Video calls keep dropping,Calls disconnect for several people whenever they use the office network. It started while working remotely and one person is affected.,network,False,network-6
+Payroll export fails - Possible malware,The payroll application accepts the user login but fails while exporting data. It started early this morning and the whole team is affected. A malware warning appeared after an unexpected download.,software,True,software-13
+Spreadsheet is frozen,Excel becomes unresponsive when opening the monthly workbook. It started early this morning and the whole team is affected.,software,False,software-2
+PDF files will not open,The document reader reports an error for every PDF downloaded by the operations team. It started during a meeting and the whole team is affected.,software,False,software-5
+Laptop battery is swollen,The laptop case is lifting near the battery and the device should be inspected. It started late yesterday and one person is affected.,hardware,False,hardware-6
+Laptop will not start - Virus warning,The laptop power light stays off after changing the charger at Naas office. It started during normal daily work and one person is affected. The security scanner detected a possible virus during this incident.,hardware,True,hardware-0
+Payroll export fails,The payroll application accepts the user login but fails while exporting data. It started after lunch and the whole team is affected.,software,False,software-13
+New account request,Please create a standard system account for an approved new team member. It started after the latest restart and the whole team is affected.,access,False,access-13
+Remove leaver access,Please revoke the former employee's account permissions today. It started after lunch and one person is affected.,access,False,access-3
+Login screen freezes,The payroll software accepts my password but freezes while loading. It started early this morning and one person is affected.,software,False,software-4
+Password reset,I forgot my password and need a normal account reset. It started late yesterday and one person is affected.,access,False,access-1
+Wired connection unavailable,The network cable is connected but the workstation cannot reach any internal site. It started late yesterday and one person is affected.,network,False,network-5
+Keyboard keys not responding,Several keyboard keys have stopped working on a desktop used by the Finance team. It started late yesterday and one person is affected.,hardware,False,hardware-5
+VPN connected without resources,The VPN reports connected but internal drives and pages remain unreachable. It started when the office opened and one person is affected.,network,False,network-14
+Mouse disconnects - Suspicious email reported,The wired mouse repeatedly disconnects when moved to another USB port. It started late yesterday and one person is affected. A suspicious email asks me to open an attachment and enter my password.,hardware,True,hardware-9
+Install approved software,Please install the approved reporting application for the Finance team. It started while working remotely and one person is affected.,software,False,software-3
+Video calls keep dropping,Calls disconnect for several people whenever they use the office network. It started after the latest restart and the whole team is affected.,network,False,network-6
+Multi-factor code rejected,The portal accepts my password but rejects every authentication code. It started during a meeting and the whole team is affected.,access,False,access-6
+VPN connected without resources,The VPN reports connected but internal drives and pages remain unreachable. It started after lunch and the whole team is affected.,network,False,network-14
+Weak wireless signal,The Wi-Fi signal disappears in part of Carlow office for every nearby device. It started after lunch and the whole team is affected.,network,False,network-13
+Document formatting changed,The word processor moves headings and tables when the file is saved. It started early this morning and one person is affected.,software,False,software-11
+Spreadsheet is frozen,Excel becomes unresponsive when opening the monthly workbook. It started after the latest restart and the whole team is affected.,software,False,software-2
+Wired connection unavailable - Lost company device,The network cable is connected but the workstation cannot reach any internal site. It started during a meeting and one person is affected. A work device containing company data cannot be located.,network,True,network-5
+Wi-Fi disconnecting,Wireless access drops every few minutes throughout the Naas site. It started while working remotely and one person is affected.,network,False,network-0
+Cannot reach drive over VPN - Possible malware,My account works locally but the shared drive is unreachable over VPN. It started after the latest restart and one person is affected. A malware warning appeared after an unexpected download.,network,True,network-4
+Cannot resolve internal address,The internal server name is not resolving although public websites still load. It started late yesterday and one person is affected.,network,False,network-12
+VPN cannot connect,The VPN times out before reaching the company network from home. It started after lunch and one person is affected.,network,False,network-1
+Webcam not detected,The external webcam is not recognised after reconnecting it at Naas office. It started early this morning and the whole team is affected.,hardware,False,hardware-7
+Calendar application frozen,The calendar stops responding after a meeting invitation is accepted. It started while working remotely and one person is affected.,software,False,software-9
+Calendar application frozen,The calendar stops responding after a meeting invitation is accepted. It started during a meeting and the whole team is affected.,software,False,software-9
+Remove folder permission,Please remove a contractor's access to the confidential project folder. It started early this morning and the whole team is affected.,access,False,access-11
+Docking station failure,USB devices disconnect whenever the laptop is placed on the dock. It started after the latest restart and one person is affected.,hardware,False,hardware-3
+Wired connection unavailable,The network cable is connected but the workstation cannot reach any internal site. It started early this morning and one person is affected.,network,False,network-5
+Incorrect totals in report - Ransomware concern,The reporting program calculates the wrong total after importing a spreadsheet. It started during normal daily work and one person is affected. A message claims company files were encrypted and demands payment.,software,True,software-7
+Application keeps crashing,The finance application closes whenever the HR team saves a report. It started after lunch and one person is affected.,software,False,software-0
+New starter permissions,A new employee needs approved access to the HR portal. It started early this morning and the whole team is affected.,access,False,access-2
+Permission changed unexpectedly,I can log in but no longer have access to files I was authorised to use. It started after the latest restart and the whole team is affected.,access,False,access-14
+Login screen freezes,The payroll software accepts my password but freezes while loading. It started late yesterday and one person is affected.,software,False,software-4
+Cannot reach drive over VPN,My account works locally but the shared drive is unreachable over VPN. It started early this morning and the whole team is affected.,network,False,network-4
+Password reset,I forgot my password and need a normal account reset. It started after lunch and one person is affected.,access,False,access-1
+Shared drive unreachable,The operations team cannot reach the shared drive over the network. It started after the latest restart and one person is affected.,network,False,network-2
+Shared drive unreachable,The HR team cannot reach the shared drive over the network. It started after the latest restart and the whole team is affected.,network,False,network-2
+Spreadsheet is frozen,Excel becomes unresponsive when opening the monthly workbook. It started after lunch and the whole team is affected.,software,False,software-2
+Email client search broken,The desktop mail application opens normally but returns no search results. It started after lunch and the whole team is affected.,software,False,software-8
+Headset microphone broken - Unknown administrator activity,The headset plays sound but its microphone does not capture any audio. It started during a meeting and one person is affected. An unrecognised administrator changed settings without approval.,hardware,True,hardware-12
+Calendar application frozen,The calendar stops responding after a meeting invitation is accepted. It started after lunch and one person is affected.,software,False,software-9
+Desktop making warning beeps,The workstation beeps during startup and does not reach the login screen. It started during a meeting and one person is affected.,hardware,False,hardware-14
+Document formatting changed,The word processor moves headings and tables when the file is saved. It started after lunch and one person is affected.,software,False,software-11
+Application keeps crashing,The finance application closes whenever the reception saves a report. It started early this morning and the whole team is affected.,software,False,software-0
+Webcam not detected,The external webcam is not recognised after reconnecting it at Naas office. It started during a meeting and one person is affected.,hardware,False,hardware-7

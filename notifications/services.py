@@ -17,8 +17,16 @@ from .models import NotificationEvent
 logger = logging.getLogger(__name__)
 
 
+# The one place ticket events turn into actual emails. Every ticket
+# action that should notify someone (created, assigned, commented,
+# resolved, cancelled) calls send_notification here rather than talking
+# to GraphClient directly, so template rendering, event logging and error
+# handling only need to be written once.
 class NotificationService:
     def __init__(self, client: GraphClient | None = None) -> None:
+        # Accepting a client here rather than always creating one makes
+        # it easy to swap in a fake client during tests instead of
+        # actually calling out to Microsoft Graph.
         self.client = client or GraphClient()
 
     def _render_templates(
@@ -81,6 +89,10 @@ class NotificationService:
                 render_context,
             )
         except (TemplateDoesNotExist, ValueError) as exc:
+            # If the template itself is broken, there's nothing sensible
+            # to send. This gets logged as a FAILED event with an empty
+            # body rather than letting the exception bubble up and break
+            # whatever ticket action triggered the notification.
             logger.exception(
                 "Notification template rendering failed for %s", recipient_email
             )
@@ -95,6 +107,10 @@ class NotificationService:
                 error_message=str(exc),
             )
 
+        # The event is recorded as SKIPPED first, before anything is
+        # actually sent. That way, even if the send step below crashes in
+        # some unexpected way, there's still a record that this
+        # notification was attempted.
         notification_event = self._create_event(
             event_type=event_type,
             recipient_email=recipient_email,
@@ -113,6 +129,10 @@ class NotificationService:
                 html_body=html_body,
             )
         except (GraphConfigurationError, GraphDeliveryError, ValueError) as exc:
+            # Email delivery failing should never break the ticket action
+            # that triggered it. The failure is recorded on the event so
+            # it's visible later, but the calling code just gets a
+            # normal NotificationEvent back either way.
             logger.exception("Notification delivery failed for %s", recipient_email)
             notification_event.delivery_status = NotificationEvent.DeliveryStatus.FAILED
             notification_event.error_message = str(exc)

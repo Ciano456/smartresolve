@@ -22,6 +22,9 @@ def record_audit_log(
     target_repr: str,
     message: str,
 ) -> None:
+    # The one place in the whole app that writes to the audit log, so
+    # every caller (decorators, views, the AI override flow) goes through
+    # the same function instead of creating AuditLog rows directly.
     try:
         AuditLog.objects.create(
             actor=actor,
@@ -32,4 +35,8 @@ def record_audit_log(
             message=message,
         )
     except Exception:
+        # Writing the audit log should never be the reason a real user
+        # action fails. If saving the log entry itself goes wrong, that
+        # gets logged for debugging but the original action still
+        # succeeds.
         logger.exception("Failed to record audit log entry.")

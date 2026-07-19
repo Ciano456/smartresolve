@@ -15,6 +15,8 @@ from admin_portal.forms import (
 from tickets.models import TicketType
 
 
+# Covers the admin user create/edit forms (role assignment, validation)
+# and the lookup table forms (ticket type, priority, status).
 class AdminPortalFormTests(TestCase):
 
     def setUp(self):

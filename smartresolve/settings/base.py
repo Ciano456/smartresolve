@@ -8,16 +8,28 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+# Loads variables from a local .env file (not committed to git) into the
+# environment, so secrets like GRAPH_CLIENT_SECRET don't have to be
+# hardcoded anywhere in the codebase.
 load_dotenv(BASE_DIR / ".env")
 
 
 def env_list(name: str, default: str = "") -> list[str]:
-    return [item.strip() for item in os.getenv(name, default).split(",") if item.strip()]
+    # Reads a comma separated environment variable into a clean list, for
+    # things like ALLOWED_HOSTS where more than one value might be
+    # needed.
+    return [
+        item.strip() for item in os.getenv(name, default).split(",") if item.strip()
+    ]
 
 
 def positive_env_int(name: str, default: int) -> int:
+    # Falls back to the default for anything that isn't a real positive
+    # number, rather than letting a typo in an environment variable break
+    # startup.
     try:
         value = int(os.getenv(name, str(default)))
     except (TypeError, ValueError):
@@ -25,10 +37,30 @@ def positive_env_int(name: str, default: int) -> int:
     return value if value > 0 else default
 
 
+def optional_probability_env_float(name: str) -> float | None:
+    # Used for AI_SECURITY_THRESHOLD. Unlike the helpers above, this
+    # raises rather than silently falling back, since a badly set
+    # security threshold is worth failing loudly over rather than quietly
+    # using some default the operator didn't intend.
+    raw_value = os.getenv(name, "").strip()
+    if not raw_value:
+        return None
+    try:
+        value = float(raw_value)
+    except ValueError as exc:
+        raise ImproperlyConfigured(f"{name} must be a number between 0 and 1.") from exc
+    if not 0.0 <= value <= 1.0:
+        raise ImproperlyConfigured(f"{name} must be between 0 and 1.")
+    return value
+
+
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "")
 DEBUG = False
 ALLOWED_HOSTS: list[str] = []
 
+# Microsoft Graph settings for sending email notifications through
+# Microsoft 365 instead of a normal SMTP server. See
+# notifications/graph_client.py for how these actually get used.
 GRAPH_TENANT_ID = os.getenv("GRAPH_TENANT_ID", "").strip()
 GRAPH_CLIENT_ID = os.getenv("GRAPH_CLIENT_ID", "").strip()
 GRAPH_CLIENT_SECRET = os.getenv("GRAPH_CLIENT_SECRET", "").strip()
@@ -46,6 +78,26 @@ GRAPH_SEND_MAIL_URL = (
 )
 IT_SUPPORT_EMAIL = os.getenv("IT_SUPPORT_EMAIL", "").strip()
 
+# Where the trained FR8 model files live. Defaults to the artifacts
+# folder in the repo, but can be pointed elsewhere through the
+# environment, for example on a deployment where the models are stored
+# separately from the code.
+AI_CATEGORY_MODEL_PATH = Path(
+    os.getenv("AI_CATEGORY_MODEL_PATH", "").strip()
+    or BASE_DIR / "ml/artifacts/category_model.joblib"
+)
+AI_SECURITY_MODEL_PATH = Path(
+    os.getenv("AI_SECURITY_MODEL_PATH", "").strip()
+    or BASE_DIR / "ml/artifacts/security_model.joblib"
+)
+# None here means "use whatever threshold the trained model itself was
+# tuned to", see ml/predictor.py. Setting this explicitly overrides that
+# without needing to retrain the model.
+AI_SECURITY_THRESHOLD = optional_probability_env_float("AI_SECURITY_THRESHOLD")
+
+# How the login throttle in accounts/security.py behaves: how many failed
+# attempts are allowed, over what time window, and how long a block lasts
+# once triggered.
 LOGIN_RATE_LIMIT_ATTEMPTS = positive_env_int("LOGIN_RATE_LIMIT_ATTEMPTS", 5)
 LOGIN_RATE_LIMIT_WINDOW_SECONDS = positive_env_int(
     "LOGIN_RATE_LIMIT_WINDOW_SECONDS",

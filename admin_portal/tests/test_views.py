@@ -17,6 +17,10 @@ from tickets.models import (
 )
 
 
+# Covers every admin only view: dashboard, audit log, ticket overview,
+# lookup management, and user management, including the safeguards
+# around deactivating admin accounts and the permission checks that keep
+# non-admins out.
 class AdminPortalViewTests(TestCase):
     def setUp(self):
         self.admin_group = Group.objects.create(name="Admin")

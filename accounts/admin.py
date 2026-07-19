@@ -8,6 +8,8 @@ from accounts.forms import CustomUserChangeForm, CustomUserCreationForm
 from accounts.models import User
 
 
+# Registers the custom User model with Django's built in admin site,
+# using email instead of username in the list and forms.
 class UserAdmin(BaseUserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm

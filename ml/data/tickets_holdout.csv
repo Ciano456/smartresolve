@@ -1,0 +1,61 @@
+title,description,category,is_security_related,template_group
+Laptop hinge has snapped,The lid will not stay upright because the left hinge has separated from the casing.,hardware,False,final-hardware-01
+Desktop power button jammed,Pressing the physical switch does nothing and the button is stuck inside the case.,hardware,False,final-hardware-02
+Loose charging connector,Power cuts out whenever the charging plug moves slightly in the notebook socket.,hardware,False,final-hardware-03
+Printer roller torn,Paper catches on a visibly damaged rubber roller inside the printer.,hardware,False,final-hardware-04
+Monitor has dead pixels,A fixed cluster of black pixels remains visible regardless of the program displayed.,hardware,False,final-hardware-05
+Work tablet stolen,A company tablet holding cached business documents was stolen from a vehicle.,hardware,True,final-hardware-06
+Unrecognised keylogger attached,A small unknown device was discovered between the office keyboard cable and computer.,hardware,True,final-hardware-07
+Laptop storage failure,The computer reports that its internal drive has failed and cannot start the operating system.,hardware,False,final-hardware-08
+Speaker crackling constantly,The external speakers produce distortion on different computers and audio sources.,hardware,False,final-hardware-09
+Scanner lid sensor broken,The scanner always reports that its lid is open even when it is firmly closed.,hardware,False,final-hardware-10
+Phone screen no longer responds,The company phone display is visible but does not register any touch input.,hardware,False,final-hardware-11
+Memory error during startup,The workstation displays a hardware memory warning before the operating system loads.,hardware,False,final-hardware-12
+Missing encrypted laptop,An encrypted work laptop has been lost while an employee was travelling.,hardware,True,final-hardware-13
+Damaged network socket,The Ethernet port on the laptop is bent and will not hold any cable in place.,hardware,False,final-hardware-14
+Printer display panel blank,The printer still makes sounds but its built-in control screen has stopped working.,hardware,False,final-hardware-15
+Timesheet program duplicates entries,Submitting one timesheet causes the application to save the same entry twice.,software,False,final-software-01
+Presentation tool cannot save,The slide editor opens files normally but reports an error whenever changes are saved.,software,False,final-software-02
+Browser bookmarks disappeared,All saved bookmarks vanished after the browser installed its latest release.,software,False,final-software-03
+Finance report has blank columns,The reporting application runs successfully but leaves several calculated columns empty.,software,False,final-software-04
+Word processor spellcheck broken,Spelling mistakes are no longer detected even though proofing is enabled.,software,False,final-software-05
+Malicious macro warning,A downloaded spreadsheet asks me to enable a macro that may contain malware.,software,True,final-software-06
+Ransom demand after opening file,An unknown program locked local documents and now requests payment to restore them.,software,True,final-software-07
+Email client sends duplicate messages,Every outgoing message is delivered twice although the send button is pressed once.,software,False,final-software-08
+Inventory application will not print,The inventory program displays the correct report but its print action returns an error.,software,False,final-software-09
+Mapping tool displays blank window,The approved mapping software launches but its main workspace remains completely white.,software,False,final-software-10
+Audio editor import failure,The editing program rejects every valid recording with an unsupported format message.,software,False,final-software-11
+Fake antivirus application,A newly installed program claims hundreds of infections and requests card payment.,software,True,final-software-12
+CRM search returns old records,Recently added customers never appear in search although their records can be opened directly.,software,False,final-software-13
+Notes application loses changes,Text entered in the notes program disappears after the window is closed and reopened.,software,False,final-software-14
+Video player subtitles missing,The media application plays the training video but ignores its included subtitle track.,software,False,final-software-15
+Warehouse terminals offline,Every terminal in the warehouse lost contact with company services at the same time.,network,False,final-network-01
+VPN route missing,The secure tunnel connects but traffic to one internal subnet has no route.,network,False,final-network-02
+High packet loss on calls,Voice calls become distorted because the office connection is dropping many packets.,network,False,final-network-03
+Public sites unavailable internally,External websites work on mobile data but not from any device on the branch network.,network,False,final-network-04
+Suspicious outbound connections,The firewall shows repeated traffic from staff computers to an unknown overseas server.,network,True,final-network-05
+Imitation wireless network,A second access point is copying the company Wi-Fi name and collecting login details.,network,True,final-network-06
+Conference room has no Wi-Fi,Wireless service works elsewhere but no device can connect inside the conference room.,network,False,final-network-07
+DNS lookup intermittently fails,Website names randomly stop resolving while direct IP connections continue to work.,network,False,final-network-08
+Branch link is saturated,File transfers between Naas and Carlow consume all available bandwidth during office hours.,network,False,final-network-09
+VoIP phones cannot register,Desk phones have network addresses but cannot connect to the internal calling service.,network,False,final-network-10
+Guest devices receive no address,Visitors join the guest wireless signal but their devices never obtain an IP address.,network,False,final-network-11
+Possible network intrusion,Monitoring shows an unauthorised device scanning multiple internal addresses.,network,True,final-network-12
+Remote desktop has severe latency,Keyboard input takes several seconds to appear when connected through the corporate tunnel.,network,False,final-network-13
+One floor switch unavailable,All wired desks on the first floor lost connectivity while other floors remain online.,network,False,final-network-14
+Cloud portal unreachable on site,The hosted service works from home but times out over the office internet connection.,network,False,final-network-15
+Marketing folder is forbidden,My user can open the file service but is not allowed into the approved marketing folder.,access,False,final-access-01
+Contractor account needs disabling,Please deactivate the external consultant's login now that the contract has ended.,access,False,final-access-02
+Authentication app replaced,I changed phones and need my approved multi-factor authentication registration reset.,access,False,final-access-03
+Purchasing role not assigned,I can enter the purchasing system but the order approval controls are unavailable to my role.,access,False,final-access-04
+Password rejected after reset,The temporary password was accepted once but my new password is now refused at sign-in.,access,False,final-access-05
+Privileged login detected,An administrator sign-in was recorded on my standard account without my approval.,access,True,final-access-06
+Credentials exposed in phishing form,I entered my company username and password into a page that was later identified as fraudulent.,access,True,final-access-07
+Shared calendar permission required,Please allow the reception team to edit the facilities calendar.,access,False,final-access-08
+Employee transferred departments,Remove the old finance permissions and grant the approved operations role.,access,False,final-access-09
+Portal says user is suspended,My credentials are correct but the service reports that the account has been suspended.,access,False,final-access-10
+Read-only access is insufficient,I can view the project workspace but my approved role should also allow editing.,access,False,final-access-11
+Unknown recovery email added,Someone added an unfamiliar recovery address to my company account.,access,True,final-access-12
+Service account permission request,The scheduled reporting process needs authorised read access to the archive database.,access,False,final-access-13
+Licence portal user not recognised,The subscription is active but the portal says my registered user has no entitlement.,access,False,final-access-14
+Temporary access has expired,My approved short-term access ended earlier than the date shown in the request.,access,False,final-access-15

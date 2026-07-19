@@ -33,6 +33,12 @@ from tickets.models import (
 AUDIT_LOG_LIMIT = 100
 ADMIN_TICKET_LIST_PAGE_SIZE = 25
 
+# The four lookup tables (types, systems, priorities, statuses) all get
+# managed through the same set of views (lookup_list, lookup_create,
+# lookup_edit, lookup_toggle_active). Rather than writing four nearly
+# identical sets of views, this dictionary tells the shared views which
+# model, form and page text to use for whichever lookup_slug is in the
+# URL.
 LOOKUP_CONFIG = {
     "types": {
         "model": TicketType,
@@ -66,6 +72,9 @@ LOOKUP_CONFIG = {
 
 
 def _lookup_config(lookup_slug: str) -> dict:
+    # An unknown slug in the URL means a real 404, not a server error, so
+    # this is caught and turned into Http404 rather than letting a
+    # KeyError crash the request.
     try:
         return LOOKUP_CONFIG[lookup_slug]
     except KeyError as exc:
@@ -90,6 +99,12 @@ def _record_user_audit_log(
 
 
 def _build_audit_log_entries() -> list[dict]:
+    # The activity page shows two different kinds of history mixed
+    # together in one timeline: general AuditLog entries (logins, access
+    # denials, user changes) and TicketHistory entries (status changes,
+    # assignments, and so on). Both get pulled here, reshaped into the
+    # same dict shape, and merged so the template only has to deal with
+    # one list.
     audit_logs = AuditLog.objects.select_related("actor").order_by("-created_at")[
         :AUDIT_LOG_LIMIT
     ]
@@ -133,6 +148,9 @@ def _build_audit_log_entries() -> list[dict]:
 
 
 def _active_admin_count() -> int:
+    # Used to stop the last remaining admin account from being
+    # deactivated. Without this check it would be possible to lock
+    # everyone out of the admin portal with no way back in.
     return User.objects.filter(is_active=True, groups__name="Admin").distinct().count()
 
 
@@ -350,8 +368,13 @@ def user_edit(request, user_id):
 @admin_required
 @require_POST
 def user_deactivate(request, user_id):
-    # Status changes are POST-only so they cannot be triggered by a simple link visit.
+    # Status changes are POST only, so they cannot be triggered by a
+    # simple link visit or a crawler following links on the page.
     user = get_object_or_404(User, id=user_id)
+    # Two safeguards here: an admin can't lock themselves out by
+    # deactivating their own account, and the last active admin can't be
+    # deactivated at all, even by another admin, since that would leave
+    # nobody able to manage the system.
     if user == request.user:
         messages.error(request, "You cannot deactivate your own account.")
         return redirect("user_detail", user_id=user.id)

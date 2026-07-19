@@ -6,6 +6,11 @@ from django.conf import settings
 from django.db import models
 
 
+# A record of every notification the app has tried to send, whether it
+# actually went out or not. This is what lets the app show "email failed
+# to send" somewhere, and gives a paper trail for debugging notification
+# problems later, since Graph delivery isn't something automated tests
+# can fully prove works against a real mailbox.
 class NotificationEvent(models.Model):
     class EventType(models.TextChoices):
         GENERIC = "GENERIC", "Generic"
