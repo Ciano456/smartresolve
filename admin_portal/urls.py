@@ -6,6 +6,7 @@ from admin_portal.views import (
     audit_log_list,
     admin_dashboard,
     admin_ticket_list,
+    security_dashboard,
     lookup_create,
     lookup_edit,
     lookup_list,
@@ -25,6 +26,7 @@ from django.urls import path
 urlpatterns = [
     path("", admin_dashboard, name="admin_dashboard"),
     path("audit-logs/", audit_log_list, name="audit_log_list"),
+    path("security/", security_dashboard, name="security_dashboard"),
     path("tickets/", admin_ticket_list, name="admin_ticket_list"),
     path("lookups/<str:lookup_slug>/", lookup_list, name="lookup_list"),
     path(

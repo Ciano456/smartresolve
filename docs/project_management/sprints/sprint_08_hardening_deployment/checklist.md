@@ -10,7 +10,7 @@
 - [x] Failed and rate-limited login logging.
 - [x] Access denial logging.
 - [x] Audit log extended for important security and ticket events.
-- [ ] Security dashboard summary.
+- [x] Security dashboard summary delivered in Sprint 11.
 - [x] Configurable cache-backed repeated-login throttle.
 - [ ] Backup/restore plan.
 - [ ] GDPR/data minimisation review.

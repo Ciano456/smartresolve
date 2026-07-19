@@ -2,7 +2,7 @@
 
 ## Automated Test Status
 
-The latest local verification on 19 July 2026 completed with 226 passing
+The latest local verification on 19 July 2026 completed with 243 passing
 tests. The suite uses pytest, pytest-django, Django `TestCase`, the Django test client,
 and targeted mocking at the Microsoft Graph boundary.
 
@@ -17,6 +17,7 @@ Implemented functional coverage includes:
 - Microsoft Graph client, notification service, event records, and ticket triggers
 - dashboard permissions, KPIs, chart datasets, and CSV export
 - audit events for login failures, throttling, access denials, uploads, and ticket actions
+- IP-aware security-event severity, AI ticket flags, and the admin-only security dashboard
 - production settings validation and database-aware health checks
 
 ## Security Testing

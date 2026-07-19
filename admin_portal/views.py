@@ -21,6 +21,7 @@ from admin_portal.forms import (
     TicketTypeLookupForm,
 )
 from admin_portal.models import AuditLog
+from admin_portal.security_dashboard import build_security_dashboard_context
 from tickets.models import (
     Ticket,
     TicketHistory,
@@ -83,6 +84,7 @@ def _lookup_config(lookup_slug: str) -> dict:
 
 def _record_user_audit_log(
     *,
+    request: HttpRequest,
     actor: User,
     action: str,
     target_user: User,
@@ -95,6 +97,7 @@ def _record_user_audit_log(
         target_id=target_user.id,
         target_repr=target_user.email,
         message=message,
+        request=request,
     )
 
 
@@ -165,6 +168,15 @@ def admin_dashboard(request: HttpRequest) -> HttpResponse:
         request,
         "admin_portal/admin_dashboard.html",
         {"ticket_stats": ticket_stats},
+    )
+
+
+@admin_required(forbidden=True)
+def security_dashboard(request: HttpRequest) -> HttpResponse:
+    return render(
+        request,
+        "admin_portal/security_dashboard.html",
+        build_security_dashboard_context(request.GET.get("severity", "")),
     )
 
 
@@ -307,6 +319,7 @@ def user_create(request):
         if form.is_valid():
             created_user = form.save()
             _record_user_audit_log(
+                request=request,
                 actor=request.user,
                 action=AuditLog.ACTION_USER_CREATED,
                 target_user=created_user,
@@ -340,6 +353,7 @@ def user_edit(request, user_id):
         if form.is_valid():
             updated_user = form.save()
             _record_user_audit_log(
+                request=request,
                 actor=request.user,
                 action=AuditLog.ACTION_USER_UPDATED,
                 target_user=updated_user,
@@ -384,6 +398,7 @@ def user_deactivate(request, user_id):
     user.is_active = False
     user.save()
     _record_user_audit_log(
+        request=request,
         actor=request.user,
         action=AuditLog.ACTION_USER_DEACTIVATED,
         target_user=user,
@@ -400,6 +415,7 @@ def user_reactivate(request, user_id):
     user.is_active = True
     user.save()
     _record_user_audit_log(
+        request=request,
         actor=request.user,
         action=AuditLog.ACTION_USER_REACTIVATED,
         target_user=user,

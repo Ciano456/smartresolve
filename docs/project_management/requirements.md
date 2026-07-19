@@ -13,8 +13,8 @@
 | FR-07 | Authorised users must be able to view dashboards and reports. | [x] KPIs, charts, workload trends, resolution metrics, and authorised CSV export implemented. |
 | FR-08 | The system must provide AI-assisted ticket categorisation. | [x] Four-category suggestion, staff override, security triage, and manual fallback implemented. |
 | FR-09 | The system must record configured actions in an audit log. | [x] Authentication, denial, upload, ticket, and administrator events implemented. |
-| FR-10 | Administrators must be able to view security metrics and trends. | [x] Security dashboard and supporting aggregates implemented. |
-| FR-11 | The system must flag configured suspicious security events. | [x] Rule-based detection, security-event recording, and AI-assisted ticket-text triage implemented. |
+| FR-10 | Administrators must be able to view security metrics and trends. | [x] Admin-only flagged-ticket, severity, keyword, recent-event, and six-month trend dashboard implemented. |
+| FR-11 | The system must flag configured suspicious security events. | [x] IP-aware audit severity, configured event flags, and AI-assisted ticket security events implemented. |
 
 ## Non-Functional Requirements
 
@@ -24,7 +24,7 @@
 | NFR-02 | System must use CSRF protection and input validation. | [x] CSRF, form validation, upload allowlist/size/content checks, and tests exist. |
 | NFR-03 | Unauthorized users cannot access restricted views. | [x] Role and object-level enforcement is covered by tests. |
 | NFR-04 | Dashboard must load within acceptable time. | [ ] Needs performance target and test. |
-| NFR-05 | AI classifier must achieve about 75-85 percent accuracy. | [x] Separately authored holdout accuracy is 75%; full evidence is recorded in `ml/artifacts/metrics.json`. |
+| NFR-05 | AI classifier must achieve about 75-85 percent accuracy. | [x] Mean grouped cross-validation accuracy is 82.5%; frozen holdout accuracy is 91.7%; full evidence is recorded in `ml/artifacts/metrics.json`. |
 | NFR-06 | System logs ticket actions and login events. | [x] Ticket/admin, failed login, throttle, denied access, and blocked upload events exist. |
 | NFR-07 | System must minimise stored personal data. | [~] Needs explicit report section and review. |
 
