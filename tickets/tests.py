@@ -5,6 +5,7 @@
 from datetime import timedelta
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from django.test import TestCase, override_settings
@@ -82,6 +83,7 @@ class TicketAIIntegrationTests(TestCase):
     @patch("tickets.views.create_prediction_for_ticket")
     def test_ticket_creation_calls_ai_service(self, prediction_service):
         # Valid submitter creation should request an assistive prediction once.
+        prediction_service.return_value = None
         self.client.force_login(self.submitter)
         response = self.client.post(
             reverse("ticket_create"),
@@ -95,6 +97,31 @@ class TicketAIIntegrationTests(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         prediction_service.assert_called_once()
+
+    @patch("tickets.views.create_prediction_for_ticket")
+    def test_security_prediction_creates_flagged_audit_event(self, prediction_service):
+        prediction_service.return_value = SimpleNamespace(
+            is_security_flagged=True,
+            matched_keywords="ransomware",
+            security_confidence=0.92,
+        )
+        self.client.force_login(self.submitter)
+        response = self.client.post(
+            reverse("ticket_create"),
+            {
+                "title": "Encrypted project files",
+                "description": "A payment demand appeared.",
+                "ticket_type": self.ticket_type.id,
+                "ticket_system": self.ticket_system.id,
+                "ticket_priority": self.priority.id,
+            },
+            REMOTE_ADDR="198.51.100.40",
+        )
+        self.assertEqual(response.status_code, 302)
+        event = AuditLog.objects.get(action=AuditLog.ACTION_SECURITY_TICKET_FLAGGED)
+        self.assertTrue(event.flagged)
+        self.assertEqual(event.severity, AuditLog.SEVERITY_CRITICAL)
+        self.assertEqual(str(event.ip_address), "198.51.100.40")
 
     @patch("tickets.views.ticket_notifications.notify_ticket_created")
     def test_ticket_creation_persists_real_model_prediction(self, notification):

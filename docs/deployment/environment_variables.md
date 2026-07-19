@@ -44,6 +44,7 @@ or recorded as failed according to the existing notification service behaviour.
 | `AI_CATEGORY_MODEL_PATH` | `ml/artifacts/category_model.joblib` | Optional category artifact override. |
 | `AI_SECURITY_MODEL_PATH` | `ml/artifacts/security_model.joblib` | Optional security artifact override. |
 | `AI_SECURITY_THRESHOLD` | Trained artifact value | Optional security review threshold override; must be between 0 and 1. |
+| `TRUST_PROXY_HEADERS` | `False` | Trust the first valid `X-Forwarded-For` address for audit and throttle IP capture. Enable only behind Railway or another trusted proxy. |
 
 The model paths and threshold are operational configuration rather than secrets.
 Leave the paths and threshold unset to use the build-generated artifacts and their

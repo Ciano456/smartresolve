@@ -41,6 +41,7 @@ def login_view(request: HttpRequest) -> HttpResponse:
                 target_id=None,
                 target_repr=email or "<blank>",
                 message="Login attempt blocked by the configured rate limit.",
+                request=request,
             )
             messages.error(request, "Invalid email or password.")
             return render(request, "accounts/login.html")
@@ -62,6 +63,7 @@ def login_view(request: HttpRequest) -> HttpResponse:
             target_id=None,
             target_repr=email or "<blank>",
             message=f"Failed login attempt for {email or '<blank>'}.",
+            request=request,
         )
         if record_failed_login(request, email):
             record_audit_log(
@@ -71,6 +73,7 @@ def login_view(request: HttpRequest) -> HttpResponse:
                 target_id=None,
                 target_repr=email or "<blank>",
                 message="Login rate limit activated after repeated failures.",
+                request=request,
             )
         messages.error(request, "Invalid email or password.")
     return render(request, "accounts/login.html")

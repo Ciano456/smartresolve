@@ -22,13 +22,15 @@ from django.conf import settings
 from django.core.cache import cache
 from django.http import HttpRequest
 
+from admin_portal.security import get_client_ip
+
 
 def _login_attempt_key(request: HttpRequest, email: str) -> str:
     # Hashing the email and IP together means the cache key itself
     # doesn't store anyone's email address in plain text, and combining
     # both means the limit is per person per location, not just per
     # email on its own.
-    client_ip = request.META.get("REMOTE_ADDR", "unknown")
+    client_ip = get_client_ip(request) or "unknown"
     identifier = f"{email.strip().lower()}|{client_ip}"
     digest = hashlib.sha256(identifier.encode("utf-8")).hexdigest()
     return f"login-attempt:{digest}"

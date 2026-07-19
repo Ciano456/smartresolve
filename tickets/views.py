@@ -18,6 +18,7 @@ from django.views import View
 from accounts.decorators import admin_or_support_staff_required, submitter_required
 from admin_portal.audit import record_audit_log
 from admin_portal.models import AuditLog
+from admin_portal.security import security_ticket_severity
 from . import notifications as ticket_notifications
 
 from .forms import (
@@ -50,6 +51,7 @@ TICKET_LIST_PAGE_SIZE = 25
 
 def _record_ticket_audit_log(
     *,
+    request: HttpRequest,
     actor,
     action: str,
     ticket: Ticket,
@@ -62,6 +64,7 @@ def _record_ticket_audit_log(
         target_id=ticket.id,
         target_repr=ticket.ticket_number,
         message=message,
+        request=request,
     )
 
 
@@ -206,7 +209,23 @@ def ticket_create(request):
             # available) a TicketCategoryPrediction gets attached. If
             # nothing is available this just quietly does nothing, so
             # ticket creation always succeeds either way.
-            create_prediction_for_ticket(ticket)
+            prediction = create_prediction_for_ticket(ticket)
+            if prediction is not None and prediction.is_security_flagged:
+                signal = prediction.matched_keywords or "model confidence"
+                record_audit_log(
+                    actor=request.user,
+                    action=AuditLog.ACTION_SECURITY_TICKET_FLAGGED,
+                    target_type="Ticket",
+                    target_id=ticket.id,
+                    target_repr=ticket.ticket_number,
+                    message=f"Security review requested from {signal}.",
+                    request=request,
+                    severity=security_ticket_severity(
+                        prediction.matched_keywords,
+                        prediction.security_confidence,
+                    ),
+                    flagged=True,
+                )
             ticket_history = TicketHistory(
                 ticket=ticket,
                 changed_by=request.user,
@@ -217,6 +236,7 @@ def ticket_create(request):
             )
             ticket_history.save()
             _record_ticket_audit_log(
+                request=request,
                 actor=request.user,
                 action=AuditLog.ACTION_TICKET_CREATED,
                 ticket=ticket,
@@ -243,6 +263,7 @@ def comment_create(request, ticket_id):
             comment.author = request.user
             comment.save()
             _record_ticket_audit_log(
+                request=request,
                 actor=request.user,
                 action=AuditLog.ACTION_TICKET_COMMENT_ADDED,
                 ticket=ticket,
@@ -294,6 +315,7 @@ def attachment_create(request, ticket_id):
                     target_id=ticket.id,
                     target_repr=Path(uploaded_file.name).name[:255],
                     message="Ticket attachment was rejected by upload validation.",
+                    request=request,
                 )
             return render(
                 request,
@@ -484,6 +506,7 @@ def ticket_detail(request, id):
                 new_value=new_status.name,
             )
             _record_ticket_audit_log(
+                request=request,
                 actor=request.user,
                 action=AuditLog.ACTION_TICKET_STATUS_CHANGED,
                 ticket=ticket_detail,
@@ -556,6 +579,7 @@ class TicketCategoryOverrideView(View):
                 f"AI category changed from {previous} to "
                 f"{prediction.effective_category_display}."
             ),
+            request=request,
         )
         return redirect("ticket_detail", id=ticket.id)
 
@@ -586,6 +610,7 @@ def ticket_assignment_update(request, ticket_id):
                 new_value=str(new_assignee) if new_assignee else "Unassigned",
             )
             _record_ticket_audit_log(
+                request=request,
                 actor=request.user,
                 action=AuditLog.ACTION_TICKET_ASSIGNED,
                 ticket=updated_ticket,
@@ -634,6 +659,7 @@ def ticket_priority_update(request, ticket_id):
                 new_value=new_priority.name,
             )
             _record_ticket_audit_log(
+                request=request,
                 actor=request.user,
                 action=AuditLog.ACTION_TICKET_PRIORITY_CHANGED,
                 ticket=updated_ticket,
@@ -699,6 +725,7 @@ def ticket_resolve(request, ticket_id):
             new_value=closed_status.name,
         )
         _record_ticket_audit_log(
+            request=request,
             actor=request.user,
             action=AuditLog.ACTION_TICKET_RESOLVED,
             ticket=updated_ticket,
@@ -760,6 +787,7 @@ def ticket_cancel(request, ticket_id):
             new_value=cancelled_status.name,
         )
         _record_ticket_audit_log(
+            request=request,
             actor=request.user,
             action=AuditLog.ACTION_TICKET_CANCELLED,
             ticket=updated_ticket,
@@ -794,6 +822,7 @@ def ticket_resolution_note_create(request, ticket_id):
         resolution_note.is_internal = False
         resolution_note.save()
         _record_ticket_audit_log(
+            request=request,
             actor=request.user,
             action=AuditLog.ACTION_RESOLUTION_NOTE_ADDED,
             ticket=ticket,
@@ -834,6 +863,7 @@ def staff_comment_create(request, ticket_id):
             comment.author = request.user
             comment.save()
             _record_ticket_audit_log(
+                request=request,
                 actor=request.user,
                 action=AuditLog.ACTION_TICKET_COMMENT_ADDED,
                 ticket=ticket,
