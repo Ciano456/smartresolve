@@ -14,8 +14,8 @@ screenshots, performance measurements, UAT, and deployment evidence remain open.
 | FR-07 | Dashboard and reporting | FR-07 | `dashboard/services.py`, `dashboard/views.py`, dashboard templates | KPI, access, chart-data, aggregate, export-permission, and CSV-injection tests | Dashboard screenshot and sample CSV pending | [x] |
 | FR-08 | AI-assisted ticket categorisation | FR-08 | `ml/`, ticket creation/detail/list integration | ML, fallback, permission, override, audit, and filter tests | Staff workflow screenshot pending | [x] |
 | FR-09 | Audit logging | FR-09 | `admin_portal.models.AuditLog`, `admin_portal/audit.py`, `TicketHistory` | Login, denial, upload, admin, and ticket audit tests | Audit-log screenshot pending | [x] |
-| FR-10 | Security metrics dashboard | FR-10 | Security dashboard views, services, and templates | Access, metric, aggregation, and security-event tests | Security dashboard screenshot pending | [x] |
-| FR-11 | Security event flagging | FR-11 | `accounts/security.py`, audit/event services, upload and ticket rules | Failed-login, denial, upload, role-change, and ticket-event tests | Flagged-event evidence pending | [x] Includes AI-assisted ticket-text triage |
+| FR-10 | Security metrics dashboard | FR-10 | `admin_portal.security_dashboard.build_security_dashboard_context`, `security_dashboard`, security dashboard template | Admin-only access, metric, filter, empty-state, keyword, and query-bound tests | Security dashboard screenshot pending | [x] |
+| FR-11 | Security event flagging | FR-11 | `AuditLog`, `admin_portal/audit.py`, `admin_portal/security.py`, account and ticket flows | Direct/proxy IP, severity mapping, login, denial, upload, and AI ticket-event tests | Flagged-event dashboard screenshot pending | [x] |
 | NFR-01 | Secure authentication | UC-01 | Django auth, `accounts.models.User` | Auth and password-flow tests | Security notes in `SECURITY.md` | [x] |
 | NFR-02 | Security protections | UC-ALL | Middleware, forms, `accounts/security.py` | CSRF defaults, upload validation, throttle, and malformed-input tests | Audit screenshot pending | [x] |
 | NFR-03 | Access enforcement | UC-ALL | Role decorators and object-filtered views | Anonymous, wrong-role, cross-user, and attachment tests | Permission evidence pending | [x] |
@@ -27,7 +27,7 @@ screenshots, performance measurements, UAT, and deployment evidence remain open.
 
 ## Latest Automated Test Evidence
 
-- Local suite on 19 July 2026: `215 passed` across isolated test groups.
+- Local suite on 19 July 2026: `243 passed`.
 - Migration consistency: no changes detected.
 - Django system check: no issues.
 - GitHub CI evidence will be linked from the issue #24 pull request.

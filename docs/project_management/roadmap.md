@@ -121,8 +121,8 @@
 80. Audit trail visibility
 81. Failed login logging
 82. Access denial logging
-83. Security events table if needed
-84. Security dashboard summary
+83. Security events table complete
+84. Security dashboard summary complete
 85. File upload validation
 86. Strong permission checks across views
 87. Production settings split

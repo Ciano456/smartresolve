@@ -7,8 +7,8 @@
 - Attachment validation checks allowlists and basic signatures but is not antivirus
   or sandbox scanning.
 - Microsoft Graph delivery depends on external tenant configuration and availability.
-- Audit records are visible in the application but there is no automated alerting or
-  dedicated security dashboard.
+- Security metrics and flagged records are visible to administrators, but there is no
+  automated alert delivery or external SIEM integration.
 - Formal load/performance targets have not yet been measured on production-sized data.
 - Backups and restoration require Railway operational procedures and live validation.
 - Self-service registration is not supported; administrators create accounts.
@@ -19,6 +19,6 @@
 - multiple web replicas after media is moved off the local volume
 - central monitoring and security alerts
 - SLA timers and escalation rules
-- AI-assisted categorisation and response suggestions using synthetic training data
+- AI-assisted response suggestions beyond the implemented category and security models
 - Teams integration and knowledge-base suggestions
 - formal accessibility and load-testing programmes

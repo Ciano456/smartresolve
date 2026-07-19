@@ -5,12 +5,27 @@
 - Django authentication with explicit Admin, Support Staff and Submitter role checks.
 - Object-level checks protect submitter tickets and attachment downloads.
 - Failed logins, rate-limited logins, access denials, blocked uploads and important
-  ticket changes are recorded in the audit log.
+  ticket changes are recorded with severity, flagged state, and a validated client
+  address where available.
 - Login throttling uses a SHA-256 cache key derived from the normalised email and
   direct client address. Raw client addresses are not stored in the cache key.
 - Attachment uploads enforce an extension allowlist, a 5 MB size limit and basic
   file-content checks. Rejected files are not stored.
 - CSRF middleware and Django password validation are enabled.
+- Administrators have a read-only security dashboard for flagged tickets, event
+  severity, keyword signals, and recent trends.
+
+## Security event reporting
+
+Configured suspicious events are classified as low, medium, high, or critical.
+Rate limiting, access denials, blocked uploads, and AI security-ticket signals are
+flagged for administrator review. Security flags do not automatically change ticket
+priority or replace a human decision.
+
+`REMOTE_ADDR` is used for audit and throttle identification by default. Set
+`TRUST_PROXY_HEADERS=True` only behind Railway or another trusted reverse proxy that
+controls `X-Forwarded-For`. The first valid forwarded address is then treated as the
+original client address.
 
 ## Login throttle configuration
 
@@ -34,14 +49,13 @@ environment-provided secret key.
 - Add reverse-proxy or platform-level request throttling.
 - Add antivirus or malware scanning for uploaded files.
 - Add central log collection, alerting and retention policies.
-- Add a security dashboard if operational monitoring requires one.
 
 ## Verification
 
 ```text
 .venv/bin/python manage.py makemigrations --check --dry-run
 .venv/bin/python manage.py migrate
-.venv/bin/pytest accounts/tests.py tickets/tests.py admin_portal/tests/test_views.py
+.venv/bin/pytest accounts/tests.py tickets/tests.py admin_portal/tests
 .venv/bin/pytest
 .venv/bin/python manage.py check --deploy
 ```

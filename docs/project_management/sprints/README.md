@@ -18,6 +18,9 @@ Each sprint folder contains:
 6. `sprint_06_staff_workflow`
 7. `sprint_07_notifications_dashboard`
 8. `sprint_08_hardening_deployment`
+9. `sprint_09_ai_ticket_classification`
+10. `sprint_10_security_event_flagging`
+11. `sprint_11_security_metrics_dashboard`
 
 ## Standard Feature Done Checklist
 

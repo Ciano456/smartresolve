@@ -21,9 +21,7 @@ The MVP should include:
 
 Build these after the MVP is stable:
 
-- AI ticket categorisation
 - smart response generator
-- advanced security dashboard
 - SLA logic
 - advanced automation
 - Teams integration
@@ -33,7 +31,8 @@ Build these after the MVP is stable:
 
 ## Current Priority
 
-The planned operational MVP is implemented through Sprint 7:
+The planned operational MVP and later AI/security reporting work are implemented
+through Sprint 11:
 
 - submitter ticket submission, comments, attachments, and protected downloads
 - staff assignment, filtering, notes, resolution, cancellation, and history
@@ -41,6 +40,8 @@ The planned operational MVP is implemented through Sprint 7:
 - Microsoft Graph notification service and ticket notification triggers
 - dashboard KPIs, charts, trends, workload reporting, and CSV export
 - security audit events, upload validation, and configurable login throttling
+- AI-assisted ticket categorisation and security triage
+- administrator security metrics, severity trends, and flagged-event review
 
-The current priority is Sprint 8 production configuration, deployment documentation,
-UAT, and final evidence. AI features remain later enhancements.
+The current priority is production deployment, live validation,
+UAT, and final evidence. AI-assisted response generation remains a later enhancement.
