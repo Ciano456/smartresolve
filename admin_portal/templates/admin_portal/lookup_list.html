@@ -7,26 +7,27 @@
 {% block title %}SmartResolve | {{ lookup_config.title }}{% endblock %}
 
 {% block body %}
-<main class="min-h-screen p-2 md:p-3">
-    <section class="mx-auto min-h-[calc(100vh-1rem)] w-full max-w-[1850px] overflow-hidden rounded-[26px] border border-slate-200 bg-[#f7faff] shadow-shell">
-        <div class="grid min-h-[calc(100vh-1rem)] md:grid-cols-[280px_1fr]">
+<main id="main-content" class="min-h-screen bg-[#f3f5f7]">
+    <section class="min-h-screen">
+        <div class="grid min-h-screen md:grid-cols-[264px_1fr]">
             {% include "partials/side_nav.html" with side_nav="admin_portal" %}
             <div class="min-w-0">
                 {% include "partials/top_nav.html" with top_nav=lookup_config.title top_nav_subtitle=lookup_config.description %}
 
-                <section class="p-5 md:p-7">
-                    <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
-                        <a href="{% url 'admin_dashboard' %}" class="inline-flex rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-soft transition hover:bg-slate-50">
+                <div class="mx-auto max-w-[1560px] space-y-6 p-5 md:p-8">
+                    <div class="flex min-h-11 items-center border-b border-slate-300 pb-4"><p class="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Lookup configuration</p></div>
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <a href="{% url 'admin_dashboard' %}" class="inline-flex border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition hover:bg-slate-50">
                             Back to Admin Portal
                         </a>
-                        <a href="{% url 'lookup_create' lookup_slug %}" class="inline-flex rounded-lg bg-[#0756f8] px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-[#0046d6]">
+                        <a href="{% url 'lookup_create' lookup_slug %}" class="inline-flex bg-[#1769ff] px-5 py-3 text-sm font-bold text-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition hover:bg-[#0f56d9]">
                             Create {{ lookup_config.singular }}
                         </a>
                     </div>
 
-                    <section class="overflow-hidden rounded-2xl bg-white shadow-card">
+                    <section class="overflow-hidden border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
                         <div class="border-b border-slate-200 p-6">
-                            <p class="text-sm font-bold uppercase tracking-[0.18em] text-[#0756f8]">Lookup Management</p>
+                            <p class="text-sm font-bold uppercase tracking-[0.18em] text-[#1769ff]">Lookup Management</p>
                             <h2 class="mt-2 text-3xl font-bold tracking-tight">{{ lookup_config.title }}</h2>
                         </div>
                         <div class="overflow-x-auto">
@@ -50,17 +51,17 @@
                                         <td>{{ lookup_value.sort_order }}</td>
                                         <td>
                                             {% if lookup_value.is_active %}
-                                            <span class="rounded-full bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700">Active</span>
+                                            <span class="bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700">Active</span>
                                             {% else %}
-                                            <span class="rounded-full bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600">Inactive</span>
+                                            <span class="bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600">Inactive</span>
                                             {% endif %}
                                         </td>
                                         <td>
                                             <div class="flex flex-wrap gap-2">
-                                                <a href="{% url 'lookup_edit' lookup_slug lookup_value.id %}" class="inline-flex rounded-lg border border-[#0756f8]/25 px-4 py-2 text-sm font-bold text-[#0756f8] transition hover:bg-[#eaf1ff]">Edit</a>
+                                                <a href="{% url 'lookup_edit' lookup_slug lookup_value.id %}" class="inline-flex border border-[#1769ff]/25 px-4 py-2 text-sm font-bold text-[#1769ff] transition hover:bg-[#eaf1ff]">Edit</a>
                                                 <form method="post" action="{% url 'lookup_toggle_active' lookup_slug lookup_value.id %}">
                                                     {% csrf_token %}
-                                                    <button type="submit" class="inline-flex rounded-lg border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
+                                                    <button type="submit" class="inline-flex border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50">
                                                         {% if lookup_value.is_active %}Deactivate{% else %}Activate{% endif %}
                                                     </button>
                                                 </form>
@@ -76,7 +77,7 @@
                             </table>
                         </div>
                     </section>
-                </section>
+                </div>
             </div>
         </div>
     </section>

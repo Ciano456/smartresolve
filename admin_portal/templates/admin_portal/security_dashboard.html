@@ -11,120 +11,119 @@
 {% endblock %}
 
 {% block body %}
-<main class="min-h-screen p-2 md:p-3">
-    <section class="mx-auto min-h-[calc(100vh-1rem)] w-full max-w-[1850px] overflow-hidden rounded-[34px] border border-white/50 bg-white/55 shadow-shell backdrop-blur">
-        <div class="grid min-h-[calc(100vh-1rem)] md:grid-cols-[280px_1fr]">
+<main id="main-content" class="min-h-screen bg-[#f3f5f7]">
+    <section class="min-h-screen">
+        <div class="grid min-h-screen md:grid-cols-[264px_1fr]">
             {% include "partials/side_nav.html" with side_nav="security_dashboard" %}
 
             <div class="min-w-0">
-                {% include "partials/top_nav.html" with top_nav="Security Metrics" top_nav_subtitle="Read-only visibility into flagged tickets and suspicious events." %}
+                {% include "partials/top_nav.html" with top_nav="Security Metrics" top_nav_subtitle="Flagged tickets and security-related audit activity." %}
                 {{ security_chart_data|json_script:"security-chart-data" }}
 
-                <section class="space-y-7 p-5 md:p-8">
-                    <header class="relative overflow-hidden rounded-[28px] bg-slate-950 p-7 text-white shadow-[0_22px_55px_rgba(15,23,42,0.24)] md:p-9">
-                        <div class="absolute inset-y-0 right-0 w-2/5 bg-gradient-to-l from-rose-500/30 to-transparent" aria-hidden="true"></div>
-                        <div class="relative max-w-3xl">
-                            <p class="text-xs font-black uppercase tracking-[0.28em] text-rose-300">Administrator Security View</p>
-                            <h1 class="mt-4 text-4xl font-bold tracking-tight md:text-5xl">Signals that need a human decision</h1>
-                            <p class="mt-4 max-w-2xl text-base leading-7 text-slate-300">AI and audit rules raise review signals. They do not automatically change ticket priority or replace administrator judgement.</p>
-                        </div>
-                    </header>
-
-                    <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-6">
-                        <article class="rounded-[22px] bg-white p-6 shadow-[0_18px_48px_rgba(15,23,42,0.10)] sm:col-span-2">
-                            <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Flagged tickets</p>
-                            <p class="mt-4 text-5xl font-bold text-[#0756f8]">{{ security_stats.flagged_tickets }}</p>
-                        </article>
-                        <article class="rounded-[22px] bg-white p-6 shadow-[0_18px_48px_rgba(15,23,42,0.10)] sm:col-span-2">
-                            <p class="text-xs font-black uppercase tracking-[0.2em] text-slate-500">Flagged events</p>
-                            <p class="mt-4 text-5xl font-bold text-rose-600">{{ security_stats.flagged_events }}</p>
-                        </article>
-                        <article class="rounded-[22px] border border-rose-200 bg-rose-50 p-6 sm:col-span-2">
-                            <p class="text-xs font-black uppercase tracking-[0.2em] text-rose-700">Critical events</p>
-                            <p class="mt-4 text-5xl font-bold text-rose-700">{{ security_stats.critical }}</p>
-                        </article>
-                        <article class="rounded-[22px] border border-orange-200 bg-orange-50 p-5">
-                            <p class="text-xs font-black uppercase tracking-[0.16em] text-orange-700">High</p>
-                            <p class="mt-3 text-4xl font-bold text-orange-700">{{ security_stats.high }}</p>
-                        </article>
-                        <article class="rounded-[22px] border border-amber-200 bg-amber-50 p-5">
-                            <p class="text-xs font-black uppercase tracking-[0.16em] text-amber-700">Medium</p>
-                            <p class="mt-3 text-4xl font-bold text-amber-700">{{ security_stats.medium }}</p>
-                        </article>
-                        <article class="rounded-[22px] border border-slate-200 bg-slate-50 p-5">
-                            <p class="text-xs font-black uppercase tracking-[0.16em] text-slate-600">Low flagged</p>
-                            <p class="mt-3 text-4xl font-bold text-slate-700">{{ security_stats.low }}</p>
-                        </article>
+                <div class="mx-auto max-w-[1560px] space-y-6 p-5 md:p-8">
+                    <div class="flex min-h-11 items-center border-b border-slate-300 pb-4">
+                        <p class="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Security overview</p>
                     </div>
 
-                    <div class="grid gap-6 xl:grid-cols-2">
-                        <section class="rounded-[26px] bg-white p-6 shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
-                            <h2 class="text-xl font-bold text-slate-900">Flagged events by severity</h2>
-                            <div class="mt-6 h-72"><canvas id="severityChart" aria-label="Flagged events by severity"></canvas></div>
+                    <section aria-label="Security summary" class="grid overflow-hidden border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] sm:grid-cols-2 xl:grid-cols-6 xl:divide-x xl:divide-slate-200">
+                        <article class="flex min-h-32 flex-col justify-between border-b border-t-2 border-b-slate-200 border-t-[#1769ff] p-6 xl:border-b-0">
+                            <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Flagged tickets</p>
+                            <p class="text-4xl font-black tracking-[-0.04em] text-slate-900">{{ security_stats.flagged_tickets }}</p>
+                        </article>
+                        <article class="flex min-h-32 flex-col justify-between border-b border-t-2 border-b-slate-200 border-t-slate-500 p-6 xl:border-b-0">
+                            <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Flagged events</p>
+                            <p class="text-4xl font-black tracking-[-0.04em] text-slate-900">{{ security_stats.flagged_events }}</p>
+                        </article>
+                        <article class="flex min-h-32 flex-col justify-between border-b border-t-2 border-b-slate-200 border-t-rose-600 p-6 xl:border-b-0">
+                            <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Critical</p>
+                            <p class="text-4xl font-black tracking-[-0.04em] text-rose-700">{{ security_stats.critical }}</p>
+                        </article>
+                        <article class="flex min-h-32 flex-col justify-between border-b border-t-2 border-b-slate-200 border-t-orange-500 p-6 sm:border-b-0">
+                            <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">High</p>
+                            <p class="text-4xl font-black tracking-[-0.04em] text-slate-900">{{ security_stats.high }}</p>
+                        </article>
+                        <article class="flex min-h-32 flex-col justify-between border-t-2 border-t-amber-400 p-6">
+                            <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Medium</p>
+                            <p class="text-4xl font-black tracking-[-0.04em] text-slate-900">{{ security_stats.medium }}</p>
+                        </article>
+                        <article class="flex min-h-32 flex-col justify-between border-t-2 border-t-slate-300 p-6">
+                            <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Low</p>
+                            <p class="text-4xl font-black tracking-[-0.04em] text-slate-900">{{ security_stats.low }}</p>
+                        </article>
+                    </section>
+
+                    <div class="grid items-stretch gap-6 xl:grid-cols-2">
+                        <section class="flex min-h-[390px] flex-col border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]" aria-labelledby="severity-heading">
+                            <div class="border-b border-slate-200 pb-4"><p class="font-mono text-[10px] uppercase tracking-[0.16em] text-slate-400">01 / Severity</p><h2 id="severity-heading" class="mt-1 text-lg font-black text-slate-900">Flagged events</h2></div>
+                            <div class="mt-5 min-h-0 flex-1"><canvas id="severityChart" role="img" aria-label="Flagged events by severity"></canvas></div>
                         </section>
-                        <section class="rounded-[26px] bg-white p-6 shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
-                            <h2 class="text-xl font-bold text-slate-900">Six month event trend</h2>
-                            <div class="mt-6 h-72"><canvas id="securityTrendChart" aria-label="Monthly flagged security events"></canvas></div>
+                        <section class="flex min-h-[390px] flex-col border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]" aria-labelledby="security-trend-heading">
+                            <div class="border-b border-slate-200 pb-4"><p class="font-mono text-[10px] uppercase tracking-[0.16em] text-slate-400">02 / Six months</p><h2 id="security-trend-heading" class="mt-1 text-lg font-black text-slate-900">Event trend</h2></div>
+                            <div class="mt-5 min-h-0 flex-1"><canvas id="securityTrendChart" role="img" aria-label="Monthly flagged security events"></canvas></div>
                         </section>
                     </div>
 
-                    <div class="grid gap-6 xl:grid-cols-[1.35fr_0.65fr]">
-                        <section class="overflow-hidden rounded-[26px] bg-white shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
-                            <div class="border-b border-slate-200 px-6 py-5"><h2 class="text-xl font-bold">Recent flagged tickets</h2></div>
-                            {% if recent_flagged_tickets %}
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
-                                    <thead class="bg-slate-50 text-xs uppercase tracking-[0.14em] text-slate-500"><tr><th class="px-6 py-4">Ticket</th><th class="px-6 py-4">Submitter</th><th class="px-6 py-4">Signal</th><th class="px-6 py-4">Status</th></tr></thead>
-                                    <tbody class="divide-y divide-slate-100">
-                                        {% for prediction in recent_flagged_tickets %}
-                                        <tr><td class="px-6 py-4"><a href="{% url 'ticket_detail' prediction.ticket.id %}" class="font-bold text-[#0756f8] hover:underline">{{ prediction.ticket.ticket_number }}</a><p class="mt-1 text-slate-500">{{ prediction.ticket.title }}</p></td><td class="px-6 py-4 text-slate-600">{{ prediction.ticket.submitter.email }}</td><td class="px-6 py-4"><span class="rounded-full bg-rose-100 px-3 py-1 text-xs font-bold text-rose-800">{{ prediction.matched_keywords|default:"Model signal" }}</span></td><td class="px-6 py-4">{{ prediction.ticket.ticket_status.name }}</td></tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                            {% else %}<p class="px-6 py-10 text-center text-slate-500">No tickets currently require security review.</p>{% endif %}
-                        </section>
-
-                        <aside class="rounded-[26px] bg-white p-6 shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
-                            <h2 class="text-xl font-bold">Keyword signals</h2>
-                            <div class="mt-5 space-y-3">
-                                {% for item in keyword_breakdown %}
-                                <div class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3"><span class="font-semibold capitalize text-slate-700">{{ item.label }}</span><span class="rounded-full bg-slate-900 px-3 py-1 text-xs font-bold text-white">{{ item.count }}</span></div>
-                                {% empty %}<p class="rounded-xl bg-slate-50 p-5 text-sm text-slate-500">No keyword signals have been recorded.</p>{% endfor %}
-                            </div>
-                        </aside>
-                    </div>
-
-                    <section class="overflow-hidden rounded-[26px] bg-white shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
-                        <div class="flex flex-col gap-4 border-b border-slate-200 px-6 py-5 sm:flex-row sm:items-end sm:justify-between">
-                            <div><h2 class="text-xl font-bold">Recent flagged audit events</h2><p class="mt-1 text-sm text-slate-500">Only explicitly flagged security events appear here.</p></div>
-                            <form method="get" class="flex items-end gap-3">
-                                <div><label for="severity" class="block text-xs font-bold uppercase tracking-[0.14em] text-slate-500">Severity</label><select id="severity" name="severity" class="mt-2 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700"><option value="">All severities</option>{% for value, label in severity_choices %}<option value="{{ value }}" {% if selected_severity == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
-                                <button type="submit" class="rounded-xl bg-slate-900 px-5 py-3 text-sm font-bold text-white transition hover:bg-slate-700">Filter</button>
-                            </form>
-                        </div>
-                        {% if recent_security_events %}
+                    <section class="overflow-hidden border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)]" aria-labelledby="flagged-tickets-heading">
+                        <div class="border-b border-slate-200 px-6 py-5"><h2 id="flagged-tickets-heading" class="text-lg font-black text-slate-900">Flagged tickets</h2></div>
+                        {% if recent_flagged_tickets %}
                         <div class="overflow-x-auto">
-                            <table class="min-w-full divide-y divide-slate-200 text-left text-sm">
-                                <thead class="bg-slate-50 text-xs uppercase tracking-[0.14em] text-slate-500"><tr><th class="px-6 py-4">Time</th><th class="px-6 py-4">Severity</th><th class="px-6 py-4">Event</th><th class="px-6 py-4">Target</th><th class="px-6 py-4">IP address</th></tr></thead>
+                            <table class="min-w-full text-left text-sm">
+                                <thead class="bg-slate-50 text-xs font-bold uppercase tracking-[0.12em] text-slate-500"><tr><th class="px-6 py-4">Ticket</th><th class="px-6 py-4">Submitter</th><th class="px-6 py-4">Matched signal</th><th class="px-6 py-4">Status</th></tr></thead>
                                 <tbody class="divide-y divide-slate-100">
-                                    {% for event in recent_security_events %}
-                                    <tr><td class="whitespace-nowrap px-6 py-4 text-slate-600">{{ event.created_at|date:"d M Y H:i" }}</td><td class="px-6 py-4"><span class="rounded-full px-3 py-1 text-xs font-bold {% if event.severity == 'critical' %}bg-rose-700 text-white{% elif event.severity == 'high' %}bg-orange-100 text-orange-800{% elif event.severity == 'medium' %}bg-amber-100 text-amber-800{% else %}bg-slate-100 text-slate-700{% endif %}">{{ event.get_severity_display }}</span></td><td class="px-6 py-4"><p class="font-bold">{{ event.get_action_display }}</p><p class="mt-1 max-w-xl text-slate-500">{{ event.message }}</p></td><td class="px-6 py-4">{{ event.target_repr }}</td><td class="whitespace-nowrap px-6 py-4 font-mono text-xs text-slate-600">{{ event.ip_address|default:"Not recorded" }}</td></tr>
+                                    {% for prediction in recent_flagged_tickets %}
+                                    <tr class="transition hover:bg-slate-50"><td class="px-6 py-4"><a href="{% url 'ticket_detail' prediction.ticket.id %}" class="font-mono text-xs font-bold text-[#1769ff] hover:underline">{{ prediction.ticket.ticket_number }}</a><p class="mt-1 font-semibold text-slate-900">{{ prediction.ticket.title }}</p></td><td class="px-6 py-4 text-slate-600">{{ prediction.ticket.submitter.email }}</td><td class="px-6 py-4 text-slate-700">{{ prediction.matched_keywords|default:"Model signal" }}</td><td class="px-6 py-4 font-semibold text-slate-700">{{ prediction.ticket.ticket_status.name }}</td></tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
                         </div>
-                        {% else %}<p class="px-6 py-10 text-center text-slate-500">No flagged audit events have been recorded.</p>{% endif %}
+                        {% else %}<p class="px-6 py-10 text-center text-slate-500">No tickets currently require security review.</p>{% endif %}
                     </section>
-                </section>
+
+                    <section class="border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)]" aria-labelledby="keywords-heading">
+                        <div class="border-b border-slate-200 px-6 py-4"><h2 id="keywords-heading" class="text-base font-black text-slate-900">Matched security terms</h2></div>
+                        <div class="flex flex-wrap gap-2 p-6">
+                            {% for item in keyword_breakdown %}
+                            <span class="inline-flex min-h-10 items-center gap-3 border border-slate-200 bg-slate-50 px-4 text-sm font-semibold capitalize text-slate-700">{{ item.label }} <strong class="font-mono text-[#1769ff]">{{ item.count }}</strong></span>
+                            {% empty %}<p class="text-sm text-slate-500">No matched terms.</p>{% endfor %}
+                        </div>
+                    </section>
+
+                    <section class="overflow-hidden border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)]" aria-labelledby="events-heading">
+                        <div class="flex flex-col gap-4 border-b border-slate-200 px-6 py-5 sm:flex-row sm:items-end sm:justify-between">
+                            <h2 id="events-heading" class="text-lg font-black text-slate-900">Security audit events</h2>
+                            <form method="get" class="flex items-end gap-2">
+                                <div><label for="severity" class="block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Severity</label><select id="severity" name="severity" class="mt-2 min-h-11 border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700"><option value="">All</option>{% for value, label in severity_choices %}<option value="{{ value }}" {% if selected_severity == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+                                <button type="submit" class="min-h-11 bg-slate-900 px-5 text-sm font-bold text-white transition hover:bg-slate-700">Apply</button>
+                            </form>
+                        </div>
+                        {% if recent_security_events %}
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-left text-sm">
+                                <thead class="bg-slate-50 text-xs font-bold uppercase tracking-[0.12em] text-slate-500"><tr><th class="px-6 py-4">Time</th><th class="px-6 py-4">Severity</th><th class="px-6 py-4">Event</th><th class="px-6 py-4">Target</th><th class="px-6 py-4">IP address</th></tr></thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    {% for event in recent_security_events %}
+                                    <tr class="transition hover:bg-slate-50"><td class="whitespace-nowrap px-6 py-4 font-mono text-xs text-slate-500">{{ event.created_at|date:"d M Y H:i" }}</td><td class="px-6 py-4"><span class="border-l-2 px-3 py-1 text-xs font-bold {% if event.severity == 'critical' %}border-rose-600 text-rose-700{% elif event.severity == 'high' %}border-orange-500 text-orange-700{% elif event.severity == 'medium' %}border-amber-400 text-amber-700{% else %}border-slate-300 text-slate-600{% endif %}">{{ event.get_severity_display }}</span></td><td class="px-6 py-4"><p class="font-bold text-slate-900">{{ event.get_action_display }}</p><p class="mt-1 text-slate-500">{{ event.message }}</p></td><td class="px-6 py-4 text-slate-700">{{ event.target_repr }}</td><td class="whitespace-nowrap px-6 py-4 font-mono text-xs text-slate-600">{{ event.ip_address|default:"Not recorded" }}</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}<p class="px-6 py-10 text-center text-slate-500">No security audit events.</p>{% endif %}
+                    </section>
+                </div>
             </div>
         </div>
     </section>
 </main>
+
 <script>
     const securityData = JSON.parse(document.getElementById("security-chart-data").textContent);
-    const sharedOptions = {responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}}, scales: {y: {beginAtZero: true, ticks: {precision: 0}}}};
-    new Chart(document.getElementById("severityChart"), {type: "bar", data: {labels: securityData.severity.labels, datasets: [{data: securityData.severity.counts, backgroundColor: ["#94a3b8", "#f59e0b", "#f97316", "#e11d48"], borderRadius: 10}]}, options: sharedOptions});
-    new Chart(document.getElementById("securityTrendChart"), {type: "line", data: {labels: securityData.trend.labels, datasets: [{data: securityData.trend.counts, borderColor: "#e11d48", backgroundColor: "rgba(225,29,72,0.12)", fill: true, tension: 0.35}]}, options: sharedOptions});
+    Chart.defaults.font.family = "ui-sans-serif, system-ui, sans-serif";
+    Chart.defaults.color = "#64748b";
+    const gridColor = "rgba(148,163,184,0.18)";
+    const tooltip = {backgroundColor: "#171a1f", padding: 12, cornerRadius: 2, displayColors: false};
+    const sharedScales = {x: {grid: {display: false}, border: {display: false}}, y: {beginAtZero: true, grid: {color: gridColor}, border: {display: false}, ticks: {precision: 0}}};
+
+    new Chart(document.getElementById("severityChart"), {type: "bar", data: {labels: securityData.severity.labels, datasets: [{data: securityData.severity.counts, backgroundColor: ["#94a3b8", "#d98b12", "#ea6a2a", "#e11d48"], borderRadius: 2, barThickness: 30}]}, options: {responsive: true, maintainAspectRatio: false, plugins: {tooltip, legend: {display: false}}, scales: sharedScales}});
+    new Chart(document.getElementById("securityTrendChart"), {type: "line", data: {labels: securityData.trend.labels, datasets: [{data: securityData.trend.counts, borderColor: "#1769ff", backgroundColor: "rgba(23,105,255,0.07)", pointBackgroundColor: "#fff", pointBorderColor: "#1769ff", pointBorderWidth: 2, pointRadius: 3, fill: true, tension: 0.28}]}, options: {responsive: true, maintainAspectRatio: false, plugins: {tooltip, legend: {display: false}}, scales: sharedScales}});
 </script>
 {% endblock %}

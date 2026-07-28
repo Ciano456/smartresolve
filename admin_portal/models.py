@@ -78,6 +78,12 @@ class AuditLog(models.Model):
     target_id = models.PositiveIntegerField(null=True, blank=True)
     target_repr = models.CharField(max_length=255)
     message = models.TextField()
+    # ip_address, severity and flagged are what the FR10 security
+    # dashboard is built on top of. ip_address is nullable because not
+    # every event has a request behind it, for example a system generated
+    # entry. severity and flagged are worked out by admin_portal/security.py
+    # at the time the entry is written, using audit_event_defaults and
+    # security_ticket_severity, rather than being decided later.
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     severity = models.CharField(
         max_length=10,
@@ -89,6 +95,9 @@ class AuditLog(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
+        # Both the dashboard and the audit log page filter on flagged and
+        # severity a lot, so these indexes keep those queries fast as the
+        # table grows.
         indexes = [
             models.Index(fields=["flagged", "-created_at"]),
             models.Index(fields=["severity", "-created_at"]),
