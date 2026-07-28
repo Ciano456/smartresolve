@@ -1,0 +1,61 @@
+title,description,category,is_security_related,template_group
+Touchpad physically stuck,The trackpad button remains pressed down and cannot be clicked.,hardware,False,holdout-hardware-01
+Unknown USB device,An unfamiliar storage device was found connected to a shared reception computer.,hardware,True,holdout-hardware-02
+Projector has no picture,The meeting room projector powers up but produces no image from any laptop.,hardware,False,holdout-hardware-03
+Cracked monitor panel,The display has visible cracks and coloured lines after it was knocked.,hardware,False,holdout-hardware-04
+Printer feeding blank pages,The printer runs normally but every sheet comes through completely blank.,hardware,False,holdout-hardware-05
+USB headset not detected,The same headset is not recognised in any port on two workstations.,hardware,False,holdout-hardware-06
+Server drive clicking,A physical disk in the local server is clicking and its warning light is amber.,hardware,False,holdout-hardware-07
+Missing company phone,A work mobile containing company email may have been stolen on the train.,hardware,True,holdout-hardware-08
+Dock has no power,No devices charge and no indicator appears when the docking station is connected.,hardware,False,holdout-hardware-09
+Keyboard liquid damage,Several keys stopped responding after water was spilled on the keyboard.,hardware,False,holdout-hardware-10
+Desktop shuts down randomly,The workstation loses all power after a few minutes even before applications open.,hardware,False,holdout-hardware-11
+Camera image distorted,The built-in webcam shows permanent coloured bands in every video application.,hardware,False,holdout-hardware-12
+Laptop stolen from office,A company laptop containing work documents was taken from a locked office.,hardware,True,holdout-hardware-13
+Mouse wheel broken,The scroll wheel spins freely and does not move pages on any computer.,hardware,False,holdout-hardware-14
+External screen flickers,The second monitor continues flickering after changing its cable and computer.,hardware,False,holdout-hardware-15
+Accounting app error,The accounting program displays an exception whenever an invoice is generated.,software,False,holdout-software-01
+Unexpected encryption warning,A program claims the files were encrypted and demands a cryptocurrency payment.,software,True,holdout-software-02
+Browser update problem,The browser closes immediately every time it starts since the latest update.,software,False,holdout-software-03
+Spreadsheet formula incorrect,The workbook opens but calculates an incorrect total in several formula cells.,software,False,holdout-software-04
+Document editor freezes,The word processing application stops responding whenever tracked changes are enabled.,software,False,holdout-software-05
+Email attachments fail,The mail program works normally except that it displays an error opening attachments.,software,False,holdout-software-06
+Approved application missing,Please install the authorised diagramming program on the new workstation.,software,False,holdout-software-07
+Fake update prompt,A suspicious software update window is asking for my password and bank details.,software,True,holdout-software-08
+Calendar duplicates meetings,The calendar application creates two copies of every accepted invitation.,software,False,holdout-software-09
+Payroll export corrupted,The payroll system accepts my login but produces an unreadable export file.,software,False,holdout-software-10
+PDF reader crashes,The PDF reader exits when any document is opened from local storage.,software,False,holdout-software-11
+Presentation audio missing,The slide application plays the presentation but no embedded audio tracks work.,software,False,holdout-software-12
+Unknown program installed,A program nobody approved appeared overnight and is displaying suspicious adverts.,software,True,holdout-software-13
+Database client query error,The database client connects successfully but fails when a saved query runs.,software,False,holdout-software-14
+Video application frozen,The conferencing program accepts the account sign-in and then becomes unresponsive.,software,False,holdout-software-15
+Office network outage,Every desk in the Carlow branch has lost both wired and wireless connectivity.,network,False,holdout-network-01
+Suspicious DNS redirect,Internal addresses redirect to an imitation login page while using office Wi-Fi.,network,True,holdout-network-02
+Remote connection slow,The VPN connects successfully but every internal page takes several minutes to load.,network,False,holdout-network-03
+Wireless drops upstairs,All devices lose Wi-Fi repeatedly on the upper floor but work downstairs.,network,False,holdout-network-04
+No wired connection,The desktop shows no network connectivity despite a connected Ethernet cable.,network,False,holdout-network-05
+Shared drive unavailable remotely,My permissions work in the office but the shared drive cannot be reached through VPN.,network,False,holdout-network-06
+Video calls dropping,Online meetings disconnect for the whole department on the office connection.,network,False,holdout-network-07
+Unexpected network traffic,Several computers are contacting a suspicious external address every minute.,network,True,holdout-network-08
+Intranet name not found,Public websites load but the internal portal address cannot be resolved.,network,False,holdout-network-09
+Cloud sync stalls,Cloud files remain pending only when connected to the company network.,network,False,holdout-network-10
+Guest Wi-Fi unavailable,Visitors cannot connect any device to the guest wireless network.,network,False,holdout-network-11
+Network printer offline,The printer is powered on but nobody can reach its network address.,network,False,holdout-network-12
+Rogue wireless access point,A duplicate office Wi-Fi name appeared and asks users to re-enter credentials.,network,True,holdout-network-13
+Internal service timing out,Multiple users can browse the internet but cannot reach the internal service.,network,False,holdout-network-14
+Remote desktop disconnects,The remote desktop session ends whenever the VPN connection briefly drops.,network,False,holdout-network-15
+Folder permission request,I need approved read-only access to the procurement shared folder.,access,False,holdout-access-01
+Unknown account sign-in,An unauthorised login to my account was recorded from an unknown device.,access,True,holdout-access-02
+New employee account,Please create standard portal access for an approved new starter.,access,False,holdout-access-03
+Password forgotten,I cannot sign in because I no longer remember my account password.,access,False,holdout-access-04
+Finance role missing,The finance application opens but my user is denied access to the payment screen.,access,False,holdout-access-05
+User account locked,The service says my account was locked after too many incorrect passwords.,access,False,holdout-access-06
+Remove former contractor,Please revoke the former contractor's access to company systems and folders.,access,False,holdout-access-07
+Unexpected administrator rights,My ordinary account appears to have gained administrator permissions without approval.,access,True,holdout-access-08
+Authentication code rejected,My correct password is accepted but every multi-factor code is refused.,access,False,holdout-access-09
+Shared mailbox denied,I can sign in to email but I am not authorised to open the team mailbox.,access,False,holdout-access-10
+Account has expired,The portal reports that my user account expired and blocks the login.,access,False,holdout-access-11
+Approval feature restricted,The program loads normally but says my role cannot approve requests.,access,False,holdout-access-12
+Suspicious password change,My account password was changed without my knowledge and I can no longer sign in.,access,True,holdout-access-13
+Database records forbidden,The database connects but my account does not have permission to view the records.,access,False,holdout-access-14
+Temporary worker access,Please grant the approved temporary worker access that expires at the end of the week.,access,False,holdout-access-15

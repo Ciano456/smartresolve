@@ -1,100 +1,83 @@
+{# Student Name: Cian O'Connor #}
+{# Student Number: x22109668 #}
+{# Module: Final Year Project #}
+
 {% extends "base.html" %}
 
-{% block title %}Premier Life Sciences | SmartResolve Profile{% endblock %}
+{% block title %}SmartResolve | Profile{% endblock %}
 
 {% block body %}
-<main class="min-h-screen p-4 md:p-6">
-    <section class="mx-auto min-h-[calc(100vh-2rem)] max-w-7xl overflow-hidden rounded-[34px] border border-white/50 bg-white/55 shadow-shell backdrop-blur">
-        {% include "partials/top_nav.html" with top_nav="tracking" %}
+<main id="main-content" class="min-h-screen bg-[#f3f5f7]">
+    <section class="min-h-screen">
+        <div class="grid min-h-screen md:grid-cols-[264px_1fr]">
+            {% include "partials/side_nav.html" with side_nav="account" %}
 
-        <div class="grid min-h-[calc(100vh-8rem)] md:grid-cols-[110px_1fr]">
-            {% include "partials/side_nav.html" with side_nav="profile" %}
+            <div class="min-w-0">
+                {% include "partials/top_nav.html" with top_nav="Profile" top_nav_subtitle="View your SmartResolve account details." %}
 
-            <section class="p-5 md:p-7">
-                <div class="grid items-start gap-6 xl:grid-cols-[310px_1fr]">
-                    <aside class="rounded-[30px] border border-slate-200/70 bg-white/90 p-7 text-center shadow-card">
-                        <div class="mx-auto mb-4 grid h-28 w-28 place-items-center rounded-full bg-gradient-to-br from-indigo-100 to-blue-200 text-4xl font-extrabold text-premierBlue shadow-card">
-                            {% if request.user.first_name %}
-                            {{ request.user.first_name|slice:":1" }}{{ request.user.last_name|slice:":1" }}
-                            {% else %}
-                            {{ request.user.email|slice:":1"|upper }}
-                            {% endif %}
-                        </div>
-
-                        <span class="mb-3 inline-block rounded-full bg-premierBlue px-3 py-2 text-xs font-bold text-white shadow-soft">Your Profile</span>
-                        <p class="text-sm text-slate-500">User Name</p>
-                        <h2 class="mt-1 text-4xl font-extrabold tracking-tight">
-                            {% if request.user.first_name or request.user.last_name %}
-                            {{ request.user.first_name }} {{ request.user.last_name }}
-                            {% else %}
-                            {{ request.user.email }}
-                            {% endif %}
-                        </h2>
-                        <span class="mt-4 inline-block rounded-full bg-yellow-100 px-3 py-2 text-xs font-extrabold text-yellow-800">
-                            {{ request.user.display_role }}
-                        </span>
-                    </aside>
-
-                    <section>
-                        <div class="grid gap-4 lg:grid-cols-3">
-                            <article class="relative overflow-hidden rounded-[22px] border border-slate-200/70 bg-white/90 p-6 shadow-card">
-                                <h3 class="text-5xl font-extrabold tracking-[-0.06em] text-sky-500">5</h3>
-                                <p class="mt-2 font-semibold text-slate-800">Current Tickets</p>
-                                <small class="mt-2 block text-slate-500">35.67%</small>
-                            </article>
-
-                            <article class="relative overflow-hidden rounded-[22px] border border-slate-200/70 bg-white/90 p-6 shadow-card">
-                                <h3 class="text-5xl font-extrabold tracking-[-0.06em] text-violet-500">2</h3>
-                                <p class="mt-2 font-semibold text-slate-800">Closed Tickets</p>
-                                <small class="mt-2 block text-slate-500">25%</small>
-                            </article>
-
-                            <article class="relative overflow-hidden rounded-[22px] border border-slate-200/70 bg-white/90 p-6 shadow-card">
-                                <h3 class="text-4xl font-extrabold tracking-[-0.06em] text-orange-500">1.5 hrs</h3>
-                                <p class="mt-2 font-semibold text-slate-800">Average Response Time</p>
-                                <small class="mt-2 block text-slate-500">Current support average</small>
-                            </article>
-                        </div>
-
-                        <section class="mt-5 rounded-[30px] border border-slate-200/70 bg-white/90 p-6 shadow-card">
-                            <h3 class="mb-5 border-b border-slate-200 pb-3 text-lg font-bold">Ticket Activity</h3>
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full border-collapse">
-                                    <thead>
-                                        <tr class="text-left text-xs font-bold uppercase tracking-[0.05em] text-slate-500">
-                                            <th class="px-2 py-3">Date</th>
-                                            <th class="px-2 py-3">Activity</th>
-                                            <th class="px-2 py-3">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="border-t border-slate-200/80">
-                                            <td class="px-2 py-4">03/31/2025</td>
-                                            <td class="px-2 py-4">Ticket closed</td>
-                                            <td class="px-2 py-4"><span class="inline-block rounded-full bg-amber-100 px-3 py-2 text-xs font-extrabold text-amber-800">Cancelled</span></td>
-                                        </tr>
-                                        <tr class="border-t border-slate-200/80">
-                                            <td class="px-2 py-4">03/31/2025</td>
-                                            <td class="px-2 py-4">Comment added</td>
-                                            <td class="px-2 py-4"><span class="inline-block rounded-full bg-emerald-100 px-3 py-2 text-xs font-extrabold text-emerald-700">Updated</span></td>
-                                        </tr>
-                                        <tr class="border-t border-slate-200/80">
-                                            <td class="px-2 py-4">03/31/2025</td>
-                                            <td class="px-2 py-4">New ticket raised</td>
-                                            <td class="px-2 py-4"><span class="inline-block rounded-full bg-rose-100 px-3 py-2 text-xs font-extrabold text-rose-700">Medium Priority</span></td>
-                                        </tr>
-                                        <tr class="border-t border-slate-200/80">
-                                            <td class="px-2 py-4">03/31/2025</td>
-                                            <td class="px-2 py-4">New ticket raised</td>
-                                            <td class="px-2 py-4"><span class="inline-block rounded-full bg-slate-200 px-3 py-2 text-xs font-extrabold text-slate-700">High Priority</span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                <div class="mx-auto max-w-[1560px] space-y-6 p-5 md:p-8">
+                    <div class="flex min-h-11 items-center border-b border-slate-300 pb-4"><p class="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Account overview</p></div>
+                    <div class="grid gap-4 xl:grid-cols-[0.85fr_1.15fr]">
+                        <aside class="border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="grid h-16 w-16 place-items-center bg-[#1769ff] text-4xl font-bold text-white shadow-[0_18px_42px_rgba(7,86,248,0.24)]">
+                                    {% if request.user.first_name %}
+                                    {{ request.user.first_name|slice:":1" }}{{ request.user.last_name|slice:":1" }}
+                                    {% else %}
+                                    {{ request.user.email|slice:":1"|upper }}
+                                    {% endif %}
+                                </div>
+                                <h2 class="mt-6 text-3xl font-bold tracking-tight text-slate-950">
+                                    {% if request.user.first_name or request.user.last_name %}
+                                    {{ request.user.first_name }} {{ request.user.last_name }}
+                                    {% else %}
+                                    {{ request.user.email }}
+                                    {% endif %}
+                                </h2>
+                                <p class="mt-2 break-all text-lg text-slate-500">{{ request.user.email }}</p>
+                                <span class="mt-5 bg-blue-50 px-5 py-3 text-sm font-black uppercase tracking-[0.16em] text-[#1769ff]">{{ request.user.display_role }}</span>
                             </div>
+                        </aside>
+
+                        <section class="border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
+                            <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                                <div>
+                                    <p class="text-sm font-black uppercase tracking-[0.22em] text-[#1769ff]">Account</p>
+                                    <h1 class="mt-3 text-4xl font-bold tracking-tight">Profile details</h1>
+                                </div>
+                                {% if request.user.is_active %}
+                                <span class="bg-emerald-50 px-5 py-3 text-sm font-bold text-emerald-700">Active</span>
+                                {% else %}
+                                <span class="bg-rose-50 px-5 py-3 text-sm font-bold text-rose-700">Inactive</span>
+                                {% endif %}
+                            </div>
+
+                            <dl class="mt-8 grid gap-4 md:grid-cols-2">
+                                <div class="border border-slate-200 bg-slate-50 p-5">
+                                    <dt class="text-sm font-bold uppercase tracking-[0.14em] text-slate-500">First Name</dt>
+                                    <dd class="mt-2 text-xl font-bold text-slate-950">{{ request.user.first_name|default:"Not set" }}</dd>
+                                </div>
+                                <div class="border border-slate-200 bg-slate-50 p-5">
+                                    <dt class="text-sm font-bold uppercase tracking-[0.14em] text-slate-500">Last Name</dt>
+                                    <dd class="mt-2 text-xl font-bold text-slate-950">{{ request.user.last_name|default:"Not set" }}</dd>
+                                </div>
+                                <div class="border border-slate-200 bg-slate-50 p-5 md:col-span-2">
+                                    <dt class="text-sm font-bold uppercase tracking-[0.14em] text-slate-500">Email Address</dt>
+                                    <dd class="mt-2 break-all text-xl font-bold text-slate-950">{{ request.user.email }}</dd>
+                                </div>
+                                <div class="border border-slate-200 bg-slate-50 p-5">
+                                    <dt class="text-sm font-bold uppercase tracking-[0.14em] text-slate-500">Role</dt>
+                                    <dd class="mt-2 text-xl font-bold text-slate-950">{{ request.user.display_role }}</dd>
+                                </div>
+                                <div class="border border-slate-200 bg-slate-50 p-5">
+                                    <dt class="text-sm font-bold uppercase tracking-[0.14em] text-slate-500">Staff Access</dt>
+                                    <dd class="mt-2 text-xl font-bold text-slate-950">{% if request.user.is_staff %}Enabled{% else %}Disabled{% endif %}</dd>
+                                </div>
+                            </dl>
                         </section>
-                    </section>
+                    </div>
                 </div>
-            </section>
+            </div>
         </div>
     </section>
 </main>

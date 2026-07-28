@@ -3,10 +3,13 @@
 # Module: Final Year Project
 
 from accounts.views import login_view, logout_view, profile_view
-from django.urls import path
+from django.urls import include, path
 
 urlpatterns = [
     path("login/", login_view, name="login"),
     path("logout/", logout_view, name="logout"),
+    # Dashboard routes live in their own app, but are mounted here rather
+    # than in the project's root urls.py.
+    path("dashboard/", include("dashboard.urls")),
     path("profile/", profile_view, name="profile"),
 ]

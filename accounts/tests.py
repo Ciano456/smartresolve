@@ -2,22 +2,37 @@
 # Student Number: x22109668
 # Module: Final Year Project
 
-from django.test import TestCase
+from unittest.mock import patch
+
+from django.core.cache import cache
+from django.test import TestCase, override_settings
 from accounts.models import User
+from admin_portal.models import AuditLog
 from django.contrib.auth.models import Group
 
+
+# Covers login, logout, the role based redirect after login, and the
+# login rate limiting from accounts/security.py.
 class AuthViewTests(TestCase):
     def setUp(self):
+        cache.clear()
         self.email = "testemail@gmail.com"
         self.password = "password123"
         self.wrong_password = "wrongpassword"
         self.user = User.objects.create_user(
-            email=self.email, 
+            email=self.email,
             password=self.password,
             first_name="Test1",
-            last_name="User1"
+            last_name="User1",
         )
-        
+        self.submitter_group = Group.objects.create(name="Submitter")
+        self.support_group = Group.objects.create(name="Support Staff")
+        self.user.groups.add(self.submitter_group)
+        self.support_user = User.objects.create_user(
+            email="support@test.com",
+            password=self.password,
+        )
+        self.support_user.groups.add(self.support_group)
 
     def test_login_page_loads_correctly(self):
         response = self.client.get("/accounts/login/")
@@ -25,18 +40,127 @@ class AuthViewTests(TestCase):
         self.assertTemplateUsed(response, "accounts/login.html")
 
     def test_login_with_invalid_credentials_stays_on_login(self):
-        response = self.client.post("/accounts/login/", {"email": self.email, "password": self.wrong_password})
+        response = self.client.post(
+            "/accounts/login/", {"email": self.email, "password": self.wrong_password}
+        )
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "accounts/login.html")
+        self.assertTrue(
+            AuditLog.objects.filter(
+                action=AuditLog.ACTION_LOGIN_FAILED,
+                target_repr=self.email,
+            ).exists()
+        )
 
     def test_login_view_with_valid_credentials(self):
-        response = self.client.post("/accounts/login/", {"email": self.email, "password": self.password})
+        response = self.client.post(
+            "/accounts/login/", {"email": self.email, "password": self.password}
+        )
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, "/accounts/profile/")
 
+    def test_login_with_missing_password_fails_without_server_error(self):
+        # Malformed login requests must fail safely and still produce an audit event.
+        response = self.client.post("/accounts/login/", {"email": self.email})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            AuditLog.objects.filter(
+                action=AuditLog.ACTION_LOGIN_FAILED,
+                target_repr=self.email,
+            ).exists()
+        )
+
+    @override_settings(
+        LOGIN_RATE_LIMIT_ATTEMPTS=3,
+        LOGIN_RATE_LIMIT_WINDOW_SECONDS=60,
+        LOGIN_RATE_LIMIT_BLOCK_SECONDS=60,
+    )
+    @patch("accounts.views.authenticate", return_value=None)
+    def test_repeated_failed_logins_are_rate_limited(self, mocked_authenticate):
+        # Authentication must stop once the configured failure threshold is reached.
+        credentials = {"email": self.email, "password": self.wrong_password}
+
+        for _ in range(4):
+            response = self.client.post("/accounts/login/", credentials)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(mocked_authenticate.call_count, 3)
+        self.assertTrue(
+            AuditLog.objects.filter(
+                action=AuditLog.ACTION_LOGIN_RATE_LIMITED,
+                target_repr=self.email,
+            ).exists()
+        )
+
+    @override_settings(
+        LOGIN_RATE_LIMIT_ATTEMPTS=3,
+        LOGIN_RATE_LIMIT_WINDOW_SECONDS=60,
+        LOGIN_RATE_LIMIT_BLOCK_SECONDS=60,
+    )
+    def test_successful_login_clears_previous_failures(self):
+        # A genuine successful login must reset earlier failures for that client.
+        invalid_credentials = {
+            "email": self.email,
+            "password": self.wrong_password,
+        }
+        for _ in range(2):
+            self.client.post("/accounts/login/", invalid_credentials)
+
+        response = self.client.post(
+            "/accounts/login/",
+            {"email": self.email, "password": self.password},
+        )
+        self.assertRedirects(response, "/accounts/profile/")
+        self.client.post("/accounts/logout/")
+
+        for _ in range(2):
+            self.client.post("/accounts/login/", invalid_credentials)
+        response = self.client.post(
+            "/accounts/login/",
+            {"email": self.email, "password": self.password},
+        )
+
+        self.assertRedirects(response, "/accounts/profile/")
+
+    @override_settings(
+        LOGIN_RATE_LIMIT_ATTEMPTS=3,
+        LOGIN_RATE_LIMIT_WINDOW_SECONDS=60,
+        LOGIN_RATE_LIMIT_BLOCK_SECONDS=60,
+    )
+    def test_login_throttle_is_separate_for_each_client_address(self):
+        # One blocked client address must not lock the account for every client.
+        invalid_credentials = {
+            "email": self.email,
+            "password": self.wrong_password,
+        }
+        for _ in range(3):
+            self.client.post(
+                "/accounts/login/",
+                invalid_credentials,
+                REMOTE_ADDR="192.0.2.10",
+            )
+
+        response = self.client.post(
+            "/accounts/login/",
+            {"email": self.email, "password": self.password},
+            REMOTE_ADDR="192.0.2.11",
+        )
+
+        self.assertRedirects(response, "/accounts/profile/")
+
+    def test_login_view_redirects_support_staff_to_dashboard(self):
+        response = self.client.post(
+            "/accounts/login/", {"email": "support@test.com", "password": self.password}
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, "/accounts/dashboard/")
+
     def test_logout_view(self):
         # Log in first so this test follows the real logout flow.
-        response = self.client.post("/accounts/login/", {"email": self.email, "password": self.password})
+        response = self.client.post(
+            "/accounts/login/", {"email": self.email, "password": self.password}
+        )
         response = self.client.post("/accounts/logout/")
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, "/accounts/login/")
@@ -45,7 +169,19 @@ class AuthViewTests(TestCase):
         response = self.client.get("/accounts/profile/")
         self.assertRedirects(response, "/accounts/login/?next=/accounts/profile/")
 
-class UserRolePropertyTests(TestCase): 
+    def test_dashboard_view_requires_login(self):
+        response = self.client.get("/accounts/dashboard/")
+        self.assertRedirects(response, "/accounts/login/")
+
+    def test_profile_view_loads_actual_profile_page(self):
+        self.client.force_login(self.user)
+        response = self.client.get("/accounts/profile/")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "accounts/profile.html")
+        self.assertContains(response, "Profile details")
+
+
+class UserRolePropertyTests(TestCase):
     def setUp(self):
         self.admin_group = Group.objects.create(name="Admin")
         self.submitter_group = Group.objects.create(name="Submitter")
@@ -71,8 +207,7 @@ class UserRolePropertyTests(TestCase):
         self.submitter_user.groups.add(self.submitter_group)
         self.support_user.groups.add(self.support_staff_group)
 
-
-    def test_admin_role_property(self): 
+    def test_admin_role_property(self):
         self.assertTrue(self.admin_user.is_admin_role)
 
     def test_submitter_role_property(self):

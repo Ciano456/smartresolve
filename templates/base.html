@@ -1,31 +1,19 @@
+{# Student Name: Cian O'Connor #}
+{# Student Number: x22109668 #}
+{# Module: Final Year Project #}
+
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Premier Life Sciences | SmartResolve{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        premierBlue: "#233893",
-                        premierBlueDeep: "#18296e",
-                        premierYellow: "#ffbd11",
-                    },
-                    boxShadow: {
-                        shell: "0 28px 70px rgba(24, 38, 89, 0.16)",
-                        card: "0 16px 36px rgba(24, 38, 89, 0.10)",
-                        soft: "0 10px 24px rgba(24, 38, 89, 0.08)",
-                    },
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
-<body class="min-h-screen bg-[linear-gradient(135deg,#dde6fb_0%,#eef3ff_50%,#dce6fb_100%)] text-slate-900">
+<body class="min-h-screen bg-[#f3f5f7] font-sans text-[#171a1f] antialiased selection:bg-[#1769ff] selection:text-white">
+    <a href="#main-content" class="fixed left-4 top-4 z-[100] -translate-y-24 bg-[#1769ff] px-4 py-3 text-sm font-bold text-white transition focus:translate-y-0">Skip to content</a>
     {% block body %}{% endblock %}
 </body>
 </html>

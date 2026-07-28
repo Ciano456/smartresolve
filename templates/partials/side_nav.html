@@ -1,17 +1,31 @@
-<aside class="flex flex-col justify-between gap-6 border-r border-slate-200/70 bg-white/60 p-4">
-    <nav class="flex flex-col gap-4">
-        <a href="{% url 'profile' %}" class="flex flex-col items-center gap-2 rounded-2xl px-3 py-4 text-center text-xs font-bold shadow-soft {% if side_nav == 'profile' %}bg-gradient-to-b from-sky-400 to-premierBlue text-white{% else %}bg-white/90 text-slate-500{% endif %}">
-            <span class="text-base">●</span>
-            <span>Profile</span>
-        </a>
-    </nav>
+{# Student Name: Cian O'Connor #}
+{# Student Number: x22109668 #}
+{# Module: Final Year Project #}
 
-    {% if user.is_authenticated %}
-    <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit" class="w-full rounded-full bg-gradient-to-r from-[#344cab] to-premierBlue px-4 py-3 text-sm font-bold text-white shadow-card">
-            Logout
-        </button>
-    </form>
-    {% endif %}
-</aside>
+{% load static %}
+<div class="bg-[#171a1f] text-slate-200 md:min-h-screen">
+    <details class="group md:hidden">
+        <summary class="flex min-h-16 cursor-pointer list-none items-center justify-between border-b border-white/10 px-5">
+            <span class="flex items-center gap-3">
+                <img src="{% static 'img/smartresolve-logo.png' %}" alt="" class="h-9 w-9 object-cover" aria-hidden="true">
+                <span class="text-sm font-black uppercase tracking-[0.2em] text-white">SmartResolve</span>
+            </span>
+            <span class="grid h-10 w-10 place-items-center border border-white/15 text-xl group-open:bg-white/10" aria-hidden="true">☰</span>
+        </summary>
+        <div class="border-b border-white/10 px-4 py-4">
+            {% include "partials/side_nav_links.html" %}
+        </div>
+    </details>
+
+    <aside class="sticky top-0 hidden min-h-screen flex-col border-r border-white/10 px-5 py-7 md:flex">
+        <a href="{% if user.is_admin_role or user.is_support_staff_role %}{% url 'dashboard' %}{% else %}{% url 'profile' %}{% endif %}" class="mb-8 flex items-center gap-3 border-b border-white/10 pb-7" aria-label="SmartResolve home">
+            <img src="{% static 'img/smartresolve-logo.png' %}" alt="SmartResolve logo" class="h-12 w-12 object-cover">
+            <span><strong class="block text-sm font-black uppercase tracking-[0.18em] text-white">SmartResolve</strong><small class="mt-1 block font-mono text-[10px] uppercase tracking-[0.2em] text-[#74a4ff]">Service operations</small></span>
+        </a>
+        {% include "partials/side_nav_links.html" %}
+        <div class="mt-auto border-t border-white/10 pt-5">
+            <p class="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500">System status</p>
+            <p class="mt-2 flex items-center gap-2 text-xs font-semibold text-slate-300"><span class="h-2 w-2 bg-emerald-400"></span>Operational</p>
+        </div>
+    </aside>
+</div>

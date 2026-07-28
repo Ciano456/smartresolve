@@ -6,6 +6,9 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from accounts.models import User
 from django import forms
 
+# These two forms plug the custom User model into Django's built in admin
+# user creation and editing screens, since the default forms assume a
+# username field that this project doesn't have.
 class CustomUserCreationForm(UserCreationForm):
 
     class Meta: 
@@ -14,8 +17,6 @@ class CustomUserCreationForm(UserCreationForm):
             "email", 
             "first_name", 
             "last_name", 
-            "password1", 
-            "password2"
             ]
     
         

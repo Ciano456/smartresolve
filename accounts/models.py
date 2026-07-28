@@ -9,6 +9,11 @@ from .manager import UserManager
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    # Custom user model so people log in with their email instead of a
+    # separate username. Roles (Admin, Submitter, Support Staff) are just
+    # Django groups rather than extra boolean fields on this model, so
+    # the group system that already ships with Django can be reused for
+    # permissions instead of building something new.
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
@@ -24,11 +29,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_admin_role(self):
         return self.groups.filter(name="Admin").exists()
-    
+
     @property
     def is_submitter_role(self):
         return self.groups.filter(name="Submitter").exists()
-    
+
     @property
     def is_support_staff_role(self):
         return self.groups.filter(name="Support Staff").exists()

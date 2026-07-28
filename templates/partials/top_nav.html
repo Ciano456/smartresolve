@@ -1,23 +1,21 @@
-<header class="flex flex-wrap items-center gap-4 border-b border-slate-200/70 bg-white/90 px-6 py-4">
-    <div class="flex items-center gap-3">
-        <div class="grid h-11 w-11 place-items-center rounded-full border border-slate-200 bg-gradient-to-br from-white to-slate-100 text-lg font-extrabold text-premierBlue shadow-soft">
-            ✺
-        </div>
-        <div class="leading-none">
-            <strong class="block text-xl font-extrabold tracking-tight">Premier</strong>
-            <span class="text-sm text-slate-500">Life Sciences</span>
-        </div>
-    </div>
+{# Student Name: Cian O'Connor #}
+{# Student Number: x22109668 #}
+{# Module: Final Year Project #}
 
-    <div class="flex items-center gap-4">
-        <span class="text-sm font-semibold text-slate-800">Tracking</span>
+<header class="border-b border-slate-200 bg-white px-5 py-5 md:px-8">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="border-l-4 border-[#1769ff] pl-4">
+            <p class="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">SmartResolve / Operations</p>
+            <h1 class="mt-1 text-2xl font-black tracking-[-0.025em] text-[#171a1f]">{{ top_nav|default:"Dashboard" }}</h1>
+            <p class="mt-1 text-sm text-slate-500">{{ top_nav_subtitle|default:"Review and manage service activity." }}</p>
+        </div>
         {% if user.is_authenticated %}
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="rounded-full bg-gradient-to-r from-[#344cab] to-premierBlue px-5 py-3 text-sm font-bold text-white shadow-card">
-                Logout
-            </button>
-        </form>
+        <div class="flex items-center gap-3 border border-slate-200 bg-[#f8f9fa] px-3 py-2">
+            <div class="grid h-9 w-9 place-items-center bg-[#1769ff] text-xs font-black text-white">
+                {% if request.user.first_name %}{{ request.user.first_name|slice:":1" }}{{ request.user.last_name|slice:":1" }}{% else %}{{ request.user.email|slice:":1"|upper }}{% endif %}
+            </div>
+            <div class="min-w-0 leading-tight"><p class="max-w-48 truncate text-sm font-bold text-slate-800">{% if request.user.first_name or request.user.last_name %}{{ request.user.first_name }} {{ request.user.last_name }}{% else %}{{ request.user.email }}{% endif %}</p><p class="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-[#1769ff]">{{ request.user.display_role }}</p></div>
+        </div>
         {% endif %}
     </div>
 </header>

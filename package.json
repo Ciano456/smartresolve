@@ -1,0 +1,29 @@
+{
+  "name": "smartresolve",
+  "version": "1.0.0",
+  "description": "SmartResolve is an internal support platform for managing incidents, service requests, change requests, access requests, and report or data requests.",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "npx @tailwindcss/cli -i ./static_src/src/input.css -o ./static/css/styles.css --minify",
+    "watch:css": "npx @tailwindcss/cli -i ./static_src/src/input.css -o ./static/css/styles.css --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ciano456/smartresolve.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ciano456/smartresolve/issues"
+  },
+  "homepage": "https://github.com/Ciano456/smartresolve#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.13",
+    "@tailwindcss/postcss": "^4.1.13",
+    "autoprefixer": "^10.4.27",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^4.2.2"
+  }
+}
