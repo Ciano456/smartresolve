@@ -96,6 +96,9 @@ STORAGES = {
 # loaded in an iframe on another site (clickjacking protection).
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = True
+# Railway's internal health checker reaches the container over HTTP even
+# though public traffic is terminated at HTTPS by Railway's proxy.
+SECURE_REDIRECT_EXEMPT = [r"^health/$"]
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_HSTS_SECONDS = positive_env_int("DJANGO_SECURE_HSTS_SECONDS", 31536000)
