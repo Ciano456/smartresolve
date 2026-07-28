@@ -7,32 +7,33 @@
 {% block title %}SmartResolve | {{ page_title }}{% endblock %}
 
 {% block body %}
-<main class="min-h-screen p-2 md:p-3">
-    <section class="mx-auto min-h-[calc(100vh-1rem)] w-full max-w-[1850px] overflow-hidden rounded-[34px] border border-white/50 bg-white/55 shadow-shell backdrop-blur">
-        <div class="grid min-h-[calc(100vh-1rem)] md:grid-cols-[280px_1fr]">
+<main id="main-content" class="min-h-screen bg-[#f3f5f7]">
+    <section class="min-h-screen">
+        <div class="grid min-h-screen md:grid-cols-[264px_1fr]">
             {% include "partials/side_nav.html" with side_nav="user_management" %}
 
             <div class="min-w-0">
                 {% include "partials/top_nav.html" with top_nav=page_title top_nav_subtitle="Maintain controlled internal access to SmartResolve." %}
 
-                <section class="p-5 md:p-8">
-                    <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-                        <a href="{% url 'user_list' %}" class="rounded-lg border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-soft transition hover:bg-slate-50">Back to Users</a>
-                        <span class="rounded-full bg-blue-50 px-5 py-3 text-sm font-bold text-[#0756f8]">{{ form_mode|title }} Mode</span>
+                <div class="mx-auto max-w-[1560px] space-y-6 p-5 md:p-8">
+                    <div class="flex min-h-11 items-center border-b border-slate-300 pb-4"><p class="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Account setup</p></div>
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <a href="{% url 'user_list' %}" class="border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-700 shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition hover:bg-slate-50">Back to Users</a>
+                        <span class="bg-blue-50 px-5 py-3 text-sm font-bold text-[#1769ff]">{{ form_mode|title }} Mode</span>
                     </div>
 
-                    <div class="grid gap-7 xl:grid-cols-[1fr_420px]">
-                        <form method="post" class="rounded-[28px] bg-white p-8 shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
+                    <div class="grid gap-4 xl:grid-cols-[1fr_420px]">
+                        <form method="post" class="border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
                             {% csrf_token %}
 
                             <div class="mb-8">
-                                <p class="text-sm font-black uppercase tracking-[0.22em] text-[#0756f8]">Admin Portal</p>
+                                <p class="text-sm font-black uppercase tracking-[0.22em] text-[#1769ff]">Admin Portal</p>
                                 <h1 class="mt-3 text-4xl font-bold tracking-tight">{{ form_heading }}</h1>
                                 <p class="mt-3 max-w-2xl text-slate-500">{{ flow_text }}</p>
                             </div>
 
                             {% if form.non_field_errors %}
-                            <div class="mb-6 rounded-xl bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">{{ form.non_field_errors }}</div>
+                            <div class="mb-6 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">{{ form.non_field_errors }}</div>
                             {% endif %}
 
                             <div class="grid gap-5 md:grid-cols-2">
@@ -78,7 +79,7 @@
                                     {% if form.role.errors %}<p class="mt-2 text-sm text-rose-600">{{ form.role.errors.0 }}</p>{% endif %}
                                 </div>
 
-                                <div class="rounded-2xl bg-slate-50 px-5 py-4">
+                                <div class="bg-slate-50 px-5 py-4">
                                     <label for="{{ form.is_active.id_for_label }}" class="flex items-center gap-3 text-sm font-bold text-slate-800">
                                         {{ form.is_active }}
                                         <span>Active Account</span>
@@ -88,35 +89,35 @@
                             </div>
 
                             <div class="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-                                <a href="{% url 'user_list' %}" class="inline-flex items-center justify-center rounded-lg border border-slate-300 px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50">Cancel</a>
-                                <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-[#0756f8] px-6 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-[#0046d6]">
+                                <a href="{% url 'user_list' %}" class="inline-flex items-center justify-center border border-slate-300 px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50">Cancel</a>
+                                <button type="submit" class="inline-flex items-center justify-center bg-[#1769ff] px-6 py-3 text-sm font-bold text-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition hover:bg-[#0f56d9]">
                                     {{ submit_label }}
                                 </button>
                             </div>
                         </form>
 
-                        <aside class="rounded-[28px] bg-white p-8 shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
+                        <aside class="border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
                             <p class="text-sm font-black uppercase tracking-[0.22em] text-slate-400">Access Rules</p>
                             <h2 class="mt-3 text-3xl font-bold">Single role assignment</h2>
                             <p class="mt-4 leading-7 text-slate-600">{{ hero_text }}</p>
 
                             <div class="mt-8 grid gap-4">
-                                <div class="rounded-2xl bg-blue-50 p-5">
-                                    <p class="text-sm font-bold uppercase tracking-[0.12em] text-[#0756f8]">Admin</p>
+                                <div class="bg-blue-50 p-5">
+                                    <p class="text-sm font-bold uppercase tracking-[0.12em] text-[#1769ff]">Admin</p>
                                     <p class="mt-2 text-slate-600">Can manage users and access administrator screens.</p>
                                 </div>
-                                <div class="rounded-2xl bg-violet-50 p-5">
+                                <div class="bg-violet-50 p-5">
                                     <p class="text-sm font-bold uppercase tracking-[0.12em] text-violet-700">Support Staff</p>
                                     <p class="mt-2 text-slate-600">Can review the ticket queue and staff ticket pages.</p>
                                 </div>
-                                <div class="rounded-2xl bg-emerald-50 p-5">
+                                <div class="bg-emerald-50 p-5">
                                     <p class="text-sm font-bold uppercase tracking-[0.12em] text-emerald-700">Submitter</p>
                                     <p class="mt-2 text-slate-600">Can create and track their own tickets.</p>
                                 </div>
                             </div>
                         </aside>
                     </div>
-                </section>
+                </div>
             </div>
         </div>
     </section>

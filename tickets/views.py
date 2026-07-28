@@ -210,6 +210,13 @@ def ticket_create(request):
             # nothing is available this just quietly does nothing, so
             # ticket creation always succeeds either way.
             prediction = create_prediction_for_ticket(ticket)
+            # FR11. If the AI triage above flagged this ticket as
+            # security related, that gets written to the audit log too,
+            # separately from the normal "ticket created" entry, so it
+            # shows up on the FR10 security dashboard straight away. The
+            # message says whichever signal caused the flag, the matched
+            # keywords if there were any, or just "model confidence" if
+            # only the model's score cleared the threshold.
             if prediction is not None and prediction.is_security_flagged:
                 signal = prediction.matched_keywords or "model confidence"
                 record_audit_log(

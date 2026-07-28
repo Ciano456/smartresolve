@@ -12,7 +12,8 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
-<body class="min-h-screen bg-[#eef3f9] text-slate-950 antialiased">
+<body class="min-h-screen bg-[#f3f5f7] font-sans text-[#171a1f] antialiased selection:bg-[#1769ff] selection:text-white">
+    <a href="#main-content" class="fixed left-4 top-4 z-[100] -translate-y-24 bg-[#1769ff] px-4 py-3 text-sm font-bold text-white transition focus:translate-y-0">Skip to content</a>
     {% block body %}{% endblock %}
 </body>
 </html>

@@ -2,6 +2,13 @@
 # Student Number: x22109668
 # Module: Final Year Project
 
+"""
+Shared helpers for turning raw events into the severity and flagged
+fields on AuditLog (FR10/FR11). Kept separate from audit.py itself so the
+"how severe is this" decisions live in one place and can be reused by
+both normal audit logging and the FR8 security triage flow.
+"""
+
 from __future__ import annotations
 
 import ipaddress
@@ -11,6 +18,10 @@ from django.http import HttpRequest
 
 from admin_portal.models import AuditLog
 
+# These lists back the security ticket severity check below. A keyword
+# match on something like ransomware or a confirmed breach is treated as
+# more serious than a general unauthorised access mention, so the two are
+# kept as separate sets rather than one flat list.
 CRITICAL_KEYWORDS = {"breach", "compromised", "credential theft", "ransomware"}
 HIGH_KEYWORDS = {
     "fraud",
@@ -24,6 +35,11 @@ HIGH_KEYWORDS = {
     "virus",
 }
 
+# Default severity and whether an action counts as "flagged" for the
+# security dashboard, keyed by AuditLog action type. Anything not listed
+# here falls back to low severity and not flagged, since most audit
+# entries (a ticket comment, a routine status change) are not security
+# events at all.
 AUDIT_EVENT_DEFAULTS = {
     AuditLog.ACTION_LOGIN_FAILED: (AuditLog.SEVERITY_LOW, False),
     AuditLog.ACTION_LOGIN_RATE_LIMITED: (AuditLog.SEVERITY_HIGH, True),
@@ -34,6 +50,9 @@ AUDIT_EVENT_DEFAULTS = {
 
 
 def _valid_ip_address(value: str) -> str | None:
+    # Confirms the value is actually a real IPv4 or IPv6 address before
+    # it gets stored. A malformed or spoofed header should never end up
+    # saved as if it were a genuine client address.
     try:
         return str(ipaddress.ip_address(value.strip()))
     except ValueError:
@@ -45,6 +64,13 @@ def get_client_ip(request: HttpRequest | None) -> str | None:
     if request is None:
         return None
     if settings.TRUST_PROXY_HEADERS:
+        # Only trust the X-Forwarded-For header if the deployment is
+        # actually sitting behind a proxy that sets it honestly, for
+        # example Railway. The header can list several addresses if the
+        # request passed through more than one proxy, so each candidate
+        # is checked until a valid one turns up. Without TRUST_PROXY_HEADERS
+        # set, this header is ignored completely, since anyone could send
+        # a fake one directly.
         forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
         for candidate in forwarded_for.split(","):
             address = _valid_ip_address(candidate)
@@ -54,6 +80,8 @@ def get_client_ip(request: HttpRequest | None) -> str | None:
 
 
 def audit_event_defaults(action: str) -> tuple[str, bool]:
+    # Used by record_audit_log() in audit.py so callers do not have to
+    # pass a severity and flagged value in every single call site.
     return AUDIT_EVENT_DEFAULTS.get(action, (AuditLog.SEVERITY_LOW, False))
 
 
@@ -61,6 +89,14 @@ def security_ticket_severity(
     matched_keywords: str,
     security_confidence: float | None,
 ) -> str:
+    # Decides how serious a security flagged ticket is, for the dashboard
+    # and the audit trail. Keyword matches are checked first since they
+    # are the most explainable signal, a ticket that mentions ransomware
+    # is always treated as critical regardless of what the model thinks.
+    # If no strong keyword fired, a high model confidence still counts as
+    # high severity. Anything flagged but without a strong keyword or
+    # high confidence still gets medium severity rather than being missed
+    # entirely.
     keywords = {
         keyword.strip().casefold()
         for keyword in matched_keywords.split(",")

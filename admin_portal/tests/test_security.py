@@ -25,6 +25,9 @@ from tickets.models import (
 )
 
 class SecurityDashboardTests(TestCase):
+    # Covers FR10: who can reach the security dashboard, and whether the
+    # numbers and records it shows actually match what is in the
+    # database.
     def setUp(self) -> None:
         admin_group = Group.objects.create(name="Admin")
         support_group = Group.objects.create(name="Support Staff")
