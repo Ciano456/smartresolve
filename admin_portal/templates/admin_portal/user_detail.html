@@ -7,31 +7,30 @@
 {% block title %}SmartResolve | User Detail{% endblock %}
 
 {% block body %}
-<main id="main-content" class="min-h-screen bg-[#f3f5f7]">
-    <section class="min-h-screen">
-        <div class="grid min-h-screen md:grid-cols-[264px_1fr]">
+<main class="min-h-screen p-2 md:p-3">
+    <section class="mx-auto min-h-[calc(100vh-1rem)] w-full max-w-[1850px] overflow-hidden rounded-[34px] border border-white/50 bg-white/55 shadow-shell backdrop-blur">
+        <div class="grid min-h-[calc(100vh-1rem)] md:grid-cols-[280px_1fr]">
             {% include "partials/side_nav.html" with side_nav="user_management" %}
 
             <div class="min-w-0">
                 {% include "partials/top_nav.html" with top_nav="User Detail" top_nav_subtitle="Review this account's role and activation status." %}
 
-                <div class="mx-auto max-w-[1560px] space-y-6 p-5 md:p-8">
-                    <div class="flex min-h-11 items-center border-b border-slate-300 pb-4"><p class="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Account record</p></div>
+                <section class="p-5 md:p-8">
                     <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                        <a href="{% url 'user_list' %}" class="inline-flex items-center justify-center gap-3 border border-slate-200 bg-white px-6 py-4 text-base font-bold text-[#1769ff] shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition hover:bg-blue-50">
+                        <a href="{% url 'user_list' %}" class="inline-flex items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white px-6 py-4 text-base font-bold text-[#0756f8] shadow-soft transition hover:bg-blue-50">
                             <span class="text-2xl" aria-hidden="true">←</span>
                             Back to User List
                         </a>
 
                         <div class="flex flex-wrap gap-4">
-                            <a href="{% url 'user_edit' managed_user.id %}" class="inline-flex items-center justify-center gap-3 border border-blue-200 bg-white px-6 py-4 text-base font-bold text-[#1769ff] shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition hover:bg-blue-50">
+                            <a href="{% url 'user_edit' managed_user.id %}" class="inline-flex items-center justify-center gap-3 rounded-xl border border-blue-200 bg-white px-6 py-4 text-base font-bold text-[#0756f8] shadow-soft transition hover:bg-blue-50">
                                 <span class="text-2xl" aria-hidden="true">⌁</span>
                                 Edit User
                             </a>
                             {% if managed_user.is_active %}
                             <form method="post" action="{% url 'user_deactivate' managed_user.id %}">
                                 {% csrf_token %}
-                                <button type="submit" class="inline-flex items-center justify-center gap-3 border border-rose-200 bg-white px-6 py-4 text-base font-bold text-rose-600 shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition hover:bg-rose-50">
+                                <button type="submit" class="inline-flex items-center justify-center gap-3 rounded-xl border border-rose-200 bg-white px-6 py-4 text-base font-bold text-rose-600 shadow-soft transition hover:bg-rose-50">
                                     <span class="text-2xl" aria-hidden="true">⌧</span>
                                     Deactivate User
                                 </button>
@@ -39,7 +38,7 @@
                             {% else %}
                             <form method="post" action="{% url 'user_reactivate' managed_user.id %}">
                                 {% csrf_token %}
-                                <button type="submit" class="inline-flex items-center justify-center gap-3 border border-emerald-200 bg-white px-6 py-4 text-base font-bold text-emerald-700 shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition hover:bg-emerald-50">
+                                <button type="submit" class="inline-flex items-center justify-center gap-3 rounded-xl border border-emerald-200 bg-white px-6 py-4 text-base font-bold text-emerald-700 shadow-soft transition hover:bg-emerald-50">
                                     <span class="text-2xl" aria-hidden="true">✓</span>
                                     Reactivate User
                                 </button>
@@ -48,9 +47,9 @@
                         </div>
                     </div>
 
-                    <div class="grid gap-4 xl:grid-cols-[0.9fr_0.95fr_1.05fr]">
-                        <aside class="bg-white px-7 py-10 text-center shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
-                            <div class="mx-auto grid h-16 w-16 place-items-center bg-[#1769ff] text-4xl font-bold text-white">
+                    <div class="grid gap-7 xl:grid-cols-[0.9fr_0.95fr_1.05fr]">
+                        <aside class="rounded-[24px] bg-white px-7 py-10 text-center shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
+                            <div class="mx-auto grid h-32 w-32 place-items-center rounded-full bg-[#0756f8] text-5xl font-bold text-white">
                                 {% if managed_user.first_name %}
                                 {{ managed_user.first_name|slice:":1" }}{{ managed_user.last_name|slice:":1" }}
                                 {% else %}
@@ -65,19 +64,19 @@
                                 {% endif %}
                             </h1>
                             <p class="mt-4 break-words text-lg font-medium text-slate-500">{{ managed_user.email }}</p>
-                            <span class="mt-7 inline-flex bg-blue-50 px-6 py-3 text-sm font-bold text-[#1769ff]">{{ managed_user.display_role }}</span>
+                            <span class="mt-7 inline-flex rounded-full bg-blue-50 px-6 py-3 text-sm font-bold text-[#0756f8]">{{ managed_user.display_role }}</span>
                         </aside>
 
-                        <article class="flex min-h-60 items-center gap-4 border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
+                        <article class="flex min-h-60 items-center gap-7 rounded-[24px] bg-white p-8 shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
                             {% if managed_user.is_active %}
-                            <div class="grid h-12 w-12 shrink-0 place-items-center bg-emerald-50 text-4xl text-emerald-600">✓</div>
+                            <div class="grid h-24 w-24 shrink-0 place-items-center rounded-full bg-emerald-50 text-5xl text-emerald-600">✓</div>
                             <div>
                                 <p class="text-sm font-black uppercase tracking-[0.28em] text-slate-500">Account Status</p>
                                 <h2 class="mt-5 text-4xl font-bold text-emerald-600">Active</h2>
                                 <p class="mt-4 max-w-sm text-lg leading-8 text-slate-500">This account can sign in and use assigned role permissions.</p>
                             </div>
                             {% else %}
-                            <div class="grid h-12 w-12 shrink-0 place-items-center bg-rose-50 text-4xl text-rose-600">!</div>
+                            <div class="grid h-24 w-24 shrink-0 place-items-center rounded-full bg-rose-50 text-5xl text-rose-600">!</div>
                             <div>
                                 <p class="text-sm font-black uppercase tracking-[0.28em] text-slate-500">Account Status</p>
                                 <h2 class="mt-5 text-4xl font-bold text-rose-600">Inactive</h2>
@@ -86,47 +85,47 @@
                             {% endif %}
                         </article>
 
-                        <article class="flex min-h-60 items-center gap-4 border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
-                            <div class="grid h-12 w-12 shrink-0 place-items-center bg-blue-50 text-4xl text-[#1769ff]">⌾</div>
+                        <article class="flex min-h-60 items-center gap-7 rounded-[24px] bg-white p-8 shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
+                            <div class="grid h-24 w-24 shrink-0 place-items-center rounded-full bg-blue-50 text-5xl text-[#0756f8]">⌾</div>
                             <div>
                                 <p class="text-sm font-black uppercase tracking-[0.28em] text-slate-500">Role</p>
-                                <h2 class="mt-5 text-4xl font-bold text-[#1769ff]">{{ managed_user.display_role }}</h2>
+                                <h2 class="mt-5 text-4xl font-bold text-[#0756f8]">{{ managed_user.display_role }}</h2>
                                 <p class="mt-4 max-w-sm text-lg leading-8 text-slate-500">Role checks are enforced by the accounts decorators.</p>
                             </div>
                         </article>
                     </div>
 
-                    <section class="mt-9 border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
+                    <section class="mt-9 rounded-[24px] bg-white p-8 shadow-[0_18px_48px_rgba(15,23,42,0.10)]">
                         <h2 class="text-3xl font-black tracking-tight">Account Details</h2>
                         <div class="mt-6 h-px bg-slate-200"></div>
 
                         <dl class="mt-7 grid gap-6 md:grid-cols-2">
-                            <div class="flex items-center gap-6 bg-slate-50 p-6">
-                                <div class="grid h-16 w-16 shrink-0 place-items-center border border-blue-100 bg-blue-50 text-3xl text-[#1769ff]">○</div>
+                            <div class="flex items-center gap-6 rounded-2xl bg-slate-50 p-6">
+                                <div class="grid h-16 w-16 shrink-0 place-items-center rounded-xl border border-blue-100 bg-blue-50 text-3xl text-[#0756f8]">○</div>
                                 <div>
                                     <dt class="text-sm font-black uppercase tracking-[0.18em] text-slate-500">First Name</dt>
                                     <dd class="mt-2 text-2xl font-bold text-slate-950">{{ managed_user.first_name|default:"Not set" }}</dd>
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-6 bg-slate-50 p-6">
-                                <div class="grid h-16 w-16 shrink-0 place-items-center border border-blue-100 bg-blue-50 text-3xl text-[#1769ff]">○</div>
+                            <div class="flex items-center gap-6 rounded-2xl bg-slate-50 p-6">
+                                <div class="grid h-16 w-16 shrink-0 place-items-center rounded-xl border border-blue-100 bg-blue-50 text-3xl text-[#0756f8]">○</div>
                                 <div>
                                     <dt class="text-sm font-black uppercase tracking-[0.18em] text-slate-500">Last Name</dt>
                                     <dd class="mt-2 text-2xl font-bold text-slate-950">{{ managed_user.last_name|default:"Not set" }}</dd>
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-6 bg-slate-50 p-6">
-                                <div class="grid h-16 w-16 shrink-0 place-items-center border border-blue-100 bg-blue-50 text-3xl text-[#1769ff]">▣</div>
+                            <div class="flex items-center gap-6 rounded-2xl bg-slate-50 p-6">
+                                <div class="grid h-16 w-16 shrink-0 place-items-center rounded-xl border border-blue-100 bg-blue-50 text-3xl text-[#0756f8]">▣</div>
                                 <div>
                                     <dt class="text-sm font-black uppercase tracking-[0.18em] text-slate-500">Staff Access</dt>
                                     <dd class="mt-2 text-2xl font-bold {% if managed_user.is_staff %}text-emerald-600{% else %}text-slate-950{% endif %}">{{ managed_user.is_staff|yesno:"Yes,No" }}</dd>
                                 </div>
                             </div>
 
-                            <div class="flex items-center gap-6 bg-slate-50 p-6">
-                                <div class="grid h-16 w-16 shrink-0 place-items-center border border-blue-100 bg-blue-50 text-3xl text-[#1769ff]">▦</div>
+                            <div class="flex items-center gap-6 rounded-2xl bg-slate-50 p-6">
+                                <div class="grid h-16 w-16 shrink-0 place-items-center rounded-xl border border-blue-100 bg-blue-50 text-3xl text-[#0756f8]">▦</div>
                                 <div>
                                     <dt class="text-sm font-black uppercase tracking-[0.18em] text-slate-500">Joined</dt>
                                     <dd class="mt-2 text-2xl font-bold text-slate-950">{{ managed_user.date_joined|date:"d M Y" }}</dd>
@@ -134,7 +133,7 @@
                             </div>
                         </dl>
                     </section>
-                </div>
+                </section>
             </div>
         </div>
     </section>

@@ -100,8 +100,6 @@ class TicketAIIntegrationTests(TestCase):
 
     @patch("tickets.views.create_prediction_for_ticket")
     def test_security_prediction_creates_flagged_audit_event(self, prediction_service):
-        # A ticket flagged by FR8 triage should also produce a flagged,
-        # correctly scored FR11 audit event with the request's IP saved.
         prediction_service.return_value = SimpleNamespace(
             is_security_flagged=True,
             matched_keywords="ransomware",

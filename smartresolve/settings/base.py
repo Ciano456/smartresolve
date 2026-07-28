@@ -55,10 +55,6 @@ def optional_probability_env_float(name: str) -> float | None:
 
 
 def boolean_env(name: str, default: bool = False) -> bool:
-    # A simple helper for settings that are just on or off, like
-    # TRUST_PROXY_HEADERS below. Accepts a few common ways of writing
-    # true in an environment variable rather than requiring an exact
-    # match, since these get set by hand in Railway or a .env file.
     return os.getenv(name, str(default)).strip().lower() in {"1", "true", "yes", "on"}
 
 
@@ -102,12 +98,6 @@ AI_SECURITY_MODEL_PATH = Path(
 # tuned to", see ml/predictor.py. Setting this explicitly overrides that
 # without needing to retrain the model.
 AI_SECURITY_THRESHOLD = optional_probability_env_float("AI_SECURITY_THRESHOLD")
-# Whether to trust the X-Forwarded-For header when working out a
-# request's real IP address for the audit log, see
-# admin_portal/security.py. This should only be turned on when the app
-# is actually running behind a proxy that sets this header honestly, for
-# example on Railway, since otherwise anyone could fake their own IP by
-# just sending the header themselves.
 TRUST_PROXY_HEADERS = boolean_env("TRUST_PROXY_HEADERS")
 
 # How the login throttle in accounts/security.py behaves: how many failed

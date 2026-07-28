@@ -12,9 +12,6 @@ from admin_portal.security import get_client_ip, security_ticket_severity
 
 
 class ClientIPTests(TestCase):
-    # Covers get_client_ip and record_audit_log's IP capture, including
-    # the TRUST_PROXY_HEADERS setting deciding whether a forwarded
-    # header is trusted or ignored.
     def setUp(self) -> None:
         self.factory = RequestFactory()
 
@@ -67,9 +64,6 @@ class ClientIPTests(TestCase):
 
 
 class SecurityPolicyTests(TestCase):
-    # Covers security_ticket_severity, checking keyword matches win over
-    # a plain confidence score, and that a decent confidence score alone
-    # is still enough to raise the severity.
     def test_critical_keyword_sets_critical_severity(self):
         self.assertEqual(
             security_ticket_severity("ransomware, phishing", 0.4),

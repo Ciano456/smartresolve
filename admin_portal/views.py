@@ -173,10 +173,6 @@ def admin_dashboard(request: HttpRequest) -> HttpResponse:
 
 @admin_required(forbidden=True)
 def security_dashboard(request: HttpRequest) -> HttpResponse:
-    # FR10. The severity filter comes straight from the query string, for
-    # example ?severity=high, and gets validated inside
-    # build_security_dashboard_context rather than here, so the view
-    # itself stays a thin wrapper around that function.
     return render(
         request,
         "admin_portal/security_dashboard.html",

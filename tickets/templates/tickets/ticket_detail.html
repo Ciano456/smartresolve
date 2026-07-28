@@ -7,51 +7,50 @@
 {% block title %}SmartResolve | Staff Ticket Detail{% endblock %}
 
 {% block body %}
-<main id="main-content" class="min-h-screen bg-[#f3f5f7]">
-    <section class="min-h-screen">
-        <div class="grid min-h-screen md:grid-cols-[264px_1fr]">
+<main class="min-h-screen p-2 md:p-3">
+    <section class="mx-auto min-h-[calc(100vh-1rem)] w-full max-w-[1850px] overflow-hidden rounded-[26px] border border-slate-200 bg-[#f7faff] shadow-shell">
+        <div class="grid min-h-[calc(100vh-1rem)] md:grid-cols-[280px_1fr]">
             {% include "partials/side_nav.html" with side_nav="all_tickets" %}
             <div class="min-w-0">
                 {% include "partials/top_nav.html" with top_nav=ticket.ticket_number top_nav_subtitle="Staff view of the selected support request." %}
 
-                <div class="mx-auto max-w-[1560px] space-y-6 p-5 md:p-8">
-                    <div class="flex min-h-11 items-center border-b border-slate-300 pb-4"><p class="font-mono text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">Staff workspace</p></div>
-                    <a href="{% url 'ticket_list' %}" class="mb-5 inline-flex border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition hover:bg-slate-50">
+                <section class="p-5 md:p-7">
+                    <a href="{% url 'ticket_list' %}" class="mb-5 inline-flex rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 shadow-soft transition hover:bg-slate-50">
                         Back to All Tickets
                     </a>
 
                     <div class="grid gap-6 xl:grid-cols-[1fr_390px]">
                         <section class="grid gap-6">
-                            <article class="border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
+                            <article class="rounded-2xl bg-white p-6 shadow-card">
                                 <div class="flex flex-wrap items-start justify-between gap-4">
                                     <div>
-                                        <p class="text-sm font-bold uppercase tracking-[0.18em] text-[#1769ff]">{{ ticket.ticket_number }}</p>
+                                        <p class="text-sm font-bold uppercase tracking-[0.18em] text-[#0756f8]">{{ ticket.ticket_number }}</p>
                                         <h2 class="mt-2 text-3xl font-bold tracking-tight">{{ ticket.title }}</h2>
                                     </div>
-                                    <span class="bg-blue-50 px-4 py-2 text-sm font-bold text-[#1769ff]">{{ ticket.ticket_status.name }}</span>
+                                    <span class="rounded-full bg-blue-50 px-4 py-2 text-sm font-bold text-[#0756f8]">{{ ticket.ticket_status.name }}</span>
                                 </div>
                                 <p class="mt-5 whitespace-pre-line leading-7 text-slate-600">{{ ticket.description }}</p>
 
                                 <dl class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                                    <div class="bg-slate-50 p-4"><dt class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Submitter</dt><dd class="mt-2 font-bold">{{ ticket.submitter }}</dd></div>
-                                    <div class="bg-slate-50 p-4"><dt class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Assigned</dt><dd class="mt-2 font-bold">{{ ticket.assigned_to|default:"Unassigned" }}</dd></div>
-                                    <div class="bg-slate-50 p-4"><dt class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Priority</dt><dd class="mt-2 font-bold">{{ ticket.ticket_priority.name }}</dd></div>
-                                    <div class="bg-slate-50 p-4"><dt class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">System</dt><dd class="mt-2 font-bold">{{ ticket.ticket_system.name }}</dd></div>
+                                    <div class="rounded-xl bg-slate-50 p-4"><dt class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Submitter</dt><dd class="mt-2 font-bold">{{ ticket.submitter }}</dd></div>
+                                    <div class="rounded-xl bg-slate-50 p-4"><dt class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Assigned</dt><dd class="mt-2 font-bold">{{ ticket.assigned_to|default:"Unassigned" }}</dd></div>
+                                    <div class="rounded-xl bg-slate-50 p-4"><dt class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Priority</dt><dd class="mt-2 font-bold">{{ ticket.ticket_priority.name }}</dd></div>
+                                    <div class="rounded-xl bg-slate-50 p-4"><dt class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">System</dt><dd class="mt-2 font-bold">{{ ticket.ticket_system.name }}</dd></div>
                                 </dl>
 
-                                <section class="mt-7 border {% if category_prediction.is_security_flagged %}border-rose-300 bg-rose-50{% else %}border-blue-200 bg-blue-50{% endif %} p-5">
+                                <section class="mt-7 rounded-2xl border {% if category_prediction.is_security_flagged %}border-rose-300 bg-rose-50{% else %}border-blue-200 bg-blue-50{% endif %} p-5">
                                     <div class="flex flex-wrap items-start justify-between gap-3">
                                         <div>
-                                            <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Suggested category</p>
+                                            <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">AI-assisted category</p>
                                             <p class="mt-2 text-lg font-bold text-slate-900">{% if category_prediction %}{{ category_prediction.effective_category_display }}{% else %}Uncategorised{% endif %}</p>
                                             {% if category_prediction.predicted_category %}
                                             <p class="mt-1 text-sm text-slate-600">Suggested {{ category_prediction.get_predicted_category_display }} at {{ category_prediction.confidence|floatformat:2 }} confidence.</p>
                                             {% else %}
-                                            <p class="mt-1 text-sm text-slate-600"><span class="sr-only">No AI category is available. </span>No category suggestion is available. Select one manually.</p>
+                                            <p class="mt-1 text-sm text-slate-600">No AI category is available. Select a category manually.</p>
                                             {% endif %}
                                         </div>
                                         {% if category_prediction.is_security_flagged %}
-                                        <span class="bg-rose-600 px-3 py-2 text-xs font-bold text-white">Security review required</span>
+                                        <span class="rounded-full bg-rose-600 px-3 py-2 text-xs font-bold text-white">Security review required</span>
                                         {% endif %}
                                     </div>
                                     <form method="post" action="{% url 'ticket_category_override' ticket.id %}" class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -63,12 +62,12 @@
                                             <div class="mt-2 text-sm font-semibold text-rose-600">{{ category_override_form.staff_override_category.errors }}</div>
                                             {% endif %}
                                         </div>
-                                        <button type="submit" class="inline-flex justify-center bg-slate-900 px-5 py-3 font-bold text-white transition hover:bg-slate-700">Save category</button>
+                                        <button type="submit" class="inline-flex justify-center rounded-xl bg-slate-900 px-5 py-3 font-bold text-white transition hover:bg-slate-700">Save category</button>
                                     </form>
                                 </section>
 
                                 {% if ticket.resolution_summary or ticket.cancellation_reason %}
-                                <section class="mt-7 border border-slate-200 bg-slate-50 p-5">
+                                <section class="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-5">
                                     {% if ticket.resolution_summary %}
                                     <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Resolution Summary</p>
                                     <p class="mt-2 whitespace-pre-line text-slate-700">{{ ticket.resolution_summary }}</p>
@@ -80,12 +79,12 @@
                                 </section>
                                 {% endif %}
 
-                                <form method="post" class="mt-7 border border-slate-200 bg-slate-50 p-5">
+                                <form method="post" class="mt-7 rounded-2xl border border-slate-200 bg-slate-50 p-5">
                                     {% csrf_token %}
                                     <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                                         <div class="w-full lg:max-w-sm">
                                             <label for="ticket_status" class="block text-xs font-bold uppercase tracking-[0.12em] text-slate-500">Ticket Status</label>
-                                            <select id="ticket_status" name="ticket_status" class="mt-2 w-full border border-slate-300 bg-white px-4 py-3 text-base font-semibold text-slate-800 shadow-sm focus:border-[#1769ff] focus:outline-none focus:ring-2 focus:ring-[#1769ff]/20">
+                                            <select id="ticket_status" name="ticket_status" class="mt-2 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base font-semibold text-slate-800 shadow-sm focus:border-[#0756f8] focus:outline-none focus:ring-2 focus:ring-[#0756f8]/20">
                                                 {% for status in status_options %}
                                                 <option value="{{ status.id }}" {% if status.id == ticket.ticket_status.id %}selected{% endif %}>{{ status.name }}</option>
                                                 {% endfor %}
@@ -94,13 +93,13 @@
                                             <p class="mt-2 text-sm font-semibold text-rose-600">{{ status_error }}</p>
                                             {% endif %}
                                         </div>
-                                        <button type="submit" class="inline-flex items-center justify-center bg-[#1769ff] px-6 py-3 text-base font-bold text-white shadow-[0_14px_32px_rgba(7,86,248,0.24)] transition hover:bg-[#0f56d9]">
+                                        <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-[#0756f8] px-6 py-3 text-base font-bold text-white shadow-[0_14px_32px_rgba(7,86,248,0.24)] transition hover:bg-[#0046d6]">
                                             Update Status
                                         </button>
                                     </div>
                                 </form>
 
-                                <form method="post" action="{% url 'ticket_assignment_update' ticket.id %}" class="mt-4 border border-slate-200 bg-slate-50 p-5">
+                                <form method="post" action="{% url 'ticket_assignment_update' ticket.id %}" class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
                                     {% csrf_token %}
                                     <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                                         <div class="w-full lg:max-w-sm">
@@ -110,13 +109,13 @@
                                             <div class="mt-2 text-sm font-semibold text-rose-600">{{ assignment_form.assigned_to.errors }}</div>
                                             {% endif %}
                                         </div>
-                                        <button type="submit" class="inline-flex items-center justify-center bg-slate-900 px-6 py-3 text-base font-bold text-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition hover:bg-slate-700">
+                                        <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-6 py-3 text-base font-bold text-white shadow-soft transition hover:bg-slate-700">
                                             Update Assignment
                                         </button>
                                     </div>
                                 </form>
 
-                                <form method="post" action="{% url 'ticket_priority_update' ticket.id %}" class="mt-4 border border-slate-200 bg-slate-50 p-5">
+                                <form method="post" action="{% url 'ticket_priority_update' ticket.id %}" class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
                                     {% csrf_token %}
                                     <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                                         <div class="w-full lg:max-w-sm">
@@ -126,23 +125,23 @@
                                             <div class="mt-2 text-sm font-semibold text-rose-600">{{ priority_form.ticket_priority.errors }}</div>
                                             {% endif %}
                                         </div>
-                                        <button type="submit" class="inline-flex items-center justify-center bg-slate-900 px-6 py-3 text-base font-bold text-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition hover:bg-slate-700">
+                                        <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-slate-900 px-6 py-3 text-base font-bold text-white shadow-soft transition hover:bg-slate-700">
                                             Update Priority
                                         </button>
                                     </div>
                                 </form>
                             </article>
 
-                            <article class="border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
+                            <article class="rounded-2xl bg-white p-6 shadow-card">
                                 <h2 class="text-2xl font-bold">Comments</h2>
                                 <div class="mt-5 grid gap-4">
                                     {% for comment in comments %}
-                                    <div class="border border-slate-200 bg-slate-50 p-4">
+                                    <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
                                         <div class="flex flex-wrap justify-between gap-2">
                                             <div class="flex flex-wrap items-center gap-3">
                                                 <p class="font-bold text-slate-900">{{ comment.author|default:"Deleted user" }}</p>
                                                 {% if comment.is_internal %}
-                                                <span class="bg-amber-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-amber-800">Internal</span>
+                                                <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-amber-800">Internal</span>
                                                 {% endif %}
                                             </div>
                                             <p class="text-sm text-slate-500">{{ comment.created_at|date:"d M Y H:i" }}</p>
@@ -150,16 +149,16 @@
                                         <p class="mt-3 whitespace-pre-line text-slate-600">{{ comment.body }}</p>
                                     </div>
                                     {% empty %}
-                                    <p class="bg-slate-50 p-4 text-slate-500">No comments yet.</p>
+                                    <p class="rounded-xl bg-slate-50 p-4 text-slate-500">No comments yet.</p>
                                     {% endfor %}
                                 </div>
                             </article>
 
-                            <article class="border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
+                            <article class="rounded-2xl bg-white p-6 shadow-card">
                                 <h2 class="text-2xl font-bold">Ticket History</h2>
                                 <div class="mt-5 grid gap-4">
                                     {% for history in history_entries %}
-                                    <div class="border border-slate-200 bg-slate-50 p-4">
+                                    <div class="rounded-xl border border-slate-200 bg-slate-50 p-4">
                                         <div class="flex flex-wrap items-start justify-between gap-3">
                                             <div>
                                                 <p class="font-bold text-slate-900">{{ history.change_type }}</p>
@@ -172,11 +171,11 @@
                                         {% endif %}
                                         {% if history.old_value or history.new_value %}
                                         <div class="mt-3 grid gap-3 sm:grid-cols-2">
-                                            <div class="border border-slate-200 bg-white p-3">
+                                            <div class="rounded-lg bg-white p-3">
                                                 <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">From</p>
                                                 <p class="mt-1 text-sm text-slate-700">{{ history.old_value|default:"-" }}</p>
                                             </div>
-                                            <div class="border border-slate-200 bg-white p-3">
+                                            <div class="rounded-lg bg-white p-3">
                                                 <p class="text-xs font-bold uppercase tracking-[0.12em] text-slate-500">To</p>
                                                 <p class="mt-1 text-sm text-slate-700">{{ history.new_value|default:"-" }}</p>
                                             </div>
@@ -184,14 +183,14 @@
                                         {% endif %}
                                     </div>
                                     {% empty %}
-                                    <p class="bg-slate-50 p-4 text-slate-500">No ticket history yet.</p>
+                                    <p class="rounded-xl bg-slate-50 p-4 text-slate-500">No ticket history yet.</p>
                                     {% endfor %}
                                 </div>
                             </article>
                         </section>
 
                         <aside class="grid gap-6">
-                            <form method="post" action="{% url 'staff_comment_create' ticket.id %}" class="border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
+                            <form method="post" action="{% url 'staff_comment_create' ticket.id %}" class="rounded-2xl bg-white p-6 shadow-card">
                                 {% csrf_token %}
                                 <h2 class="text-xl font-bold">Add Comment</h2>
                                 <div class="mt-4">
@@ -203,24 +202,24 @@
                                     Internal note
                                 </label>
                                 {{ comment_form.is_internal.errors }}
-                                <button type="submit" class="mt-4 w-full bg-[#1769ff] px-5 py-3 text-sm font-bold text-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition hover:bg-[#0f56d9]">
+                                <button type="submit" class="mt-4 w-full rounded-lg bg-[#0756f8] px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-[#0046d6]">
                                     Add Comment
                                 </button>
                             </form>
 
-                            <form method="post" action="{% url 'ticket_resolution_note_create' ticket.id %}" class="border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
+                            <form method="post" action="{% url 'ticket_resolution_note_create' ticket.id %}" class="rounded-2xl bg-white p-6 shadow-card">
                                 {% csrf_token %}
                                 <h2 class="text-xl font-bold">Resolution Note</h2>
                                 <div class="mt-4">
                                     {{ resolution_note_form.body }}
                                     {{ resolution_note_form.body.errors }}
                                 </div>
-                                <button type="submit" class="mt-4 w-full bg-slate-900 px-5 py-3 text-sm font-bold text-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition hover:bg-slate-700">
+                                <button type="submit" class="mt-4 w-full rounded-lg bg-slate-900 px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-slate-700">
                                     Add Resolution Note
                                 </button>
                             </form>
 
-                            <form method="post" action="{% url 'ticket_resolve' ticket.id %}" class="border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
+                            <form method="post" action="{% url 'ticket_resolve' ticket.id %}" class="rounded-2xl bg-white p-6 shadow-card">
                                 {% csrf_token %}
                                 <h2 class="text-xl font-bold">Resolve Ticket</h2>
                                 {% if resolve_form.non_field_errors %}
@@ -231,12 +230,12 @@
                                     {{ resolve_form.resolution_summary }}
                                     {{ resolve_form.resolution_summary.errors }}
                                 </div>
-                                <button type="submit" class="mt-4 w-full bg-emerald-700 px-5 py-3 text-sm font-bold text-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition hover:bg-emerald-800">
+                                <button type="submit" class="mt-4 w-full rounded-lg bg-emerald-700 px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-emerald-800">
                                     Resolve Ticket
                                 </button>
                             </form>
 
-                            <form method="post" action="{% url 'ticket_cancel' ticket.id %}" class="border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
+                            <form method="post" action="{% url 'ticket_cancel' ticket.id %}" class="rounded-2xl bg-white p-6 shadow-card">
                                 {% csrf_token %}
                                 <h2 class="text-xl font-bold">Cancel Ticket</h2>
                                 {% if cancel_form.non_field_errors %}
@@ -247,28 +246,28 @@
                                     {{ cancel_form.cancellation_reason }}
                                     {{ cancel_form.cancellation_reason.errors }}
                                 </div>
-                                <button type="submit" class="mt-4 w-full bg-rose-700 px-5 py-3 text-sm font-bold text-white shadow-[0_1px_2px_rgba(15,23,42,0.06)] transition hover:bg-rose-800">
+                                <button type="submit" class="mt-4 w-full rounded-lg bg-rose-700 px-5 py-3 text-sm font-bold text-white shadow-soft transition hover:bg-rose-800">
                                     Cancel Ticket
                                 </button>
                             </form>
 
-                            <section class="border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
+                            <section class="rounded-2xl bg-white p-6 shadow-card">
                                 <h2 class="text-xl font-bold">Attachments</h2>
                                 <div class="mt-4 grid gap-3">
                                     {% for attachment in attachments %}
-                                    <a href="{% url 'attachment_download' attachment.id %}" class="border border-slate-200 bg-slate-50 p-4 transition hover:border-[#1769ff]/30 hover:bg-[#eaf1ff]">
+                                    <a href="{% url 'attachment_download' attachment.id %}" class="rounded-xl border border-slate-200 bg-slate-50 p-4 transition hover:border-[#0756f8]/30 hover:bg-[#eaf1ff]">
                                         <p class="font-bold text-slate-900">{{ attachment.original_filename }}</p>
                                         <p class="mt-1 text-sm text-slate-500">Uploaded by {{ attachment.uploaded_by|default:"Deleted user" }}</p>
                                         <p class="mt-1 text-sm text-slate-500">{{ attachment.created_at|date:"d M Y H:i" }}</p>
                                     </a>
                                     {% empty %}
-                                    <p class="bg-slate-50 p-4 text-slate-500">No attachments uploaded.</p>
+                                    <p class="rounded-xl bg-slate-50 p-4 text-slate-500">No attachments uploaded.</p>
                                     {% endfor %}
                                 </div>
                             </section>
                         </aside>
                     </div>
-                </div>
+                </section>
             </div>
         </div>
     </section>
