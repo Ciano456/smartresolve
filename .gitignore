@@ -38,6 +38,12 @@ coverage/
 # Misc
 *.log
 Technical Report - Requirement Spec.docx
+~$*.docx
+
+# Project documentation and working material. The technical report is the
+# assessed deliverable; these notes are kept locally and are not published.
+docs/
 
 # Regenerable machine-learning model binaries
 ml/artifacts/*.joblib
+node_modules/
