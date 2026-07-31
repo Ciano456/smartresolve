@@ -180,6 +180,19 @@ class AuthViewTests(TestCase):
         self.assertTemplateUsed(response, "accounts/profile.html")
         self.assertContains(response, "Profile details")
 
+    def test_authenticated_profile_response_is_not_stored_by_browser(self):
+        self.client.force_login(self.user)
+        response = self.client.get("/accounts/profile/")
+
+        self.assertIn("no-store", response.headers["Cache-Control"])
+
+    def test_authenticated_dashboard_response_is_not_stored_by_browser(self):
+        self.client.force_login(self.support_user)
+        response = self.client.get("/accounts/dashboard/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("no-store", response.headers["Cache-Control"])
+
 
 class UserRolePropertyTests(TestCase):
     def setUp(self):

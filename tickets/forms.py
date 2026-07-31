@@ -10,7 +10,14 @@ from django.forms import ModelForm
 
 from ml.models import TicketCategoryPrediction
 
-from .models import Ticket, TicketAttachment, TicketComment, TicketPriority
+from .models import (
+    Ticket,
+    TicketAttachment,
+    TicketComment,
+    TicketPriority,
+    TicketSystem,
+    TicketType,
+)
 
 
 class TicketForm(ModelForm):
@@ -23,6 +30,21 @@ class TicketForm(ModelForm):
             "ticket_system",
             "ticket_type",
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Lookup values can be switched off in the admin portal without
+        # deleting old tickets that still point at them. New tickets should
+        # only be able to use the values that are still active today.
+        self.fields["ticket_priority"].queryset = TicketPriority.objects.filter(
+            is_active=True
+        ).order_by("sort_order")
+        self.fields["ticket_system"].queryset = TicketSystem.objects.filter(
+            is_active=True
+        ).order_by("sort_order")
+        self.fields["ticket_type"].queryset = TicketType.objects.filter(
+            is_active=True
+        ).order_by("sort_order")
 
 
 # Lets staff correct the category the AI model suggested for a ticket
