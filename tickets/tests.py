@@ -31,7 +31,7 @@ from django.urls import reverse
 # permissions, and the AI prediction integration on ticket creation.
 from django.utils import timezone
 
-from .forms import TicketAttachmentForm
+from .forms import TicketAttachmentForm, TicketForm
 from . import notifications as ticket_notifications
 from admin_portal.models import AuditLog
 from notifications.models import NotificationEvent
@@ -39,6 +39,65 @@ from ml.models import TicketCategoryPrediction
 from ml.classifier import TextClassifier
 from ml.predictor import PredictionResult, clear_classifier_cache
 from ml.services import create_prediction_for_ticket
+
+
+class TicketFormLookupTests(TestCase):
+    def setUp(self):
+        self.ticket_type = TicketType.objects.get(code="INCIDENT")
+        self.ticket_system = TicketSystem.objects.get(code="SOFTWARE")
+        self.priority = TicketPriority.objects.get(code="MEDIUM")
+
+    def _form_data(self, **overrides):
+        data = {
+            "title": "Lookup regression ticket",
+            "description": "The form should only accept active lookup values.",
+            "ticket_type": self.ticket_type.id,
+            "ticket_system": self.ticket_system.id,
+            "ticket_priority": self.priority.id,
+        }
+        data.update(overrides)
+        return data
+
+    def test_ticket_form_only_lists_active_lookup_values(self):
+        self.ticket_type.is_active = False
+        self.ticket_type.save(update_fields=["is_active"])
+        self.ticket_system.is_active = False
+        self.ticket_system.save(update_fields=["is_active"])
+        self.priority.is_active = False
+        self.priority.save(update_fields=["is_active"])
+
+        form = TicketForm()
+
+        self.assertNotIn(self.ticket_type, form.fields["ticket_type"].queryset)
+        self.assertNotIn(self.ticket_system, form.fields["ticket_system"].queryset)
+        self.assertNotIn(self.priority, form.fields["ticket_priority"].queryset)
+
+    def test_ticket_form_rejects_inactive_ticket_type(self):
+        self.ticket_type.is_active = False
+        self.ticket_type.save(update_fields=["is_active"])
+
+        form = TicketForm(data=self._form_data(ticket_type=self.ticket_type.id))
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("ticket_type", form.errors)
+
+    def test_ticket_form_rejects_inactive_ticket_system(self):
+        self.ticket_system.is_active = False
+        self.ticket_system.save(update_fields=["is_active"])
+
+        form = TicketForm(data=self._form_data(ticket_system=self.ticket_system.id))
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("ticket_system", form.errors)
+
+    def test_ticket_form_rejects_inactive_ticket_priority(self):
+        self.priority.is_active = False
+        self.priority.save(update_fields=["is_active"])
+
+        form = TicketForm(data=self._form_data(ticket_priority=self.priority.id))
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("ticket_priority", form.errors)
 
 
 class TicketAIIntegrationTests(TestCase):

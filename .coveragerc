@@ -1,0 +1,30 @@
+[run]
+branch = True
+source =
+    accounts
+    admin_portal
+    dashboard
+    ml
+    notifications
+    smartresolve
+    tickets
+omit =
+    */migrations/*
+    */tests.py
+    */tests/*
+    */test_*.py
+    */__pycache__/*
+    .venv/*
+    htmlcov/*
+    manage.py
+
+[report]
+show_missing = True
+skip_covered = False
+exclude_also =
+    pragma: no cover
+    if TYPE_CHECKING:
+    raise NotImplementedError
+
+[html]
+directory = htmlcov
